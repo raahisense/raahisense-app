@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    android:fillViewport="true"
+    android:scrollbars="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:accessibilityHeading="true"
+            android:paddingBottom="4dp"
+            android:text="@string/app_name"
+            android:textColor="@color/yellow"
+            android:textSize="32sp"
+            android:textStyle="bold" />
+
+        <TextView
+            style="@style/GuideText"
+            android:paddingBottom="8dp"
+            android:text="@string/tagline"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:accessibilityLiveRegion="polite"
+            android:focusable="true"
+            android:minHeight="72dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:textColor="@color/yellow"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/toggle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/btn_idle"
+            android:contentDescription="@string/cd_start"
+            android:filterTouchesWhenObscured="true"
+            android:minHeight="180dp"
+            android:text="@string/action_start"
+            android:textAllCaps="false"
+            android:textColor="@color/yellow"
+            android:textSize="42sp"
+            android:textStyle="bold"
+            app:backgroundTint="@null" />
+
+        <TextView
+            style="@style/GuideText"
+            android:paddingBottom="8dp"
+            android:text="@string/hold_phone"
+            android:textSize="18sp" />
+
+        <TextView
+            style="@style/GuideText"
+            android:paddingBottom="8dp"
+            android:text="@string/safety_note"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/draftBanner"
+            style="@style/GuideText"
+            android:paddingBottom="8dp"
+            android:text="@string/draft_banner"
+            android:textSize="18sp"
+            android:visibility="gone" />
+
+        <TextView
+            style="@style/GuideHeading"
+            android:text="@string/settings_heading" />
+
+        <TextView
+            style="@style/GuideText"
+            android:paddingBottom="8dp"
+            android:text="@string/label_language" />
+
+        <RadioGroup
+            android:id="@+id/languages"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:id="@+id/langEn"
+                style="@style/GuideRadio"
+                android:text="@string/lang_en" />
+
+            <RadioButton
+                android:id="@+id/langHi"
+                style="@style/GuideRadio"
+                android:text="@string/lang_hi" />
+
+            <RadioButton
+                android:id="@+id/langTa"
+                style="@style/GuideRadio"
+                android:text="@string/lang_ta" />
+
+            <RadioButton
+                android:id="@+id/langBn"
+                style="@style/GuideRadio"
+                android:text="@string/lang_bn" />
+
+            <RadioButton
+                android:id="@+id/langSw"
+                style="@style/GuideRadio"
+                android:text="@string/lang_sw" />
+
+            <RadioButton
+                android:id="@+id/langEs"
+                style="@style/GuideRadio"
+                android:text="@string/lang_es" />
+        </RadioGroup>
+
+        <TextView
+            style="@style/GuideText"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:text="@string/label_speech_rate" />
+
+        <RadioGroup
+            android:id="@+id/rates"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:id="@+id/rateSlow"
+                style="@style/GuideRadio"
+                android:text="@string/rate_slow" />
+
+            <RadioButton
+                android:id="@+id/rateNormal"
+                style="@style/GuideRadio"
+                android:text="@string/rate_normal" />
+
+            <RadioButton
+                android:id="@+id/rateFast"
+                style="@style/GuideRadio"
+                android:text="@string/rate_fast" />
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/batterySaver"
+            style="@style/GuideRow"
+            android:text="@string/battery_off"
+            app:backgroundTint="@null" />
+
+        <Button
+            android:id="@+id/vibration"
+            style="@style/GuideRow"
+            android:text="@string/vibration_on"
+            app:backgroundTint="@null" />
+
+        <TextView
+            android:id="@+id/batteryHint"
+            style="@style/GuideText"
+            android:paddingBottom="8dp"
+            android:text="@string/battery_hint_restricted"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/batteryOpt"
+            style="@style/GuideRow"
+            android:contentDescription="@string/cd_battery_opt"
+            android:text="@string/battery_opt_button"
+            app:backgroundTint="@null" />
+    </LinearLayout>
+</ScrollView>

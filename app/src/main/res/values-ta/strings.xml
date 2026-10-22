@@ -166,6 +166,15 @@
     <string name="calibrate_done">தூரம் அளவிடப்பட்டது.</string>
     <string name="calibrate_failed">இந்த அளவு பயன்படவில்லை. தொலைபேசியை அசையாமல் பிடித்து திறந்த பாதையில் இருந்து மீண்டும் தொடங்குங்கள்.</string>
     <string name="calibrate_same">சுவர் திறந்த பாதை போலத் தெரிந்தது. சுவருக்கு அருகில் சென்று மீண்டும் தட்டவும்.</string>
+    <string name="label_light">விளக்கு</string>
+    <string name="light_auto">தானாக</string>
+    <string name="light_on">எப்போதும் எரி</string>
+    <string name="light_off">அணை</string>
+    <string name="cd_light_auto">இருட்டு நீடித்தால் விளக்கைப் போடு</string>
+    <string name="cd_light_on">விளக்கை எப்போதும் எரிய விடு</string>
+    <string name="cd_light_off">விளக்கை அணைத்து வை</string>
+    <string name="light_turning_on">இருட்டு, விளக்கைப் போடுகிறேன்.</string>
+    <string name="light_too_dark">மிகவும் இருட்டு, தெளிவாகத் தெரியவில்லை. தயவுசெய்து எச்சரிக்கையாக இருங்கள்.</string>
     <string name="about_button">அறிமுகமும் உரிமங்களும்</string>
     <string name="cd_about">பேச்சு மற்றும் பட உரிமங்களைத் திறக்கவும்</string>
     <string name="about_title">அறிமுகம்</string>

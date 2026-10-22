@@ -171,10 +171,14 @@ object DepthWarnings {
      * A box explains the column when a known class covers enough of that
      * column's walking corridor. Score uses the same cutoff as spoken detections.
      */
-    fun explains(box: DetectionBox, position: HorizontalPosition): Boolean {
+    fun explains(
+        box: DetectionBox,
+        position: HorizontalPosition,
+        scoreThreshold: Float = WarningLogic.SCORE_THRESHOLD,
+    ): Boolean {
         val label = box.label.trim().lowercase()
         if (label !in PhraseIds.objects) return false
-        if (!box.score.isFinite() || box.score < WarningLogic.SCORE_THRESHOLD) return false
+        if (!box.score.isFinite() || box.score < scoreThreshold) return false
         val roiLeft = when (position) {
             HorizontalPosition.LEFT -> 0f
             HorizontalPosition.AHEAD -> WarningLogic.LEFT_MAX
@@ -326,6 +330,7 @@ class DepthTracker {
         field: DepthField,
         detections: List<DetectionBox>,
         calibration: DepthCalibration?,
+        scoreThreshold: Float = WarningLogic.SCORE_THRESHOLD,
     ): List<ObstacleWarning> {
         val samples = DepthWarnings.corridorSamples(field)
         val scale = DepthWarnings.scaleOf(samples, calibration)
@@ -337,7 +342,7 @@ class DepthTracker {
             history.removeFirst()
         }
         val explained = BooleanArray(3) { index ->
-            detections.any { DepthWarnings.explains(it, DepthWarnings.positions[index]) }
+            detections.any { DepthWarnings.explains(it, DepthWarnings.positions[index], scoreThreshold) }
         }
         val wall = DepthWarnings.wallCandidate(samples, scale)
         val wallBlocked = explained[1] || (explained[0] && explained[2])

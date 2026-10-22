@@ -1,6 +1,7 @@
 package org.visualaid.obstacleguide
 
 import org.visualaid.obstacleguide.logic.DepthCalibration
+import org.visualaid.obstacleguide.logic.TorchMode
 
 data class GuideSettings(
     val languageTag: String = "en",
@@ -12,6 +13,7 @@ data class GuideSettings(
     val speechVolume: Float = VOLUME_HIGH,
     val depthOpenRaw: Float = 0f,
     val depthWallRaw: Float = 0f,
+    val torchMode: TorchMode = TorchMode.AUTO,
 ) {
     fun normalized(): GuideSettings {
         val tag = if (languageTag in LANGUAGE_TAGS) languageTag else "en"

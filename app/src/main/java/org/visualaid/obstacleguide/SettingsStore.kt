@@ -1,6 +1,7 @@
 package org.visualaid.obstacleguide
 
 import android.content.Context
+import org.visualaid.obstacleguide.logic.TorchMode
 
 object SettingsStore {
     private const val PREF = "obstacleguide"
@@ -15,6 +16,7 @@ object SettingsStore {
     private const val KEY_VOLUME = "speech_volume"
     private const val KEY_DEPTH_OPEN = "depth_open_raw"
     private const val KEY_DEPTH_WALL = "depth_wall_raw"
+    private const val KEY_TORCH = "torch_mode"
 
     fun load(context: Context): GuideSettings {
         val prefs = context.applicationContext.getSharedPreferences(PREF, Context.MODE_PRIVATE)
@@ -28,6 +30,7 @@ object SettingsStore {
             speechVolume = prefs.getFloat(KEY_VOLUME, GuideSettings.VOLUME_HIGH),
             depthOpenRaw = prefs.getFloat(KEY_DEPTH_OPEN, 0f),
             depthWallRaw = prefs.getFloat(KEY_DEPTH_WALL, 0f),
+            torchMode = TorchMode.fromPersisted(prefs.getString(KEY_TORCH, "auto")),
         ).normalized()
     }
 
@@ -44,6 +47,7 @@ object SettingsStore {
             .putFloat(KEY_VOLUME, normalized.speechVolume)
             .putFloat(KEY_DEPTH_OPEN, normalized.depthOpenRaw)
             .putFloat(KEY_DEPTH_WALL, normalized.depthWallRaw)
+            .putString(KEY_TORCH, normalized.torchMode.persisted())
             .apply()
     }
 

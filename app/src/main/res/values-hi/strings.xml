@@ -168,6 +168,15 @@
     <string name="calibrate_done">दूरी जाँच हो गई।</string>
     <string name="calibrate_failed">यह रीडिंग काम नहीं आई। फ़ोन स्थिर रखें और खुले रास्ते से फिर शुरू करें।</string>
     <string name="calibrate_same">दीवार खुले रास्ते जैसी लगी। दीवार के पास जाकर फिर दबाएँ।</string>
+    <string name="label_light">रोशनी</string>
+    <string name="light_auto">अपने आप</string>
+    <string name="light_on">हमेशा चालू</string>
+    <string name="light_off">बंद</string>
+    <string name="cd_light_auto">अंधेरा रहे तो टॉर्च जलाएँ</string>
+    <string name="cd_light_on">टॉर्च चालू रखें</string>
+    <string name="cd_light_off">टॉर्च बंद रखें</string>
+    <string name="light_turning_on">अंधेरा है, बत्ती जला रहा हूँ।</string>
+    <string name="light_too_dark">बहुत अंधेरा है, साफ़ नहीं दिख रहा। कृपया सावधानी रखें।</string>
     <string name="about_button">परिचय और लाइसेंस</string>
     <string name="cd_about">बोलने और तस्वीरों के लाइसेंस खोलें</string>
     <string name="about_title">परिचय</string>

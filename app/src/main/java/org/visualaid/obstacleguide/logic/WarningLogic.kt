@@ -70,8 +70,8 @@ object WarningLogic {
         return distanceRank * 2f + centrality + area + bottom * 0.01f
     }
 
-    fun fromBox(box: DetectionBox): ObstacleWarning? {
-        if (!box.score.isFinite() || box.score < SCORE_THRESHOLD) return null
+    fun fromBox(box: DetectionBox, scoreThreshold: Float = SCORE_THRESHOLD): ObstacleWarning? {
+        if (!box.score.isFinite() || box.score < scoreThreshold) return null
         val label = box.label.trim().lowercase()
         if (label.isEmpty() || label == "???" || label !in PhraseIds.objects) return null
         if (!box.left.isFinite() || !box.top.isFinite() || !box.right.isFinite() || !box.bottom.isFinite()) {
@@ -98,8 +98,8 @@ object WarningLogic {
         )
     }
 
-    fun rank(boxes: List<DetectionBox>): List<ObstacleWarning> {
-        return boxes.mapNotNull { fromBox(it) }
+    fun rank(boxes: List<DetectionBox>, scoreThreshold: Float = SCORE_THRESHOLD): List<ObstacleWarning> {
+        return boxes.mapNotNull { fromBox(it, scoreThreshold) }
             .sortedWith(
                 compareByDescending<ObstacleWarning> { it.priority }
                     .thenBy { it.label },

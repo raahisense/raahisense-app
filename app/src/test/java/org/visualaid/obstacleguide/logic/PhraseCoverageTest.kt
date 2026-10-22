@@ -90,6 +90,8 @@ class PhraseCoverageTest {
         assertEquals("Something approaching on your left", entries.getValue("depth_approaching_left"))
         assertEquals("Something approaching ahead", entries.getValue("depth_approaching_ahead"))
         assertEquals("Something approaching on your right", entries.getValue("depth_approaching_right"))
+        assertEquals("It's dark, turning on the light.", entries.getValue("light_turning_on"))
+        assertEquals("Too dark to see clearly, please use caution.", entries.getValue("light_too_dark"))
     }
 
     private fun resRoot(): File {
@@ -100,6 +102,14 @@ class PhraseCoverageTest {
 
     private fun stringEntries(xml: String): Map<String, String> {
         val regex = Regex("""<string\s+name="([^"]+)"[^>]*>(.*?)</string>""", RegexOption.DOT_MATCHES_ALL)
-        return regex.findAll(xml).associate { it.groupValues[1] to it.groupValues[2].trim() }
+        return regex.findAll(xml).associate { match ->
+            val value = match.groupValues[2].trim()
+                .replace("\\'", "'")
+                .replace("\\\"", "\"")
+                .replace("&apos;", "'")
+                .replace("&quot;", "\"")
+                .replace("&amp;", "&")
+            match.groupValues[1] to value
+        }
     }
 }

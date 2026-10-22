@@ -177,6 +177,15 @@
     <string name="calibrate_done">Distance is calibrated.</string>
     <string name="calibrate_failed">That reading was not usable. Hold the phone steady and start again from an open path.</string>
     <string name="calibrate_same">The wall looked like the open path. Move closer to a wall and tap again.</string>
+    <string name="label_light">Light</string>
+    <string name="light_auto">Auto</string>
+    <string name="light_on">Always on</string>
+    <string name="light_off">Off</string>
+    <string name="cd_light_auto">Turn the flashlight on when it stays dark</string>
+    <string name="cd_light_on">Keep the flashlight on</string>
+    <string name="cd_light_off">Keep the flashlight off</string>
+    <string name="light_turning_on">It\'s dark, turning on the light.</string>
+    <string name="light_too_dark">Too dark to see clearly, please use caution.</string>
     <string name="about_button">About and licenses</string>
     <string name="cd_about">Open the list of speech and picture licenses</string>
     <string name="about_title">About</string>

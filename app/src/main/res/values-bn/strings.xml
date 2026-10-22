@@ -166,6 +166,15 @@
     <string name="calibrate_done">দূরত্ব মাপা হয়ে গেছে।</string>
     <string name="calibrate_failed">এই পরিমাপ ব্যবহার করা গেল না। ফোন স্থির রাখুন এবং খোলা পথ থেকে আবার শুরু করুন।</string>
     <string name="calibrate_same">দেয়াল খোলা পথের মতো লাগছে। দেয়ালের আরও কাছে গিয়ে আবার চাপুন।</string>
+    <string name="label_light">আলো</string>
+    <string name="light_auto">নিজে থেকে</string>
+    <string name="light_on">সবসময় জ্বালা</string>
+    <string name="light_off">বন্ধ</string>
+    <string name="cd_light_auto">অন্ধকার থাকলে টর্চ জ্বালান</string>
+    <string name="cd_light_on">টর্চ জ্বালিয়ে রাখুন</string>
+    <string name="cd_light_off">টর্চ বন্ধ রাখুন</string>
+    <string name="light_turning_on">অন্ধকার, আলো জ্বালাচ্ছি।</string>
+    <string name="light_too_dark">খুব অন্ধকার, স্পষ্ট দেখা যাচ্ছে না। দয়া করে সাবধান থাকুন।</string>
     <string name="about_button">পরিচিতি ও লাইসেন্স</string>
     <string name="cd_about">কথা ও ছবির লাইসেন্স খুলুন</string>
     <string name="about_title">পরিচিতি</string>

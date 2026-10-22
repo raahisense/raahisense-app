@@ -28,6 +28,7 @@ import android.util.Log
 import android.util.Size
 import android.view.Surface
 import android.view.WindowManager
+import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
@@ -40,6 +41,9 @@ import androidx.lifecycle.LifecycleService
 import org.visualaid.obstacleguide.detect.ArcoreDepthCamera
 import org.visualaid.obstacleguide.detect.ObstacleDetector
 import org.visualaid.obstacleguide.detect.TfliteDepth
+import org.visualaid.obstacleguide.detect.captureExposure
+import org.visualaid.obstacleguide.detect.meanLuma
+import org.visualaid.obstacleguide.detect.meanLumaY
 import org.visualaid.obstacleguide.detect.toUprightBitmap
 import org.visualaid.obstacleguide.logic.CommandLexicon
 import org.visualaid.obstacleguide.logic.DepthCalibration
@@ -47,6 +51,10 @@ import org.visualaid.obstacleguide.logic.DepthField
 import org.visualaid.obstacleguide.logic.DepthTracker
 import org.visualaid.obstacleguide.logic.DepthWarnings
 import org.visualaid.obstacleguide.logic.DetectionBox
+import org.visualaid.obstacleguide.logic.LowLight
+import org.visualaid.obstacleguide.logic.LowLightController
+import org.visualaid.obstacleguide.logic.SceneLight
+import org.visualaid.obstacleguide.logic.TorchMode
 import org.visualaid.obstacleguide.logic.ObstacleWarning
 import org.visualaid.obstacleguide.logic.VoiceAction
 import org.visualaid.obstacleguide.logic.VoiceCommand
@@ -59,6 +67,7 @@ import org.visualaid.obstacleguide.speech.VoiceStatus
 import org.visualaid.obstacleguide.voice.VoskEar
 import org.visualaid.obstacleguide.voice.VoskVocab
 import java.util.concurrent.Executors
+import kotlin.math.roundToInt
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -118,7 +127,22 @@ class GuideService : LifecycleService() {
     private var ear: VoskEar? = null
     private var sensorManager: SensorManager? = null
     private var shakeListener: SensorEventListener? = null
+    private var lightListener: SensorEventListener? = null
     private val shakeWatch = ShakeWatch()
+    private val lowLight = LowLightController()
+    @Volatile
+    private var ambientLux: Float? = null
+    @Volatile
+    private var scoreThreshold = WarningLogic.SCORE_THRESHOLD
+    private var boundCamera: Camera? = null
+    @Volatile
+    private var flashUnit = false
+    @Volatile
+    private var lastScene: SceneLight? = null
+    private var torchWanted = false
+    private var exposureBoost = false
+    private var appliedTorch: Boolean? = null
+    private var appliedExposureBoost: Boolean? = null
     @Volatile
     private var commandCapturing = false
     @Volatile
@@ -207,6 +231,7 @@ class GuideService : LifecycleService() {
         applySettings(settings, announceMissing = false)
         handler.post { listener?.onRunningChanged(true) }
         if (settings.voiceEnabled) ensureEar()
+        registerLight()
         if (detector == null) {
             loadModelThenCamera()
         } else if (!cameraBound) {
@@ -452,6 +477,95 @@ class GuideService : LifecycleService() {
         shakeListener = null
     }
 
+    private fun registerLight() {
+        if (lightListener != null) return
+        val manager = sensorManager ?: getSystemService(SensorManager::class.java) ?: return
+        val sensor = manager.getDefaultSensor(Sensor.TYPE_LIGHT) ?: return
+        val listener = object : SensorEventListener {
+            override fun onSensorChanged(event: SensorEvent) {
+                val lux = event.values.firstOrNull() ?: return
+                if (lux.isFinite() && lux >= 0f) ambientLux = lux
+            }
+
+            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) = Unit
+        }
+        manager.registerListener(listener, sensor, SensorManager.SENSOR_DELAY_NORMAL)
+        sensorManager = manager
+        lightListener = listener
+    }
+
+    private fun unregisterLight() {
+        val listener = lightListener ?: return
+        sensorManager?.unregisterListener(listener)
+        lightListener = null
+        ambientLux = null
+    }
+
+    private fun updateLight(scene: SceneLight, torchAvailable: Boolean) {
+        val sample = when {
+            scene.measured -> scene.also { lastScene = it }
+            lastScene != null -> lastScene ?: scene
+            else -> scene
+        }
+        val decision = synchronized(lowLight) {
+            lowLight.step(sample, settings.torchMode, torchAvailable, SystemClock.elapsedRealtime())
+        }
+        scoreThreshold = LowLight.scoreThreshold(decision.lowLight)
+        val changed = decision.torchOn != torchWanted || decision.lowLight != exposureBoost || appliedTorch == null
+        torchWanted = decision.torchOn
+        exposureBoost = decision.lowLight
+        if (changed) handler.post { applyCameraControls() }
+        val name = decision.phraseResName ?: return
+        val text = when (name) {
+            LowLight.PHRASE_TURNING_ON -> speechContext().getString(R.string.light_turning_on)
+            LowLight.PHRASE_TOO_DARK -> speechContext().getString(R.string.light_too_dark)
+            else -> return
+        }
+        handler.post {
+            if (!running || stopping) return@post
+            postStatus(text)
+            speakTracked(text, flush = false)
+        }
+    }
+
+    private fun applyCameraControls() {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            handler.post { applyCameraControls() }
+            return
+        }
+        val camera = boundCamera ?: return
+        if (!running) return
+        val wantTorch = torchWanted && flashUnit
+        val wantBoost = exposureBoost
+        try {
+            if (appliedTorch != wantTorch) {
+                camera.cameraControl.enableTorch(wantTorch)
+                appliedTorch = wantTorch
+            }
+        } catch (error: Exception) {
+            Log.w(TAG, "Torch failed", error)
+            appliedTorch = null
+        }
+        try {
+            if (appliedExposureBoost != wantBoost) {
+                val state = camera.cameraInfo.exposureState
+                if (state.isExposureCompensationSupported) {
+                    val step = state.exposureCompensationStep.toFloat()
+                    val raw = if (wantBoost && step > 0f) (1f / step).roundToInt() else 0
+                    val index = raw.coerceIn(
+                        state.exposureCompensationRange.lower,
+                        state.exposureCompensationRange.upper,
+                    )
+                    camera.cameraControl.setExposureCompensationIndex(index)
+                }
+                appliedExposureBoost = wantBoost
+            }
+        } catch (error: Exception) {
+            Log.w(TAG, "Exposure compensation failed", error)
+            appliedExposureBoost = null
+        }
+    }
+
     private fun stickyResult(): Int {
         return if (settings.voiceEnabled || running) START_STICKY else START_NOT_STICKY
     }
@@ -508,6 +622,14 @@ class GuideService : LifecycleService() {
             }
             VoiceStatus.UNKNOWN -> {
                 effectiveLanguage = settings.languageTag
+            }
+        }
+        if (running) {
+            val scene = lastScene
+            if (scene != null) {
+                updateLight(scene, flashUnit)
+            } else if (settings.torchMode != TorchMode.AUTO) {
+                updateLight(SceneLight(Float.NaN), flashUnit)
             }
         }
     }
@@ -623,7 +745,11 @@ class GuideService : LifecycleService() {
                 }
                 lastFrameAt = nowElapsed
                 try {
-                    considerFrame(shot.bitmap, shot.depth, allowMonocular = false)
+                    val scene = SceneLight(
+                        meanLuma = shot.bitmap.meanLuma(),
+                        lux = ambientLux,
+                    )
+                    considerFrame(shot.bitmap, shot.depth, allowMonocular = false, scene = scene)
                 } catch (error: Exception) {
                     onFrameError(error)
                 } finally {
@@ -685,12 +811,26 @@ class GuideService : LifecycleService() {
                     imageAnalysis.setAnalyzer(cameraExecutor) { image -> analyze(image) }
                     analysis = imageAnalysis
                     provider.unbindAll()
-                    provider.bindToLifecycle(
+                    val camera = provider.bindToLifecycle(
                         this,
                         CameraSelector.DEFAULT_BACK_CAMERA,
                         imageAnalysis,
                     )
+                    boundCamera = camera
+                    flashUnit = try {
+                        camera.cameraInfo.hasFlashUnit()
+                    } catch (error: Exception) {
+                        Log.w(TAG, "Flash check failed", error)
+                        false
+                    }
+                    appliedTorch = null
+                    appliedExposureBoost = null
                     onCameraReady()
+                    if (settings.torchMode == TorchMode.ON) {
+                        updateLight(lastScene ?: SceneLight(Float.NaN), flashUnit)
+                    } else {
+                        applyCameraControls()
+                    }
                 } catch (error: Exception) {
                     Log.e(TAG, "Camera bind failed", error)
                     failAndStop(speechContext().getString(R.string.status_camera_error))
@@ -725,10 +865,22 @@ class GuideService : LifecycleService() {
             image.close()
             return
         }
+        val scene = try {
+            val (iso, exposureNs) = image.captureExposure()
+            SceneLight(
+                meanLuma = image.meanLumaY(),
+                lux = ambientLux,
+                iso = iso,
+                exposureTimeNs = exposureNs,
+            )
+        } catch (error: Exception) {
+            Log.w(TAG, "Brightness read failed", error)
+            SceneLight(Float.NaN, ambientLux)
+        }
         var bitmap: android.graphics.Bitmap? = null
         try {
             bitmap = image.toUprightBitmap()
-            considerFrame(bitmap, depthField = null, allowMonocular = true)
+            considerFrame(bitmap, depthField = null, allowMonocular = true, scene = scene)
         } catch (error: Exception) {
             onFrameError(error)
         } finally {
@@ -741,16 +893,19 @@ class GuideService : LifecycleService() {
         bitmap: android.graphics.Bitmap,
         depthField: DepthField?,
         allowMonocular: Boolean,
+        scene: SceneLight,
     ) {
         val current = detector ?: return
-        val boxes = current.detect(bitmap)
+        updateLight(scene, flashUnit)
+        val threshold = scoreThreshold
+        val boxes = current.detect(bitmap, threshold)
         frameErrors = 0
         if (depthField != null) {
-            publishDepth(depthField, boxes, settings.depthCalibration())
+            publishDepth(depthField, boxes, settings.depthCalibration(), threshold)
         } else if (allowMonocular) {
-            scheduleDepth(bitmap, boxes)
+            scheduleDepth(bitmap, boxes, threshold)
         }
-        val ranked = rankFrame(boxes)
+        val ranked = rankFrame(boxes, threshold)
         lastRanked = ranked
         if (commandCapturing) return
         val choice = WarningLogic.selectAnnouncement(
@@ -773,13 +928,17 @@ class GuideService : LifecycleService() {
         Log.i(TAG, "warn ${choice.label} ${choice.position} ${choice.closeness}")
     }
 
-    private fun rankFrame(boxes: List<DetectionBox>): List<ObstacleWarning> {
-        return (WarningLogic.rank(boxes) + latestDepth).sortedWith(
+    private fun rankFrame(boxes: List<DetectionBox>, threshold: Float): List<ObstacleWarning> {
+        return (WarningLogic.rank(boxes, threshold) + latestDepth).sortedWith(
             compareByDescending<ObstacleWarning> { it.priority }.thenBy { it.label },
         )
     }
 
-    private fun scheduleDepth(bitmap: android.graphics.Bitmap, boxes: List<DetectionBox>) {
+    private fun scheduleDepth(
+        bitmap: android.graphics.Bitmap,
+        boxes: List<DetectionBox>,
+        scoreThreshold: Float,
+    ) {
         val estimator = depthEstimator ?: return
         val now = SystemClock.elapsedRealtime()
         val interval = if (settings.batterySaver) {
@@ -806,7 +965,7 @@ class GuideService : LifecycleService() {
         depthExecutor.execute {
             try {
                 if (generation != depthGeneration.get() || !running || stopping) return@execute
-                publishDepth(estimator.estimate(copy), detections, calibration)
+                publishDepth(estimator.estimate(copy), detections, calibration, scoreThreshold)
             } catch (error: Exception) {
                 Log.w(TAG, "Depth frame failed", error)
             } finally {
@@ -820,9 +979,10 @@ class GuideService : LifecycleService() {
         field: DepthField,
         boxes: List<DetectionBox>,
         calibration: DepthCalibration?,
+        scoreThreshold: Float,
     ) {
         val warnings = synchronized(depthTracker) {
-            depthTracker.update(field, boxes, calibration)
+            depthTracker.update(field, boxes, calibration, scoreThreshold)
         }
         latestAheadMedian = DepthWarnings.aheadMedian(field)
         latestDepth = warnings
@@ -860,6 +1020,7 @@ class GuideService : LifecycleService() {
         if (!running) return
         running = false
         cameraReady = false
+        unregisterLight()
         releaseCamera()
         releaseDetector()
         cancelVibration()
@@ -903,12 +1064,26 @@ class GuideService : LifecycleService() {
     private fun releaseCamera() {
         cameraBound = false
         cameraToken += 1
+        torchWanted = false
+        exposureBoost = false
+        try {
+            boundCamera?.cameraControl?.enableTorch(false)
+        } catch (error: Exception) {
+            Log.w(TAG, "torch off", error)
+        }
         try {
             cameraProvider?.unbindAll()
         } catch (error: Exception) {
             Log.w(TAG, "unbind", error)
         }
         analysis = null
+        boundCamera = null
+        flashUnit = false
+        appliedTorch = null
+        appliedExposureBoost = null
+        lastScene = null
+        scoreThreshold = WarningLogic.SCORE_THRESHOLD
+        synchronized(lowLight) { lowLight.reset() }
     }
 
     private fun releaseDetector() {

@@ -75,6 +75,77 @@ private fun ImageProxy.toNv21Capped(maxPixels: Int): Nv21 {
     return Nv21(nv21, outW, outH)
 }
 
+/** Mean luma of the camera Y plane, 0 to 1. Rotation does not change the mean. */
+internal fun ImageProxy.meanLumaY(): Float {
+    val plane = planes.firstOrNull() ?: return Float.NaN
+    val buffer = plane.buffer.duplicate()
+    val rowStride = plane.rowStride
+    val pixelStride = plane.pixelStride.coerceAtLeast(1)
+    if (rowStride <= 0 || width <= 0 || height <= 0) return Float.NaN
+    val step = 8
+    var sum = 0L
+    var count = 0
+    var row = 0
+    while (row < height) {
+        var col = 0
+        val rowStart = row * rowStride
+        while (col < width) {
+            val index = rowStart + col * pixelStride
+            if (index in 0 until buffer.limit()) {
+                sum += buffer.get(index).toInt() and 0xFF
+                count++
+            }
+            col += step
+        }
+        row += step
+    }
+    return if (count == 0) Float.NaN else sum.toFloat() / (count * 255f)
+}
+
+/** Mean luma of an upright bitmap, 0 to 1. Used when the frame is already a bitmap. */
+internal fun Bitmap.meanLuma(): Float {
+    if (width <= 0 || height <= 0) return Float.NaN
+    val step = 8
+    var sum = 0L
+    var count = 0
+    var y = 0
+    while (y < height) {
+        var x = 0
+        while (x < width) {
+            val pixel = getPixel(x, y)
+            val red = (pixel shr 16) and 0xFF
+            val green = (pixel shr 8) and 0xFF
+            val blue = pixel and 0xFF
+            sum += (red * 299 + green * 587 + blue * 114) / 1000
+            count++
+            x += step
+        }
+        y += step
+    }
+    return if (count == 0) Float.NaN else sum.toFloat() / (count * 255f)
+}
+
+/**
+ * ISO and exposure time when this CameraX build attaches a capture result.
+ * CameraX 1.3 does not publish them on ImageInfo, so this often returns nulls.
+ */
+internal fun ImageProxy.captureExposure(): Pair<Int?, Long?> {
+    return try {
+        val info = imageInfo
+        val method = info.javaClass.methods.firstOrNull { candidate ->
+            candidate.parameterCount == 0 &&
+                (candidate.name == "getCaptureResult" || candidate.name == "captureResult")
+        } ?: return null to null
+        method.isAccessible = true
+        val result = method.invoke(info) as? android.hardware.camera2.CaptureResult ?: return null to null
+        val iso = result.get(android.hardware.camera2.CaptureResult.SENSOR_SENSITIVITY)
+        val exposure = result.get(android.hardware.camera2.CaptureResult.SENSOR_EXPOSURE_TIME)
+        iso to exposure
+    } catch (_: Exception) {
+        null to null
+    }
+}
+
 private fun ByteBuffer.byteAt(index: Int): Byte {
     val size = limit()
     if (index < 0 || index >= size) {

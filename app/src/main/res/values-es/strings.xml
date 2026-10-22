@@ -166,6 +166,15 @@
     <string name="calibrate_done">La distancia está calibrada.</string>
     <string name="calibrate_failed">Esa lectura no sirvió. Sostén el teléfono quieto y empieza de nuevo en un camino despejado.</string>
     <string name="calibrate_same">La pared se vio como el camino despejado. Acércate a una pared y toca otra vez.</string>
+    <string name="label_light">Luz</string>
+    <string name="light_auto">Automática</string>
+    <string name="light_on">Siempre encendida</string>
+    <string name="light_off">Apagada</string>
+    <string name="cd_light_auto">Encender la linterna cuando sigue oscuro</string>
+    <string name="cd_light_on">Dejar la linterna encendida</string>
+    <string name="cd_light_off">Dejar la linterna apagada</string>
+    <string name="light_turning_on">Está oscuro, enciendo la luz.</string>
+    <string name="light_too_dark">Demasiado oscuro para ver con claridad, tenga cuidado.</string>
     <string name="about_button">Acerca de y licencias</string>
     <string name="cd_about">Abrir las licencias de la voz y de las fotos</string>
     <string name="about_title">Acerca de</string>

@@ -37,7 +37,7 @@ class TfliteYoloDetector(context: Context) : Closeable {
         inputFloat = input.dataType() == DataType.FLOAT32
     }
 
-    fun detect(bitmap: Bitmap): List<DetectionBox> {
+    fun detect(bitmap: Bitmap, scoreThreshold: Float = WarningLogic.SCORE_THRESHOLD): List<DetectionBox> {
         val fitted = letterbox(bitmap)
         val input = raster(fitted)
         fitted.recycle()
@@ -69,7 +69,7 @@ class TfliteYoloDetector(context: Context) : Closeable {
             inputSize = inputSize,
             frameWidth = bitmap.width,
             frameHeight = bitmap.height,
-            scoreThreshold = WarningLogic.SCORE_THRESHOLD,
+            scoreThreshold = scoreThreshold,
         )
     }
 

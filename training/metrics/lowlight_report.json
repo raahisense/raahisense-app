@@ -1,0 +1,268 @@
+{
+  "darkened_test_before": {
+    "map50": 0.28289411295123534,
+    "map50_95": 0.18910822536440317,
+    "per_class_map50_95": [
+      {
+        "class": "person",
+        "map50_95": 0.20074148636859332
+      },
+      {
+        "class": "bicycle",
+        "map50_95": 0.6902186933671578
+      },
+      {
+        "class": "motorcycle",
+        "map50_95": 0.05195802098139289
+      },
+      {
+        "class": "car",
+        "map50_95": 0.2002181949844966
+      },
+      {
+        "class": "bus",
+        "map50_95": 0.1262441420497894
+      },
+      {
+        "class": "truck",
+        "map50_95": 0.1009923288192899
+      },
+      {
+        "class": "cow",
+        "map50_95": 0.10169934510379494
+      },
+      {
+        "class": "dog",
+        "map50_95": 0.1769278857279018
+      },
+      {
+        "class": "auto_rickshaw",
+        "map50_95": 0.0931194862543123
+      },
+      {
+        "class": "cycle_rickshaw",
+        "map50_95": 0.24626413462701854
+      },
+      {
+        "class": "handcart",
+        "map50_95": 0.10391085589150344
+      },
+      {
+        "class": "pothole",
+        "map50_95": 0.010566549449086419
+      },
+      {
+        "class": "manhole_open_drain",
+        "map50_95": 0.5700889333142863
+      },
+      {
+        "class": "curb",
+        "map50_95": 0.18910822536440317
+      },
+      {
+        "class": "stairs",
+        "map50_95": 0.23630814221289173
+      },
+      {
+        "class": "pole_bollard",
+        "map50_95": 0.014185825542708022
+      },
+      {
+        "class": "barrier",
+        "map50_95": 0.5158373884044617
+      },
+      {
+        "class": "street_furniture",
+        "map50_95": 0.415877352221529
+      },
+      {
+        "class": "tree",
+        "map50_95": 0.2768986483090057
+      },
+      {
+        "class": "cat",
+        "map50_95": 0.11182506474064684
+      },
+      {
+        "class": "chair",
+        "map50_95": 0.028299863905072116
+      },
+      {
+        "class": "couch",
+        "map50_95": 0.058278400178542224
+      },
+      {
+        "class": "dining table",
+        "map50_95": 0.12231228502124099
+      },
+      {
+        "class": "bed",
+        "map50_95": 0.15171402707302512
+      },
+      {
+        "class": "toilet",
+        "map50_95": 0.26908529112731217
+      },
+      {
+        "class": "potted plant",
+        "map50_95": 0.014672219975208206
+      },
+      {
+        "class": "refrigerator",
+        "map50_95": 0.14130356408607864
+      },
+      {
+        "class": "tv",
+        "map50_95": 0.1906556052495756
+      },
+      {
+        "class": "door",
+        "map50_95": 0.07482657521736646
+      }
+    ],
+    "weights": "/workspace/training/runs/obstacles19/weights/best.pt"
+  },
+  "night_datasets_included": [],
+  "night_datasets_skipped": [
+    "ExDark: dataset terms require written permission for commercial use, and the photos are third-party",
+    "BDD100K data: educational, research, and not-for-profit unless separately licensed",
+    "nuScenes: CC BY-NC-SA, non-commercial",
+    "Roboflow Universe night-vision project lists CC BY 4.0, but the photos are a reupload with no confirmed source license, so they were not added",
+    "FLIR thermal sets are a different sensor from the phone camera and were not added"
+  ],
+  "augmentation": "training batches: darken, gamma, gaussian noise, horizontal motion blur",
+  "note": "Measured on this CPU. Not a phone and not a Helio G99.",
+  "darkened_test_after": {
+    "map50": 0.2923858894335744,
+    "map50_95": 0.1848936072305793,
+    "per_class_map50_95": [
+      {
+        "class": "person",
+        "map50_95": 0.12732813159425932
+      },
+      {
+        "class": "bicycle",
+        "map50_95": 0.6428359076334181
+      },
+      {
+        "class": "motorcycle",
+        "map50_95": 0.036156620130487226
+      },
+      {
+        "class": "car",
+        "map50_95": 0.23038039555560813
+      },
+      {
+        "class": "bus",
+        "map50_95": 0.19696191697661064
+      },
+      {
+        "class": "truck",
+        "map50_95": 0.16441838856772772
+      },
+      {
+        "class": "cow",
+        "map50_95": 0.11363829896021349
+      },
+      {
+        "class": "dog",
+        "map50_95": 0.14999521824642054
+      },
+      {
+        "class": "auto_rickshaw",
+        "map50_95": 0.08903434805759973
+      },
+      {
+        "class": "cycle_rickshaw",
+        "map50_95": 0.2318456341442209
+      },
+      {
+        "class": "handcart",
+        "map50_95": 0.09633293299019285
+      },
+      {
+        "class": "pothole",
+        "map50_95": 0.013031728927084204
+      },
+      {
+        "class": "manhole_open_drain",
+        "map50_95": 0.6591996969663843
+      },
+      {
+        "class": "curb",
+        "map50_95": 0.1848936072305793
+      },
+      {
+        "class": "stairs",
+        "map50_95": 0.20946391799319466
+      },
+      {
+        "class": "pole_bollard",
+        "map50_95": 0.030677500547482
+      },
+      {
+        "class": "barrier",
+        "map50_95": 0.24876910782028583
+      },
+      {
+        "class": "street_furniture",
+        "map50_95": 0.4752707621782892
+      },
+      {
+        "class": "tree",
+        "map50_95": 0.37794418579326916
+      },
+      {
+        "class": "cat",
+        "map50_95": 0.13735166204283877
+      },
+      {
+        "class": "chair",
+        "map50_95": 0.019624523056526837
+      },
+      {
+        "class": "couch",
+        "map50_95": 0.05712457279501497
+      },
+      {
+        "class": "dining table",
+        "map50_95": 0.1245306021482366
+      },
+      {
+        "class": "bed",
+        "map50_95": 0.12335671811476467
+      },
+      {
+        "class": "toilet",
+        "map50_95": 0.25180786985910064
+      },
+      {
+        "class": "potted plant",
+        "map50_95": 0.011878097669181964
+      },
+      {
+        "class": "refrigerator",
+        "map50_95": 0.12548643796611672
+      },
+      {
+        "class": "tv",
+        "map50_95": 0.17178861348043803
+      },
+      {
+        "class": "door",
+        "map50_95": 0.06078721224125331
+      }
+    ],
+    "weights": "/workspace/training/runs/obstacles_lowlight/weights/best.pt"
+  },
+  "train_seconds": 1590.0645620822906,
+  "shipped_tflite": false,
+  "improved_or_tied": false,
+  "clean_val_after": {
+    "map50": 0.40183,
+    "map50_95": 0.26056,
+    "source": "training/runs/obstacles_lowlight/results.csv epoch 1",
+    "note": "Normal validation split, not the darkened test. Previous validation mAP50-95 was 0.400."
+  },
+  "decision": "Not shipped. One epoch of darkening, gamma, noise, and motion blur lowered darkened-test mAP50-95 from 0.189 to 0.185 and lowered clean validation mAP50-95 from 0.400 to 0.261. The packaged int8 detector is unchanged."
+}

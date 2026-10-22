@@ -108,6 +108,8 @@ At equal speech and noise (0 dB) it started to miss. In louder noise, say the ph
 
 **Battery saver.** When this is on, the camera is checked about every 1.5 seconds instead of about 3 times a second. Warnings come less often. The phone uses less battery. Use this for a long walk.
 
+**Light.** Auto, Always on, or Off. Auto turns the flashlight on when the scene stays dark for a few seconds, and says "It's dark, turning on the light." It turns the light off only after the scene has stayed brighter for a few seconds, so it does not flicker. If it is still too dark with the light, or the phone has no flashlight, it says "Too dark to see clearly, please use caution," then waits at least a minute before saying that again. Always on keeps the flashlight on and does not say the turning-on sentence. Off leaves the flashlight off and can still say the caution sentence. In low light the detector accepts a slightly lower score, and the camera exposure is raised by about one stop when the camera allows it. The same debounce still applies: three frames for a still depth warning, four frames for something approaching, and four seconds before the same warning repeats.
+
 **Vibration.** When this is on, a very close object ahead makes the phone vibrate in three pulses, as well as speak. Turn it off if you do not want vibration.
 
 **Voice commands.** On or off. On means the phone listens for "Hey Guide" even when the screen is locked, as long as the notification is showing. Off closes the microphone. The wake phrase box is next to this button.
@@ -145,7 +147,7 @@ Until the voice is installed, the app tells you in spoken English, and it keeps 
 - Distance is a rough grade: very close, near, or far. The depth model is relative, not meters. Calibration stores two readings from this phone. It does not turn the picture into a tape measure.
 - Something moving toward you is warned only when its depth shrinks across several frames and it is already near. A slow drift, or the whole street shifting because you are walking an open path, is not called approaching.
 - It names the objects the model knows (a person, a chair, a car, and others listed below). Anything close that those classes do not explain is an unknown object, or a wall when the close region is large, flat, and wide.
-- A covered camera, a dark street, or a phone pointed at the sky will miss what is in front of you.
+- A covered camera, a street the flashlight cannot light, or a phone pointed at the sky will miss what is in front of you. The caution sentence is a warning to slow down, not a detection.
 - Some phones stop the camera when the screen is off even after you change the battery setting. If that happens, keep the screen on, or use battery saver and a power bank.
 - The wake phrase is English. A noisy street can hide it. The noise test above was synthetic speech, not a recorded street.
 - Volume-key and double-tap commands work only while this app's screen is open. They do not work on the lock screen.
@@ -163,7 +165,7 @@ export ANDROID_HOME="$HOME/android-sdk"
 ./gradlew test assembleDebug
 ```
 
-Unit tests cover side, distance, priority, the 4 second throttle, depth warnings (unknown object, wall, approaching, debounce), and the phrase files. The debug APK is written to `app/build/outputs/apk/debug/app-debug.apk`. It contains ARM 32-bit and ARM 64-bit code only, so it installs on the phones named above and stays smaller. It will not install on an x86 emulator.
+Unit tests cover side, distance, priority, the 4 second throttle, depth warnings (unknown object, wall, approaching, debounce), the flashlight decision, and the phrase files. The debug build is split by CPU. The Samsung test phone wants `app/build/outputs/apk/debug/app-arm64-v8a-debug.apk` (77,826,468 bytes in the build that added the flashlight). A 32-bit ARM APK is written beside it. There is no x86 build, so it will not install on an x86 emulator. R8 and resource shrinking run on that debug APK, and debug symbols are stripped from the native libraries. The full Vosk model, the full depth model, and the detector stay inside the APK. Nothing is downloaded later. The depth model is not quantized further.
 
 ### How a warning is chosen
 
@@ -174,11 +176,12 @@ Each box is normalized to the upright frame.
 - Side: center x below 0.35 is left, above 0.65 is right, otherwise ahead.
 - Very close: box area at least 0.22, or height at least 0.55, or the bottom edge is at least 0.92 and the height is at least 0.22.
 - Near: area at least 0.07, or height at least 0.28, or the bottom edge is at least 0.75 and the height is at least 0.12.
-- Far: anything else above the confidence cutoff of 0.5.
+- Far: anything else above the confidence cutoff of 0.5, or 0.4 when the scene is low light. The lower cutoff is also what lets a dim box explain a depth column, so an unknown-object warning is not spoken on top of it.
 - Priority: closer beats more central. Inside the same distance, the more central box wins, then the larger box, then the box that sits lower in the frame.
 - Only the top two are considered. The same object, side, and distance is not spoken again for 4 seconds. A very close object ahead may interrupt current speech and triggers the vibration pattern 280 ms on, 120 ms off, three times.
 - Sentences are not built in code. Each language file has nine fixed patterns and separate object names. The pattern contains one placeholder for the object. Wall, unknown-object, and approaching warnings are whole sentences in each language file, because their word order is not the object pattern.
 - Depth looks at the lower middle of the frame (about 42% to 88% of the height) and the same left / ahead / right columns. A larger depth value means farther. A detector box that covers a column suppresses an unknown object or a wall there. A wall is spoken only when the close region is large, flat, and reaches from about 22% to 78% of the width, for 3 frames in a row. Any other close, unexplained column becomes an unknown object after those same 3 frames. Approaching needs 4 frames, each step still shrinking, and the newest value at most 82% of the oldest, and the region must already be near or very close. Its priority is above any still warning. One close frame, or a value that bounces up and down, does not speak.
+- Brightness uses the mean luma of the frame. When the camera provides ISO or exposure time, a dim frame with ISO at least 800 or an exposure of at least 40 ms also counts as dark. An ambient light sensor below 8 lux counts as dark unless the frame itself is clearly bright. Auto turns the flashlight on after 2.5 seconds of darkness and off after 3 seconds of brightness. The too-dark caution repeats no sooner than every 60 seconds. ARCore holds the camera, so the flashlight is treated as unavailable on that path and the caution sentence is used instead.
 
 The screen can lock because the work runs in a foreground service. The service type is `camera` while warnings are on, and `microphone` while voice commands are on. A partial wake lock and a persistent notification stay up for either one. When a command is being captured, new warning speech is held back. The latest boxes are still kept, so "what is in front of me" can speak them. Passive wake-word listening does not mute warnings.
 
@@ -187,6 +190,8 @@ The screen can lock because the work runs in a foreground service. The service t
 Detector file: `app/src/main/assets/obstacles_v1.tflite` (3,050,625 bytes). It is a YOLO11n head, input 320, int8 weights, run by `org.tensorflow:tensorflow-lite` (two CPU threads) and decoded in `detect/YoloDecode.kt`. No network call is made. On this Intel Xeon, Python TFLite with two threads took about 3.3 ms per invoke. That is not a Helio G99 measurement.
 
 Held-out scores after 4 epochs on this CPU (the trainer reported 3.23 hours). Validation mAP50 0.571, mAP50-95 0.400. Test mAP50 0.559, mAP50-95 0.395. Indoor test mAP50-95: person 0.38, dog 0.40, cat 0.51, chair 0.14, couch 0.27, dining table 0.25, bed 0.42, toilet 0.55, potted plant 0.15, refrigerator 0.43, tv 0.45, door 0.18, stairs 0.42. Curb validation mAP50-95 is 0.111 (274 train images, 61 val). The test split has no curb pictures, so there is no curb test score. Potholes are also weak (test mAP50-95 0.08). These are short CPU runs, not a phone benchmark. Full per-class numbers are in `training/metrics/train_report.json`.
+
+The same test pictures were darkened (brightness, gamma, noise, and motion blur) and scored again on this CPU. Before any low-light fine-tune, that darkened split scored mAP50 0.283 and mAP50-95 0.189. One further epoch with those same effects on training batches scored mAP50 0.292 and mAP50-95 0.185 on the darkened split, and the normal validation mAP50-95 fell from 0.400 to 0.261. That epoch was not packaged. ExDark, BDD100K, and nuScenes were not added: their terms are research or non-commercial. A Roboflow night-vision project lists CC BY 4.0, but the photos are a reupload without a confirmed source license, so those pictures were not added either. Numbers are in `training/metrics/lowlight_report.json`.
 
 The 29 class names, in model order, are:
 

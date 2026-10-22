@@ -27,6 +27,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import org.visualaid.obstacleguide.databinding.ActivityMainBinding
 import org.visualaid.obstacleguide.logic.DepthCalibration
+import org.visualaid.obstacleguide.logic.TorchMode
 import org.visualaid.obstacleguide.speech.GuideSpeaker
 import org.visualaid.obstacleguide.voice.VoskVocab
 
@@ -317,6 +318,21 @@ class MainActivity : AppCompatActivity() {
                 speakUi(spoken)
             }
         }
+        binding.lights.setOnCheckedChangeListener { _, checkedId ->
+            if (updating) return@setOnCheckedChangeListener
+            val mode = lightFor(checkedId) ?: return@setOnCheckedChangeListener
+            afterTap {
+                if (mode == settings.torchMode) return@afterTap
+                settings = settings.copy(torchMode = mode)
+                persist()
+                val spoken = when (mode) {
+                    TorchMode.ON -> getString(R.string.light_on)
+                    TorchMode.OFF -> getString(R.string.light_off)
+                    TorchMode.AUTO -> getString(R.string.light_auto)
+                }
+                speakUi(spoken)
+            }
+        }
     }
 
     private fun onCalibrate() {
@@ -416,6 +432,7 @@ class MainActivity : AppCompatActivity() {
         updating = true
         checkLanguage(settings.languageTag)
         checkRate(settings.speechRate)
+        checkLight(settings.torchMode)
         updating = false
 
         val label: String
@@ -551,6 +568,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun checkLight(mode: TorchMode) {
+        val id = when (mode) {
+            TorchMode.ON -> R.id.lightOn
+            TorchMode.OFF -> R.id.lightOff
+            TorchMode.AUTO -> R.id.lightAuto
+        }
+        if (binding.lights.checkedRadioButtonId != id) {
+            binding.lights.check(id)
+        }
+    }
+
     private fun checkRate(rate: Float) {
         val id = when (rate) {
             GuideSettings.RATE_SLOW -> R.id.rateSlow
@@ -569,6 +597,13 @@ class MainActivity : AppCompatActivity() {
         R.id.langBn -> "bn"
         R.id.langSw -> "sw"
         R.id.langEs -> "es"
+        else -> null
+    }
+
+    private fun lightFor(checkedId: Int): TorchMode? = when (checkedId) {
+        R.id.lightAuto -> TorchMode.AUTO
+        R.id.lightOn -> TorchMode.ON
+        R.id.lightOff -> TorchMode.OFF
         else -> null
     }
 

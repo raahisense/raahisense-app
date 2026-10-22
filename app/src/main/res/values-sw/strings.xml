@@ -166,6 +166,15 @@
     <string name="calibrate_done">Umbali umepimwa.</string>
     <string name="calibrate_failed">Kipimo hicho hakikutumika. Shika simu tuli na anza tena kutoka njia wazi.</string>
     <string name="calibrate_same">Ukuta ulionekana kama njia wazi. Sogea karibu na ukuta kisha gonga tena.</string>
+    <string name="label_light">Taa</string>
+    <string name="light_auto">Otomatiki</string>
+    <string name="light_on">Iwake daima</string>
+    <string name="light_off">Zima</string>
+    <string name="cd_light_auto">Washa tochi giza likiendelea</string>
+    <string name="cd_light_on">Wacha tochi iwake</string>
+    <string name="cd_light_off">Wacha tochi izime</string>
+    <string name="light_turning_on">Kuna giza, ninawasha taa.</string>
+    <string name="light_too_dark">Giza sana, haionekani vizuri. Tafadhali kuwa mwangalifu.</string>
     <string name="about_button">Kuhusu na leseni</string>
     <string name="cd_about">Fungua leseni za sauti na picha</string>
     <string name="about_title">Kuhusu</string>

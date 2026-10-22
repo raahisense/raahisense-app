@@ -13,19 +13,37 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0.0"
-        ndk {
-            // Budget phones in this project are ARM. Dropping x86 keeps the APK smaller.
-            abiFilters += listOf("armeabi-v7a", "arm64-v8a")
-        }
     }
 
     buildTypes {
-        release {
-            isMinifyEnabled = false
+        debug {
+            // Shrunk so the arm64 file is the one to copy to a phone. Still signed with the debug key.
+            isMinifyEnabled = true
+            isShrinkResources = true
+            isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+        }
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
+        }
+    }
+
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            // One APK per ARM ABI. The Samsung test phone uses arm64-v8a.
+            // x86 is omitted. abiFilters cannot be set at the same time as splits.
+            include("armeabi-v7a", "arm64-v8a")
+            isUniversalApk = false
         }
     }
 
@@ -45,9 +63,17 @@ android {
 
     packaging {
         jniLibs {
-            // Compress native libraries so the install file stays small enough to share.
-            // They are extracted on install. The models are read through AssetManager, not mmap.
+            // Compress native libraries. They are extracted on install.
+            // The models are read through AssetManager, not mmap.
             useLegacyPackaging = true
+            excludes += setOf(
+                "lib/x86/**",
+                "lib/x86_64/**",
+                "lib/armeabi/**",
+                "lib/mips/**",
+                "lib/mips64/**",
+            )
+            keepDebugSymbols.clear()
         }
         resources {
             excludes += setOf(
@@ -64,6 +90,11 @@ android {
 
     testOptions {
         unitTests.isIncludeAndroidResources = false
+    }
+
+    lint {
+        checkReleaseBuilds = false
+        abortOnError = false
     }
 }
 

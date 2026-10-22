@@ -2,4 +2,5 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="yellow">#FFFFFF00</color>
+    <color name="yellow_dim">#B3FFFF00</color>
 </resources>

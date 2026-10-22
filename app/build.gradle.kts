@@ -43,11 +43,12 @@ android {
         buildConfig = false
     }
 
-    androidResources {
-        noCompress += "tflite"
-    }
-
     packaging {
+        jniLibs {
+            // Compress native libraries so the install file stays small enough to share.
+            // They are extracted on install. The models are read through AssetManager, not mmap.
+            useLegacyPackaging = true
+        }
         resources {
             excludes += setOf(
                 "META-INF/AL2.0",
@@ -77,8 +78,14 @@ dependencies {
     implementation("androidx.camera:camera-camera2:$camera")
     implementation("androidx.camera:camera-lifecycle:$camera")
 
-    // EfficientDet-Lite0 uses the TFLite detection post-process op, which this library includes.
-    implementation("org.tensorflow:tensorflow-lite-task-vision:0.4.4")
+    // Interpreter for the bundled walking detector and the relative-depth model.
+    implementation("org.tensorflow:tensorflow-lite:2.16.1")
+
+    // Optional metric depth. Used only when ARCore is already installed. No download.
+    implementation("com.google.ar:core:1.45.0")
+
+    // Offline wake word and commands. Apache License 2.0. No network and no API key.
+    implementation("com.alphacephei:vosk-android:0.3.75")
 
     testImplementation("junit:junit:4.13.2")
 }

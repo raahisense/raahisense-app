@@ -32,6 +32,7 @@ class GuideSpeaker(
     private var failed = false
     private var languageTag = "en"
     private var speechRate = 1.1f
+    private var speechVolume = 1f
     private var activeId: String? = null
     private var seq = 0
     private var onIdle: (() -> Unit)? = null
@@ -90,9 +91,10 @@ class GuideSpeaker(
         }
     }
 
-    fun setLanguage(languageTag: String, speechRate: Float): VoiceStatus {
+    fun setLanguage(languageTag: String, speechRate: Float, speechVolume: Float = 1f): VoiceStatus {
         this.languageTag = languageTag
         this.speechRate = speechRate
+        this.speechVolume = speechVolume.coerceIn(0.2f, 1f)
         val engine = tts
         if (!ready || engine == null) return VoiceStatus.UNKNOWN
         applyVoice(engine)
@@ -130,6 +132,23 @@ class GuideSpeaker(
             return
         }
         speakNow(engine, text, flush)
+    }
+
+    fun stopSpeaking() {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            main.post { stopSpeaking() }
+            return
+        }
+        pending.clear()
+        activeId = null
+        try {
+            tts?.stop()
+        } catch (_: Exception) {
+        }
+        speaking.set(false)
+        val idle = onIdle
+        onIdle = null
+        idle?.invoke()
     }
 
     fun shutdown() {
@@ -174,6 +193,7 @@ class GuideSpeaker(
         activeId = id
         val mode = if (flush) TextToSpeech.QUEUE_FLUSH else TextToSpeech.QUEUE_ADD
         val params = Bundle()
+        params.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, speechVolume)
         engine.setSpeechRate(speechRate)
         val result = engine.speak(text, mode, params, id)
         if (result == TextToSpeech.ERROR) {

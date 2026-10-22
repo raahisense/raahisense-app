@@ -1,0 +1,849 @@
+{
+ "classes": [
+  "person",
+  "bicycle",
+  "motorcycle",
+  "car",
+  "bus",
+  "truck",
+  "cow",
+  "dog",
+  "auto_rickshaw",
+  "cycle_rickshaw",
+  "handcart",
+  "pothole",
+  "manhole_open_drain",
+  "curb",
+  "stairs",
+  "pole_bollard",
+  "barrier",
+  "street_furniture",
+  "tree",
+  "cat",
+  "chair",
+  "couch",
+  "dining table",
+  "bed",
+  "toilet",
+  "potted plant",
+  "refrigerator",
+  "tv",
+  "door"
+ ],
+ "notes": [
+  "Open Images street-light-only images 11213 capped to 2000; other Open Images images kept 9368",
+  "Open Images doors grouped into 2000 images",
+  "skipped curbs_zhonghua: RGB pairs, no boxes",
+  "skipped manhole_delima87: class folders, no boxes",
+  "dropped speed_bump and low_branch: no images in the source list"
+ ],
+ "mapping": [
+  [
+   "ROD",
+   "Bike",
+   "bicycle"
+  ],
+  [
+   "ROD",
+   "Building",
+   "(dropped)"
+  ],
+  [
+   "ROD",
+   "Car",
+   "car"
+  ],
+  [
+   "ROD",
+   "Person",
+   "person"
+  ],
+  [
+   "ROD",
+   "Stairs",
+   "stairs"
+  ],
+  [
+   "ROD",
+   "Traffic sign",
+   "(dropped)"
+  ],
+  [
+   "ROD",
+   "Electrical Pole",
+   "pole_bollard"
+  ],
+  [
+   "ROD",
+   "Road",
+   "(dropped)"
+  ],
+  [
+   "ROD",
+   "Motorcycle",
+   "motorcycle"
+  ],
+  [
+   "ROD",
+   "Dustbin",
+   "street_furniture"
+  ],
+  [
+   "ROD",
+   "Dog",
+   "dog"
+  ],
+  [
+   "ROD",
+   "Manhole",
+   "manhole_open_drain"
+  ],
+  [
+   "ROD",
+   "Tree",
+   "tree"
+  ],
+  [
+   "ROD",
+   "Guard rail",
+   "barrier"
+  ],
+  [
+   "ROD",
+   "Pedestrian crosswalk",
+   "(dropped)"
+  ],
+  [
+   "ROD",
+   "Truck",
+   "truck"
+  ],
+  [
+   "ROD",
+   "Bus",
+   "bus"
+  ],
+  [
+   "ROD",
+   "Bench",
+   "street_furniture"
+  ],
+  [
+   "ROD",
+   "Traffic Cone",
+   "barrier"
+  ],
+  [
+   "ROD",
+   "Fire hydrant",
+   "street_furniture"
+  ],
+  [
+   "ROD",
+   "Traffic Barrel",
+   "barrier"
+  ],
+  [
+   "ROD",
+   "Plant Pot",
+   "street_furniture"
+  ],
+  [
+   "ROD",
+   "Electrical Box",
+   "street_furniture"
+  ],
+  [
+   "ROD",
+   "Chair",
+   "street_furniture"
+  ],
+  [
+   "ROD",
+   "Bicycle Rack",
+   "street_furniture"
+  ],
+  [
+   "RDD2022-India",
+   "D00",
+   "(dropped)"
+  ],
+  [
+   "RDD2022-India",
+   "D10",
+   "(dropped)"
+  ],
+  [
+   "RDD2022-India",
+   "D20",
+   "(dropped)"
+  ],
+  [
+   "RDD2022-India",
+   "D40",
+   "pothole"
+  ],
+  [
+   "OpenImagesV7",
+   "Stairs",
+   "stairs"
+  ],
+  [
+   "OpenImagesV7",
+   "Street light",
+   "pole_bollard"
+  ],
+  [
+   "OpenImagesV7",
+   "Cart",
+   "handcart"
+  ],
+  [
+   "OpenImagesV7",
+   "Cattle",
+   "cow"
+  ],
+  [
+   "Roboflow-pothole-detection-irkz9",
+   "pothole",
+   "pothole"
+  ],
+  [
+   "Roboflow-pothole-detection-irkz9",
+   "pothole",
+   "pothole"
+  ],
+  [
+   "Roboflow-pothole-detection-irkz9",
+   "pothole",
+   "pothole"
+  ],
+  [
+   "Roboflow-potholes-detection-d4rma",
+   "0",
+   "pothole"
+  ],
+  [
+   "Roboflow-tuk-tuk-detection",
+   "tuktuk",
+   "auto_rickshaw"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "0",
+   "(dropped)"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "1",
+   "(dropped)"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "2",
+   "(dropped)"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "3",
+   "(dropped)"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "4",
+   "(dropped)"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "5",
+   "(dropped)"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "6",
+   "(dropped)"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "Bike",
+   "(dropped)"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "Car",
+   "car"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "Rickshaw",
+   "cycle_rickshaw"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "auto",
+   "auto_rickshaw"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "auto-rickshaw",
+   "auto_rickshaw"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "bicycle",
+   "bicycle"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "bike",
+   "(dropped)"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "bus",
+   "bus"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "car",
+   "car"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "lorry",
+   "truck"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "motorcycle",
+   "motorcycle"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "rickshaw",
+   "cycle_rickshaw"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "truck",
+   "truck"
+  ],
+  [
+   "Roboflow-tuk-tuk-detection",
+   "tuktuk",
+   "auto_rickshaw"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "0",
+   "(dropped)"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "1",
+   "(dropped)"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "2",
+   "(dropped)"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "3",
+   "(dropped)"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "4",
+   "(dropped)"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "5",
+   "(dropped)"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "6",
+   "(dropped)"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "Bike",
+   "(dropped)"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "Car",
+   "car"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "Rickshaw",
+   "cycle_rickshaw"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "auto",
+   "auto_rickshaw"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "auto-rickshaw",
+   "auto_rickshaw"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "bicycle",
+   "bicycle"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "bike",
+   "(dropped)"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "bus",
+   "bus"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "car",
+   "car"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "lorry",
+   "truck"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "motorcycle",
+   "motorcycle"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "rickshaw",
+   "cycle_rickshaw"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "truck",
+   "truck"
+  ],
+  [
+   "Roboflow-tuk-tuk-detection",
+   "tuktuk",
+   "auto_rickshaw"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "0",
+   "(dropped)"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "1",
+   "(dropped)"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "2",
+   "(dropped)"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "3",
+   "(dropped)"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "4",
+   "(dropped)"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "5",
+   "(dropped)"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "6",
+   "(dropped)"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "Bike",
+   "(dropped)"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "Car",
+   "car"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "Rickshaw",
+   "cycle_rickshaw"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "auto",
+   "auto_rickshaw"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "auto-rickshaw",
+   "auto_rickshaw"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "bicycle",
+   "bicycle"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "bike",
+   "(dropped)"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "bus",
+   "bus"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "car",
+   "car"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "lorry",
+   "truck"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "motorcycle",
+   "motorcycle"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "rickshaw",
+   "cycle_rickshaw"
+  ],
+  [
+   "Roboflow-rickshaw-export",
+   "truck",
+   "truck"
+  ],
+  [
+   "Datacluster-auto-rickshaw",
+   "auto (any VOC name)",
+   "auto_rickshaw"
+  ],
+  [
+   "AssistEye-unified-obstacles",
+   "animal",
+   "(dropped)"
+  ],
+  [
+   "AssistEye-unified-obstacles",
+   "open_manhole",
+   "manhole_open_drain"
+  ],
+  [
+   "AssistEye-unified-obstacles",
+   "waste_container",
+   "street_furniture"
+  ],
+  [
+   "AssistEye-unified-obstacles",
+   "pothole",
+   "pothole"
+  ],
+  [
+   "AssistEye-unified-obstacles",
+   "bump",
+   "curb"
+  ],
+  [
+   "AssistEye-unified-obstacles",
+   "fence",
+   "barrier"
+  ],
+  [
+   "AssistEye-unified-obstacles",
+   "hole",
+   "(dropped)"
+  ],
+  [
+   "AssistEye-unified-obstacles",
+   "pole",
+   "pole_bollard"
+  ],
+  [
+   "COCO2017",
+   "person",
+   "person"
+  ],
+  [
+   "COCO2017",
+   "dog",
+   "dog"
+  ],
+  [
+   "COCO2017",
+   "cat",
+   "cat"
+  ],
+  [
+   "COCO2017",
+   "chair",
+   "chair"
+  ],
+  [
+   "COCO2017",
+   "couch",
+   "couch"
+  ],
+  [
+   "COCO2017",
+   "dining table",
+   "dining table"
+  ],
+  [
+   "COCO2017",
+   "bed",
+   "bed"
+  ],
+  [
+   "COCO2017",
+   "toilet",
+   "toilet"
+  ],
+  [
+   "COCO2017",
+   "potted plant",
+   "potted plant"
+  ],
+  [
+   "COCO2017",
+   "refrigerator",
+   "refrigerator"
+  ],
+  [
+   "COCO2017",
+   "tv",
+   "tv"
+  ],
+  [
+   "OpenImagesV7",
+   "Door",
+   "door"
+  ]
+ ],
+ "src_cnt": {
+  "ROD": 20425,
+  "RDD2022-India": 1830,
+  "OpenImagesV7": 10991,
+  "Roboflow-pothole-detection-irkz9": 89,
+  "Roboflow-potholes-detection-d4rma": 300,
+  "Roboflow-tuk-tuk-detection": 720,
+  "Roboflow-rickshaw-export": 1350,
+  "Datacluster-auto-rickshaw": 99,
+  "AssistEye-unified-obstacles": 1910,
+  "COCO2017": 11991,
+  "OpenImages-Door": 1767
+ },
+ "cnt_img": {
+  "train": {
+   "12": 1799,
+   "3": 2812,
+   "16": 2121,
+   "17": 4078,
+   "2": 873,
+   "18": 1068,
+   "0": 6096,
+   "1": 329,
+   "14": 4107,
+   "5": 644,
+   "4": 632,
+   "15": 2285,
+   "7": 1554,
+   "11": 1607,
+   "6": 2265,
+   "10": 1513,
+   "8": 1393,
+   "9": 352,
+   "13": 274,
+   "27": 1349,
+   "20": 2608,
+   "23": 1245,
+   "24": 1531,
+   "19": 1325,
+   "21": 1321,
+   "26": 1567,
+   "22": 1956,
+   "25": 1357,
+   "28": 1400
+  },
+  "val": {
+   "14": 712,
+   "17": 623,
+   "15": 339,
+   "12": 482,
+   "3": 621,
+   "5": 168,
+   "18": 225,
+   "16": 288,
+   "0": 811,
+   "1": 96,
+   "4": 121,
+   "2": 122,
+   "7": 169,
+   "11": 341,
+   "6": 293,
+   "10": 191,
+   "8": 182,
+   "9": 107,
+   "13": 61,
+   "25": 186,
+   "20": 336,
+   "22": 298,
+   "27": 162,
+   "23": 153,
+   "24": 219,
+   "26": 185,
+   "21": 182,
+   "19": 147,
+   "28": 183
+  },
+  "test": {
+   "12": 231,
+   "18": 114,
+   "15": 238,
+   "14": 554,
+   "0": 549,
+   "17": 268,
+   "3": 181,
+   "16": 149,
+   "5": 54,
+   "4": 48,
+   "1": 47,
+   "7": 142,
+   "2": 59,
+   "11": 254,
+   "10": 216,
+   "6": 273,
+   "8": 94,
+   "9": 41,
+   "24": 190,
+   "20": 333,
+   "25": 170,
+   "26": 186,
+   "21": 153,
+   "23": 168,
+   "22": 217,
+   "27": 170,
+   "19": 167,
+   "28": 184
+  }
+ },
+ "cnt_box": {
+  "train": {
+   "12": 1892,
+   "3": 6463,
+   "16": 2884,
+   "17": 5857,
+   "2": 1926,
+   "18": 1621,
+   "0": 19584,
+   "1": 349,
+   "14": 5560,
+   "5": 817,
+   "4": 1173,
+   "15": 6860,
+   "7": 1784,
+   "11": 3288,
+   "6": 9017,
+   "10": 2095,
+   "8": 2443,
+   "9": 511,
+   "13": 397,
+   "27": 1753,
+   "20": 7128,
+   "23": 1412,
+   "24": 1925,
+   "19": 1609,
+   "21": 1711,
+   "26": 1744,
+   "22": 2607,
+   "25": 2598,
+   "28": 2049
+  },
+  "val": {
+   "14": 944,
+   "17": 921,
+   "15": 924,
+   "12": 508,
+   "3": 1650,
+   "5": 222,
+   "18": 293,
+   "16": 394,
+   "0": 2542,
+   "1": 103,
+   "4": 179,
+   "2": 383,
+   "7": 215,
+   "11": 719,
+   "6": 1210,
+   "10": 276,
+   "8": 365,
+   "9": 149,
+   "13": 82,
+   "25": 401,
+   "22": 367,
+   "20": 886,
+   "23": 166,
+   "27": 190,
+   "24": 272,
+   "26": 228,
+   "21": 229,
+   "19": 162,
+   "28": 228
+  },
+  "test": {
+   "12": 242,
+   "18": 150,
+   "15": 967,
+   "14": 785,
+   "0": 1910,
+   "17": 353,
+   "3": 599,
+   "16": 180,
+   "5": 86,
+   "4": 88,
+   "1": 51,
+   "7": 183,
+   "2": 201,
+   "11": 634,
+   "10": 287,
+   "6": 1127,
+   "8": 197,
+   "9": 57,
+   "24": 226,
+   "20": 942,
+   "25": 308,
+   "26": 207,
+   "21": 198,
+   "23": 207,
+   "22": 289,
+   "27": 201,
+   "19": 185,
+   "28": 256
+  }
+ },
+ "images_written": 51472
+}

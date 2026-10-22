@@ -5,9 +5,14 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
+    <uses-feature
+        android:name="android.hardware.camera.ar"
+        android:required="false" />
 
     <!-- The rear camera is used only while warnings are on. Photos are not saved. -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -37,6 +42,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ObstacleGuide">
 
+        <!-- Optional. The app still runs when ARCore is not installed. -->
+        <meta-data
+            android:name="com.google.ar.core"
+            android:value="optional" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -47,10 +57,15 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".AboutActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
         <service
             android:name=".GuideService"
             android:exported="false"
-            android:foregroundServiceType="camera"
+            android:foregroundServiceType="camera|microphone"
             android:stopWithTask="false" />
     </application>
 </manifest>

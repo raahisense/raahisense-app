@@ -21,11 +21,16 @@ class PhraseCoverageTest {
             }
         }
         assertEquals(9, PhraseIds.templates.size)
-        assertEquals(30, PhraseIds.objects.size)
+        assertEquals(29, PhraseIds.objects.size)
         assertFalse("airplane" in PhraseIds.objects)
         assertFalse("???" in PhraseIds.objects)
         assertTrue("person" in PhraseIds.objects)
+        assertTrue("cat" in PhraseIds.objects)
+        assertTrue("chair" in PhraseIds.objects)
         assertTrue("potted plant" in PhraseIds.objects)
+        assertTrue("door" in PhraseIds.objects)
+        assertTrue("pothole" in PhraseIds.objects)
+        assertTrue("auto_rickshaw" in PhraseIds.objects)
     }
 
     @Test
@@ -54,6 +59,11 @@ class PhraseCoverageTest {
             for (name in PhraseIds.objects.values) {
                 assertFalse("$locale $name", entries.getValue(name).contains("%"))
             }
+            for (name in PhraseIds.depthPhrases) {
+                val value = entries.getValue(name)
+                assertFalse("$locale $name", value.contains("%"))
+                assertTrue("$locale $name", value.length > 8)
+            }
             if (locale != "values") {
                 assertTrue("$locale draft comment", text.contains("DRAFT") && text.contains("native-speaker review"))
                 assertTrue("$locale draft banner", entries.getValue("draft_banner").isNotBlank())
@@ -73,6 +83,13 @@ class PhraseCoverageTest {
         for (name in picker) {
             assertTrue(entries.getValue(name).contains("needs native-speaker review"))
         }
+        assertEquals("Unknown object ahead, very close", entries.getValue("depth_unknown_very_close_ahead"))
+        assertEquals("Unknown object on the left, very close", entries.getValue("depth_unknown_very_close_left"))
+        assertEquals("Wall ahead, very close", entries.getValue("depth_wall_very_close"))
+        assertEquals("Wall ahead, near", entries.getValue("depth_wall_near"))
+        assertEquals("Something approaching on your left", entries.getValue("depth_approaching_left"))
+        assertEquals("Something approaching ahead", entries.getValue("depth_approaching_ahead"))
+        assertEquals("Something approaching on your right", entries.getValue("depth_approaching_right"))
     }
 
     private fun resRoot(): File {

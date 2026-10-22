@@ -1,0 +1,278 @@
+{
+  "hardware": "CPU only. torch.cuda is not available. Not a Helio G99.",
+  "base": "yolo11n.pt COCO pretrained",
+  "imgsz": 320,
+  "epochs_requested": 4,
+  "batch": 8,
+  "train_seconds": 6274.440881883,
+  "val": {
+    "split": "val",
+    "map50": 0.5706539762086039,
+    "map50_95": 0.4003358074787177,
+    "per_class_map50_95": [
+      {
+        "class": "person",
+        "map50_95": 0.40322330165558934
+      },
+      {
+        "class": "bicycle",
+        "map50_95": 0.7774621113730232
+      },
+      {
+        "class": "motorcycle",
+        "map50_95": 0.26189321910211427
+      },
+      {
+        "class": "car",
+        "map50_95": 0.5562483093712047
+      },
+      {
+        "class": "bus",
+        "map50_95": 0.5096555412133608
+      },
+      {
+        "class": "truck",
+        "map50_95": 0.5366540981495491
+      },
+      {
+        "class": "cow",
+        "map50_95": 0.32424418677276917
+      },
+      {
+        "class": "dog",
+        "map50_95": 0.49559786689439245
+      },
+      {
+        "class": "auto_rickshaw",
+        "map50_95": 0.285775141889324
+      },
+      {
+        "class": "cycle_rickshaw",
+        "map50_95": 0.41774750317919357
+      },
+      {
+        "class": "handcart",
+        "map50_95": 0.23100142348798797
+      },
+      {
+        "class": "pothole",
+        "map50_95": 0.0858916121798328
+      },
+      {
+        "class": "manhole_open_drain",
+        "map50_95": 0.8131326410898904
+      },
+      {
+        "class": "curb",
+        "map50_95": 0.1109009209738234
+      },
+      {
+        "class": "stairs",
+        "map50_95": 0.47234384601436413
+      },
+      {
+        "class": "pole_bollard",
+        "map50_95": 0.13252452055406955
+      },
+      {
+        "class": "barrier",
+        "map50_95": 0.5408920085269566
+      },
+      {
+        "class": "street_furniture",
+        "map50_95": 0.6604941439392837
+      },
+      {
+        "class": "tree",
+        "map50_95": 0.6188598994880881
+      },
+      {
+        "class": "cat",
+        "map50_95": 0.5541564871289291
+      },
+      {
+        "class": "chair",
+        "map50_95": 0.13843260713474576
+      },
+      {
+        "class": "couch",
+        "map50_95": 0.3171919937660677
+      },
+      {
+        "class": "dining table",
+        "map50_95": 0.3125344261944102
+      },
+      {
+        "class": "bed",
+        "map50_95": 0.471973764845295
+      },
+      {
+        "class": "toilet",
+        "map50_95": 0.5281839915144013
+      },
+      {
+        "class": "potted plant",
+        "map50_95": 0.10041684456580943
+      },
+      {
+        "class": "refrigerator",
+        "map50_95": 0.3899356472958096
+      },
+      {
+        "class": "tv",
+        "map50_95": 0.3867094454385196
+      },
+      {
+        "class": "door",
+        "map50_95": 0.17566091314400994
+      }
+    ]
+  },
+  "test": {
+    "split": "test",
+    "map50": 0.5593373296002424,
+    "map50_95": 0.3945891371739435,
+    "per_class_map50_95": [
+      {
+        "class": "person",
+        "map50_95": 0.38486662761529095
+      },
+      {
+        "class": "bicycle",
+        "map50_95": 0.8034061207229645
+      },
+      {
+        "class": "motorcycle",
+        "map50_95": 0.23479000009445855
+      },
+      {
+        "class": "car",
+        "map50_95": 0.5171572949693368
+      },
+      {
+        "class": "bus",
+        "map50_95": 0.34818124200600603
+      },
+      {
+        "class": "truck",
+        "map50_95": 0.42802273419812453
+      },
+      {
+        "class": "cow",
+        "map50_95": 0.2812210156154088
+      },
+      {
+        "class": "dog",
+        "map50_95": 0.3957823322381512
+      },
+      {
+        "class": "auto_rickshaw",
+        "map50_95": 0.3004960889055789
+      },
+      {
+        "class": "cycle_rickshaw",
+        "map50_95": 0.41818107732810006
+      },
+      {
+        "class": "handcart",
+        "map50_95": 0.26094302800466257
+      },
+      {
+        "class": "pothole",
+        "map50_95": 0.08042191679958581
+      },
+      {
+        "class": "manhole_open_drain",
+        "map50_95": 0.8401265248405247
+      },
+      {
+        "class": "curb",
+        "map50_95": 0.3945891371739435
+      },
+      {
+        "class": "stairs",
+        "map50_95": 0.4181415244634983
+      },
+      {
+        "class": "pole_bollard",
+        "map50_95": 0.0752629125049807
+      },
+      {
+        "class": "barrier",
+        "map50_95": 0.666748029145613
+      },
+      {
+        "class": "street_furniture",
+        "map50_95": 0.6791653317580726
+      },
+      {
+        "class": "tree",
+        "map50_95": 0.5940420068446545
+      },
+      {
+        "class": "cat",
+        "map50_95": 0.506811013238894
+      },
+      {
+        "class": "chair",
+        "map50_95": 0.13546252148120236
+      },
+      {
+        "class": "couch",
+        "map50_95": 0.2724060792095282
+      },
+      {
+        "class": "dining table",
+        "map50_95": 0.2473620807592874
+      },
+      {
+        "class": "bed",
+        "map50_95": 0.4162579463564545
+      },
+      {
+        "class": "toilet",
+        "map50_95": 0.5492867062249933
+      },
+      {
+        "class": "potted plant",
+        "map50_95": 0.1456776128010287
+      },
+      {
+        "class": "refrigerator",
+        "map50_95": 0.42777405681989683
+      },
+      {
+        "class": "tv",
+        "map50_95": 0.44542408566228914
+      },
+      {
+        "class": "door",
+        "map50_95": 0.17507793026183124
+      }
+    ]
+  },
+  "export_seconds": 687.1520724689999,
+  "tflite": "/workspace/app/src/main/assets/obstacles_v1.tflite",
+  "tflite_bytes": 3050625,
+  "tflite_source": "/workspace/training/runs/obstacles19/weights/best_int8.tflite",
+  "tflite_latency": {
+    "hardware": "Intel(R) Xeon(R) Processor",
+    "threads": 2,
+    "input_shape": [
+      1,
+      3,
+      320,
+      320
+    ],
+    "input_dtype": "<class 'numpy.float32'>",
+    "output_shape": [
+      1,
+      33,
+      2100
+    ],
+    "output_dtype": "<class 'numpy.float32'>",
+    "mean_ms": 3.258800000003248,
+    "min_ms": 3.133309999611811,
+    "note": "Python TFLite on this CPU. Not a Helio G99 and not the Android app."
+  }
+}

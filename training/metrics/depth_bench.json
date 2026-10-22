@@ -1,0 +1,61 @@
+{
+  "detector": {
+    "file": "/workspace/app/src/main/assets/obstacles_v1.tflite",
+    "bytes": 3050625,
+    "hardware": "Intel(R) Xeon(R) Processor",
+    "threads": 2,
+    "input_shape": [
+      1,
+      3,
+      320,
+      320
+    ],
+    "input_dtype": "<class 'numpy.float32'>",
+    "output_shape": [
+      1,
+      33,
+      2100
+    ],
+    "output_dtype": "<class 'numpy.float32'>",
+    "mean_ms": 3.2141433999640867,
+    "min_ms": 3.090648999204859,
+    "times_ms": [
+      3.438388001086423,
+      3.1428210004378343,
+      3.1603759998688474,
+      3.2384829992224695,
+      3.090648999204859
+    ],
+    "process_rss": "736984 kB",
+    "note": "Python TFLite on this CPU. No GPU delegate. Not a Helio G99 and not a phone battery measurement."
+  },
+  "depth": {
+    "file": "/workspace/app/src/main/assets/depth_anything_v2_small.tflite",
+    "bytes": 27733680,
+    "hardware": "Intel(R) Xeon(R) Processor",
+    "threads": 2,
+    "input_shape": [
+      1,
+      3,
+      518,
+      686
+    ],
+    "input_dtype": "<class 'numpy.float32'>",
+    "output_shape": [
+      1,
+      518,
+      686
+    ],
+    "output_dtype": "<class 'numpy.float32'>",
+    "mean_ms": 289.88666599980206,
+    "min_ms": 275.21979300036037,
+    "times_ms": [
+      296.79499699886946,
+      275.21979300036037,
+      297.64520800017635
+    ],
+    "process_rss": "955476 kB",
+    "note": "Python TFLite on this CPU. No GPU delegate. Not a Helio G99 and not a phone battery measurement."
+  },
+  "sequential_note": "Measured one model at a time. The app runs depth on a second thread at about 2 fps while the detector runs at about 3 fps, so they contend for the same CPU. No milliamp-hour figure was measured."
+}

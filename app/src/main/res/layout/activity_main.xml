@@ -164,6 +164,42 @@
             android:text="@string/vibration_on"
             app:backgroundTint="@null" />
 
+        <Button
+            android:id="@+id/voiceCommands"
+            style="@style/GuideRow"
+            android:text="@string/wake_on"
+            app:backgroundTint="@null" />
+
+        <TextView
+            style="@style/GuideText"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:text="@string/wake_phrase_label" />
+
+        <EditText
+            android:id="@+id/wakePhrase"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/btn_row"
+            android:contentDescription="@string/cd_wake_phrase"
+            android:hint="@string/wake_phrase_hint"
+            android:imeOptions="actionDone"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:minHeight="64dp"
+            android:padding="12dp"
+            android:textColor="@color/yellow"
+            android:textColorHint="@color/yellow_dim"
+            android:textSize="22sp" />
+
+        <TextView
+            android:id="@+id/voiceEarNote"
+            style="@style/GuideText"
+            android:paddingBottom="8dp"
+            android:text="@string/voice_ear_note"
+            android:textSize="18sp" />
+
         <TextView
             android:id="@+id/batteryHint"
             style="@style/GuideText"
@@ -176,6 +212,20 @@
             style="@style/GuideRow"
             android:contentDescription="@string/cd_battery_opt"
             android:text="@string/battery_opt_button"
+            app:backgroundTint="@null" />
+
+        <Button
+            android:id="@+id/calibrate"
+            style="@style/GuideRow"
+            android:contentDescription="@string/cd_calibrate"
+            android:text="@string/calibrate_button"
+            app:backgroundTint="@null" />
+
+        <Button
+            android:id="@+id/about"
+            style="@style/GuideRow"
+            android:contentDescription="@string/cd_about"
+            android:text="@string/about_button"
             app:backgroundTint="@null" />
     </LinearLayout>
 </ScrollView>

@@ -1,0 +1,623 @@
+{
+  "machine": "Intel(R) Xeon(R) Processor",
+  "cores": 4,
+  "model": "vosk-model-small-en-us-0.15",
+  "license": "Apache-2.0",
+  "wake_phrase": "hey guide",
+  "grammar": "wake phrase, wake plus English command, [unk]",
+  "speech": "espeak-ng en-us, not a human recording",
+  "noise": "synthetic babble of espeak phrases plus low-pass noise, not a street recording",
+  "not_a_phone": true,
+  "clean": {
+    "n": 10,
+    "hits": 10,
+    "rate": 1.0
+  },
+  "babble_by_snr": {
+    "20": {
+      "n": 10,
+      "hits": 10,
+      "rate": 1.0
+    },
+    "15": {
+      "n": 10,
+      "hits": 10,
+      "rate": 1.0
+    },
+    "10": {
+      "n": 10,
+      "hits": 9,
+      "rate": 0.9
+    },
+    "5": {
+      "n": 10,
+      "hits": 9,
+      "rate": 0.9
+    },
+    "0": {
+      "n": 10,
+      "hits": 7,
+      "rate": 0.7
+    }
+  },
+  "unrelated_false_alarms": {
+    "n": 6,
+    "hits": 0,
+    "rate": 0.0
+  },
+  "unrelated_in_babble_false_alarms": {
+    "n": 6,
+    "hits": 0,
+    "rate": 0.0
+  },
+  "noise_only_false_alarms": {
+    "n": 8,
+    "hits": 0
+  },
+  "cpu_realtime_factor": 0.020324733333333327,
+  "cpu_seconds_for_30s_audio": 0.6097419999999998,
+  "wall_seconds_for_30s_audio": 0.6096984320001866,
+  "max_rss_kb": 192684,
+  "rows": [
+    {
+      "kind": "clean",
+      "said": "hey guide",
+      "snr_db": null,
+      "heard": "hey guide",
+      "wake_hit": true
+    },
+    {
+      "kind": "clean",
+      "said": "hey guide start",
+      "snr_db": null,
+      "heard": "hey guide start",
+      "wake_hit": true
+    },
+    {
+      "kind": "clean",
+      "said": "hey guide stop",
+      "snr_db": null,
+      "heard": "hey guide [unk]",
+      "wake_hit": true
+    },
+    {
+      "kind": "clean",
+      "said": "hey guide what is in front of me",
+      "snr_db": null,
+      "heard": "hey guide what is in front of me",
+      "wake_hit": true
+    },
+    {
+      "kind": "clean",
+      "said": "hey guide repeat",
+      "snr_db": null,
+      "heard": "hey guide repeat",
+      "wake_hit": true
+    },
+    {
+      "kind": "clean",
+      "said": "hey guide",
+      "snr_db": null,
+      "heard": "hey guide",
+      "wake_hit": true
+    },
+    {
+      "kind": "clean",
+      "said": "hey guide start",
+      "snr_db": null,
+      "heard": "hey guide start",
+      "wake_hit": true
+    },
+    {
+      "kind": "clean",
+      "said": "hey guide stop",
+      "snr_db": null,
+      "heard": "hey guide stop",
+      "wake_hit": true
+    },
+    {
+      "kind": "clean",
+      "said": "hey guide what is in front of me",
+      "snr_db": null,
+      "heard": "hey guide what is in front of me",
+      "wake_hit": true
+    },
+    {
+      "kind": "clean",
+      "said": "hey guide repeat",
+      "snr_db": null,
+      "heard": "hey guide repeat",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide",
+      "snr_db": 20,
+      "heard": "hey guide me",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide start",
+      "snr_db": 20,
+      "heard": "hey guide start",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide stop",
+      "snr_db": 20,
+      "heard": "hey guide stop",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide what is in front of me",
+      "snr_db": 20,
+      "heard": "hey guide what is in front of me",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide repeat",
+      "snr_db": 20,
+      "heard": "hey guide repeat",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide",
+      "snr_db": 20,
+      "heard": "hey guide",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide start",
+      "snr_db": 20,
+      "heard": "hey guide start",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide stop",
+      "snr_db": 20,
+      "heard": "hey guide stop",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide what is in front of me",
+      "snr_db": 20,
+      "heard": "hey guide what is in front of me",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide repeat",
+      "snr_db": 20,
+      "heard": "hey guide repeat",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide",
+      "snr_db": 15,
+      "heard": "hey guide",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide start",
+      "snr_db": 15,
+      "heard": "hey guide start",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide stop",
+      "snr_db": 15,
+      "heard": "hey guide",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide what is in front of me",
+      "snr_db": 15,
+      "heard": "hey guide what is in front of me",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide repeat",
+      "snr_db": 15,
+      "heard": "hey guide repeat",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide",
+      "snr_db": 15,
+      "heard": "hey guide",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide start",
+      "snr_db": 15,
+      "heard": "hey guide start",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide stop",
+      "snr_db": 15,
+      "heard": "hey guide stop",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide what is in front of me",
+      "snr_db": 15,
+      "heard": "hey guide what is in front of me",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide repeat",
+      "snr_db": 15,
+      "heard": "hey guide repeat",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide",
+      "snr_db": 10,
+      "heard": "hey guide what",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide start",
+      "snr_db": 10,
+      "heard": "hey guide louder",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide stop",
+      "snr_db": 10,
+      "heard": "hey guide louder",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide what is in front of me",
+      "snr_db": 10,
+      "heard": "me",
+      "wake_hit": false
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide repeat",
+      "snr_db": 10,
+      "heard": "hey guide repeat",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide",
+      "snr_db": 10,
+      "heard": "hey guide",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide start",
+      "snr_db": 10,
+      "heard": "hey guide start",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide stop",
+      "snr_db": 10,
+      "heard": "hey guide start",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide what is in front of me",
+      "snr_db": 10,
+      "heard": "hey guide what is in front of me",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide repeat",
+      "snr_db": 10,
+      "heard": "hey guide repeat",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide",
+      "snr_db": 5,
+      "heard": "hey guide what",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide start",
+      "snr_db": 5,
+      "heard": "hey guide louder",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide stop",
+      "snr_db": 5,
+      "heard": "hey guide start",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide what is in front of me",
+      "snr_db": 5,
+      "heard": "hey guide what is in of me",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide repeat",
+      "snr_db": 5,
+      "heard": "hey guide repeat",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide",
+      "snr_db": 5,
+      "heard": "hey guide",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide start",
+      "snr_db": 5,
+      "heard": "hey guide louder of me",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide stop",
+      "snr_db": 5,
+      "heard": "hey guide of",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide what is in front of me",
+      "snr_db": 5,
+      "heard": "of me",
+      "wake_hit": false
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide repeat",
+      "snr_db": 5,
+      "heard": "hey guide repeat",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide",
+      "snr_db": 0,
+      "heard": "hey guide",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide start",
+      "snr_db": 0,
+      "heard": "hey guide louder louder",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide stop",
+      "snr_db": 0,
+      "heard": "hey guide louder",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide what is in front of me",
+      "snr_db": 0,
+      "heard": "louder",
+      "wake_hit": false
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide repeat",
+      "snr_db": 0,
+      "heard": "hey guide louder",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide",
+      "snr_db": 0,
+      "heard": "hey guide",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide start",
+      "snr_db": 0,
+      "heard": "hey louder",
+      "wake_hit": false
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide stop",
+      "snr_db": 0,
+      "heard": "hey language",
+      "wake_hit": false
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide what is in front of me",
+      "snr_db": 0,
+      "heard": "hey guide louder",
+      "wake_hit": true
+    },
+    {
+      "kind": "babble",
+      "said": "hey guide repeat",
+      "snr_db": 0,
+      "heard": "hey guide",
+      "wake_hit": true
+    },
+    {
+      "kind": "unrelated",
+      "said": "what time is it",
+      "snr_db": null,
+      "heard": "guide repeat",
+      "wake_hit": false
+    },
+    {
+      "kind": "unrelated_babble_10db",
+      "said": "what time is it",
+      "snr_db": 10,
+      "heard": "what guide ahead",
+      "wake_hit": false
+    },
+    {
+      "kind": "unrelated",
+      "said": "the weather is fine",
+      "snr_db": null,
+      "heard": "[unk]",
+      "wake_hit": false
+    },
+    {
+      "kind": "unrelated_babble_10db",
+      "said": "the weather is fine",
+      "snr_db": 10,
+      "heard": "[unk]",
+      "wake_hit": false
+    },
+    {
+      "kind": "unrelated",
+      "said": "turn left at the shop",
+      "snr_db": null,
+      "heard": "[unk]",
+      "wake_hit": false
+    },
+    {
+      "kind": "unrelated_babble_10db",
+      "said": "turn left at the shop",
+      "snr_db": 10,
+      "heard": "[unk]",
+      "wake_hit": false
+    },
+    {
+      "kind": "unrelated",
+      "said": "hello there",
+      "snr_db": null,
+      "heard": "louder",
+      "wake_hit": false
+    },
+    {
+      "kind": "unrelated_babble_10db",
+      "said": "hello there",
+      "snr_db": 10,
+      "heard": "louder",
+      "wake_hit": false
+    },
+    {
+      "kind": "unrelated",
+      "said": "stop the music please",
+      "snr_db": null,
+      "heard": "[unk]",
+      "wake_hit": false
+    },
+    {
+      "kind": "unrelated_babble_10db",
+      "said": "stop the music please",
+      "snr_db": 10,
+      "heard": "[unk] louder",
+      "wake_hit": false
+    },
+    {
+      "kind": "unrelated",
+      "said": "start the car",
+      "snr_db": null,
+      "heard": "start",
+      "wake_hit": false
+    },
+    {
+      "kind": "unrelated_babble_10db",
+      "said": "start the car",
+      "snr_db": 10,
+      "heard": "[unk]",
+      "wake_hit": false
+    },
+    {
+      "kind": "noise_only",
+      "said": "",
+      "snr_db": null,
+      "heard": "",
+      "wake_hit": false
+    },
+    {
+      "kind": "noise_only",
+      "said": "",
+      "snr_db": null,
+      "heard": "hey [unk]",
+      "wake_hit": false
+    },
+    {
+      "kind": "noise_only",
+      "said": "",
+      "snr_db": null,
+      "heard": "",
+      "wake_hit": false
+    },
+    {
+      "kind": "noise_only",
+      "said": "",
+      "snr_db": null,
+      "heard": "",
+      "wake_hit": false
+    },
+    {
+      "kind": "noise_only",
+      "said": "",
+      "snr_db": null,
+      "heard": "louder is in louder hey",
+      "wake_hit": false
+    },
+    {
+      "kind": "noise_only",
+      "said": "",
+      "snr_db": null,
+      "heard": "louder",
+      "wake_hit": false
+    },
+    {
+      "kind": "noise_only",
+      "said": "",
+      "snr_db": null,
+      "heard": "quieter",
+      "wake_hit": false
+    },
+    {
+      "kind": "noise_only",
+      "said": "",
+      "snr_db": null,
+      "heard": "in",
+      "wake_hit": false
+    }
+  ]
+}

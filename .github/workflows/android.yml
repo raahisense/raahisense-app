@@ -1,0 +1,55 @@
+name: Android
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  arm64-apk:
+    name: Build the arm64 debug APK
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up the Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install the compile SDK
+        run: |
+          set -euo pipefail
+          sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
+          set +o pipefail
+          yes | sdkmanager --licenses >/dev/null || true
+
+      - name: Assemble the debug APK
+        run: ./gradlew :app:assembleDebug --stacktrace --no-daemon
+
+      - name: Keep the arm64 APK
+        run: |
+          set -euo pipefail
+          src="app/build/outputs/apk/debug/app-arm64-v8a-debug.apk"
+          test -f "$src"
+          cp "$src" RaahiSense-arm64-fixed.apk
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging RaahiSense-arm64-fixed.apk \
+            | grep -E "package:|native-code:|sdkVersion:|targetSdkVersion:|application-label:'"
+          ls -l RaahiSense-arm64-fixed.apk
+
+      - name: Upload the APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: RaahiSense-arm64-fixed
+          path: RaahiSense-arm64-fixed.apk
+          if-no-files-found: error
+          retention-days: 14

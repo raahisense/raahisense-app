@@ -1,6 +1,8 @@
-# Obstacle Guide
+# RaahiSense
 
-Obstacle Guide speaks short warnings about things the rear camera sees, while you walk. It is an extra to a white cane. It is not a replacement. It does not need the internet. It does not save photos.
+Raahi means traveller. RaahiSense speaks short warnings about things the rear camera sees, while you walk. It is an extra to a white cane. It is not a replacement. It does not need the internet. It does not save photos. The Android app and the iPhone app live in this same project. Prepared for Dr. Chindanoor Rajesh.
+
+The Android package name is still `org.visualaid.obstacleguide`. The name on the phone is RaahiSense.
 
 It is meant for a simple unlocked phone, such as a Samsung Galaxy A16 5G or a Moto G from 2025, including phones with about 4 GB of memory and no SIM card.
 
@@ -13,7 +15,7 @@ You need the file `ObstacleGuide-native.apk`. If someone built it on a computer,
 1. Copy the APK onto the phone. A USB cable is enough. You can also use Bluetooth or a memory card. The phone does not need a SIM or the internet.
 2. On the phone, open the Files app and tap the APK.
 3. If Android asks you to allow installs, allow them for the Files app, then tap Install.
-4. Open **Obstacle Guide**.
+4. Open **RaahiSense**.
 
 On older phones the switch is under Settings, Security, Unknown sources. On newer Samsung and Moto phones it is under Settings, Security, or Apps, then Special access, then Install unknown apps.
 
@@ -231,3 +233,61 @@ Command phrases live in `logic/VoiceCommands.kt` and in `cmd_*` strings. English
 - `MainActivity.kt` — the high-contrast screen, permission flow, settings, volume-key long-press, and double-tap.
 - `AboutActivity.kt` — speech and picture credits.
 - `res/values-hi`, `values-ta`, `values-bn`, `values-sw`, `values-es` — draft translations.
+
+## iPhone app
+
+The iPhone app is in `ios/`. It is native Swift and SwiftUI. It uses the same obstacle model, the same depth model, and the same spoken phrases as Android. The warning rules (side, distance, wall, unknown object, approaching, throttle, low light, shake) live in `ios/RaahiSenseLogic` and are covered by unit tests. The models are not converted to Core ML and they are not shrunk. A build copies `obstacles_v1.tflite`, `depth_anything_v2_small.tflite`, and the English wake-word word list out of `app/src/main/assets`. The Vosk zip is not copied. iOS does not have a public Vosk library.
+
+There is no Mac in the environment that built this repository, and this repository's remote is not GitHub, so the iPhone app has not been compiled here. The check that compiles it is `.github/workflows/ios.yml`. After this project is on GitHub, that workflow runs on a free GitHub-hosted macOS runner. It does not need an Apple Developer account. It turns signing off, generates the Xcode project with XcodeGen, runs `swift test` on the shared logic, builds RaahiSense, and runs the same logic tests on an iPhone simulator.
+
+### What the iPhone app does
+
+- Rear camera, portrait, so a shirt pocket with the camera facing the way you walk can work while the screen is on.
+- Spoken warnings with distance, including "pothole" and the other 29 classes, plus wall, unknown object, and approaching.
+- The screen stays awake while guiding. A very close object ahead vibrates in three pulses (about 280 ms on, 120 ms off) when vibration is on.
+- Hey Guide, then one command. A large Listen button does the same job without the wake phrase. A hard shake, or a double-tap on the screen when VoiceOver is off, also opens that command window.
+- English is the default. Hindi, Tamil, Bengali, Swahili, and Spanish are the same drafts as Android. The wake ear is English on both phones.
+- VoiceOver: the big button, Listen, and each setting have labels. Warnings are spoken by the speech synthesizer and are not announced a second time by VoiceOver.
+- Black and yellow, one large Start/Stop button.
+- Auto flashlight from the picture brightness, plus ISO and exposure time when the camera provides them. There is no ambient light sensor API on iOS.
+- Distance calibration, battery saver, speech rate, speech volume, and vibration match the Android settings.
+
+### What iOS will not do
+
+These are platform limits, not missing pieces of the Android design.
+
+- Locking the screen, or leaving RaahiSense, stops the camera. Android can keep the camera running in a foreground service with the screen locked. iOS does not allow that for a normal app. The screen is kept on while guiding so a pocket with the screen awake can keep working. A warning that has already started can finish in the background because the app asks for the audio background mode. That mode does not keep the camera on. The app does not play a silent sound to stay alive.
+- Holding a volume key does not start listening. iOS does not give that key to the app. Use Hey Guide, Listen, a double-tap when VoiceOver is off, or a hard shake. The shake also stops when iOS suspends the app.
+- Hey Guide uses Apple's on-device English speech recognizer (`requiresOnDeviceRecognition`). It is not the Vosk model. If that recognizer is not downloaded, the phone says so. Warnings still work from the buttons. Voice is not sent to a server. There is no API key.
+- The iPhone has no public light sensor for apps. Darkness uses the camera picture, ISO, and exposure time.
+- ARCore does not exist on iOS. Depth is the same monocular model as Android.
+- This copy has not been installed on an iPhone. The simulator build does not prove the camera, the torch, or the wake word on a real phone.
+
+### Put it on TestFlight
+
+The only paid Apple requirement is the Apple Developer Program, 99 US dollars a year. The account to use is `raahisenseapp@gmail.com`. It is not enrolled yet. Do not buy a Mac, a second Apple service, or a paid build host for this step. GitHub-hosted macOS runners are enough. A public GitHub repository can run them without a paid GitHub plan. A private repository spends the included Actions minutes, and macOS minutes are counted at a higher rate.
+
+The upload workflow is `.github/workflows/ios-testflight.yml`. It does not run on a normal push. It runs only when you start it by hand, and it stops immediately if the signing secrets are missing.
+
+1. Enroll `raahisenseapp@gmail.com` in the Apple Developer Program.
+2. Put this project on GitHub if it is not there yet. The simulator workflow and the TestFlight workflow both run on GitHub, not on the machine that stores the code today.
+3. In App Store Connect, create an app named RaahiSense. The bundle id is `app.raahisense.guide`. Leave encryption set to exempt. The app declares `ITSAppUsesNonExemptEncryption` as false. It does not use the network.
+4. In App Store Connect, open Users and Access, then Integrations, then App Store Connect API. Create a key that can upload builds. Download the `.p8` file once. Write down the Key ID, the Issuer ID, and the 10-character Team ID from the membership page.
+5. In the GitHub repository, open Settings, then Secrets and variables, then Actions. Add these secrets. Paste the whole `.p8` file, including the BEGIN and END lines, into the last one.
+   - `APP_STORE_CONNECT_API_KEY_ID`
+   - `APP_STORE_CONNECT_ISSUER_ID`
+   - `APP_STORE_CONNECT_API_KEY_P8`
+   - `TEAM_ID`
+6. Open Actions, choose iOS TestFlight, and run the workflow. The archive is signed automatically with that key. Each run uses the GitHub run number as the build number.
+7. When the build appears under TestFlight, add yourself as an internal tester. On the iPhone, install Apple's TestFlight app and accept the build. The iPhone signs in with an Apple ID. Internal testers must be users on the App Store Connect team. A wider beta needs Beta App Review, which is still inside the 99 dollar program.
+
+`ios/signing/ExportOptions.plist` is the export template. The workflow fills in `TEAM_ID` when it runs. You do not need a Mac to do these steps.
+
+### iOS project map
+
+- `ios/project.yml` — XcodeGen project. The `.xcodeproj` is generated and is not committed.
+- `ios/RaahiSenseLogic` — shared warning, depth, low-light, shake, and voice-command logic.
+- `ios/RaahiSense` — camera, TensorFlow Lite, speech, haptics, wake word, and the VoiceOver screen.
+- `ios/scripts/sync_strings.py` — copies Android `strings.xml` into `Localizable.strings`. `%1$s` becomes `%@`.
+- `.github/workflows/ios.yml` — simulator compile and tests, signing off.
+- `.github/workflows/ios-testflight.yml` — manual TestFlight upload, after the secrets exist.

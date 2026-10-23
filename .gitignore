@@ -13,3 +13,8 @@
 *.pt
 __pycache__/
 *.pyc
+/ios/build/
+/ios/RaahiSense.xcodeproj/
+/ios/RaahiSenseLogic/.build/
+*.xcuserstate
+xcuserdata/

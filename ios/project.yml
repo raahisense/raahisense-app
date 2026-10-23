@@ -1,0 +1,82 @@
+name: RaahiSense
+options:
+  deploymentTarget:
+    iOS: "16.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+packages:
+  RaahiSenseLogic:
+    path: RaahiSenseLogic
+  TensorFlowLiteSwift:
+    url: https://github.com/kewlbear/TensorFlowLiteSwift
+    from: 2.17.0
+settings:
+  SWIFT_VERSION: "5.0"
+  IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+targets:
+  RaahiSense:
+    type: application
+    platform: iOS
+    sources:
+      - path: RaahiSense
+        excludes:
+          - Info.plist
+    dependencies:
+      - package: RaahiSenseLogic
+        product: RaahiSenseLogic
+      - package: TensorFlowLiteSwift
+        product: TensorFlowLiteSwift
+    preBuildScripts:
+      - name: Copy shared models and phrases
+        basedOnDependencyAnalysis: false
+        script: |
+          set -euo pipefail
+          python3 "$SRCROOT/scripts/sync_strings.py"
+          DEST="$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH"
+          mkdir -p "$DEST"
+          ASSETS="$SRCROOT/../app/src/main/assets"
+          cp "$ASSETS/obstacles_v1.tflite" "$DEST/obstacles_v1.tflite"
+          cp "$ASSETS/depth_anything_v2_small.tflite" "$DEST/depth_anything_v2_small.tflite"
+          cp "$ASSETS/vosk-small-en-words.txt" "$DEST/vosk-small-en-words.txt"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.raahisense.guide
+        PRODUCT_NAME: RaahiSense
+        INFOPLIST_FILE: RaahiSense/Info.plist
+        GENERATE_INFOPLIST_FILE: "NO"
+        TARGETED_DEVICE_FAMILY: "1"
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        CODE_SIGN_STYLE: Automatic
+        ENABLE_USER_SCRIPT_SANDBOXING: "NO"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        SWIFT_VERSION: "5.0"
+        IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+  RaahiSenseLogicTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: RaahiSenseLogic/Tests/RaahiSenseLogicTests
+    dependencies:
+      - package: RaahiSenseLogic
+        product: RaahiSenseLogic
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.raahisense.guide.logic.tests
+        GENERATE_INFOPLIST_FILE: "YES"
+        SWIFT_VERSION: "5.0"
+        TEST_HOST: ""
+        BUNDLE_LOADER: ""
+        IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+        CODE_SIGNING_ALLOWED: "NO"
+schemes:
+  RaahiSense:
+    build:
+      targets:
+        RaahiSense: all
+        RaahiSenseLogicTests:
+          - test
+    test:
+      targets:
+        - RaahiSenseLogicTests
+      gatherCoverageData: false

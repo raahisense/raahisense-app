@@ -1,0 +1,58 @@
+name: iOS
+
+on:
+  push:
+    paths:
+      - "ios/**"
+      - "app/src/main/assets/obstacles_v1.tflite"
+      - "app/src/main/assets/depth_anything_v2_small.tflite"
+      - "app/src/main/assets/vosk-small-en-words.txt"
+      - "app/src/main/res/values*/strings.xml"
+      - ".github/workflows/ios.yml"
+  pull_request:
+    paths:
+      - "ios/**"
+      - "app/src/main/assets/obstacles_v1.tflite"
+      - "app/src/main/assets/depth_anything_v2_small.tflite"
+      - "app/src/main/assets/vosk-small-en-words.txt"
+      - "app/src/main/res/values*/strings.xml"
+      - ".github/workflows/ios.yml"
+  workflow_dispatch:
+
+jobs:
+  simulator:
+    name: Build and test on the iOS Simulator
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode.app
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Shared logic tests
+        run: swift test --package-path ios/RaahiSenseLogic
+
+      - name: Generate the Xcode project
+        working-directory: ios
+        run: xcodegen generate
+
+      - name: Choose a simulator
+        id: sim
+        run: echo "destination=$(python3 ios/scripts/pick_simulator.py)" >> "$GITHUB_OUTPUT"
+
+      - name: Build and test
+        run: |
+          set -euo pipefail
+          xcodebuild test \
+            -project ios/RaahiSense.xcodeproj \
+            -scheme RaahiSense \
+            -destination "${{ steps.sim.outputs.destination }}" \
+            -derivedDataPath ios/build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY=""

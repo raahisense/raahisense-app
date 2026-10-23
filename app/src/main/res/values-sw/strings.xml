@@ -2,7 +2,7 @@
 <!-- DRAFT TRANSLATION. Needs native-speaker review before field use.
      Each warning is a fixed pattern. The only placeholder is the object name. -->
 <resources>
-    <string name="app_name">Mwongozo wa Vikwazo</string>
+    <string name="app_name">RaahiSense</string>
     <string name="tagline">Ni msaada kwa fimbo nyeupe, si badala yake. Inafanya kazi bila intaneti.</string>
     <string name="hold_phone">Shika simu wima. Kamera ya nyuma ielekee unakokwenda.</string>
     <string name="safety_note">Fanya mazoezi ndani na msaidizi kwanza. Programu hii haioni ngazi, mashimo, wala nguzo. Endelea kutumia fimbo.</string>

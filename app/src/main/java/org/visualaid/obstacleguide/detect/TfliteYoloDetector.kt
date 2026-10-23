@@ -22,6 +22,7 @@ class TfliteYoloDetector(context: Context) : Closeable {
     private val interpreter: Interpreter
     private val inputSize: Int
     private val inputFloat: Boolean
+    private val channelsFirst: Boolean
     private val paint = Paint(Paint.FILTER_BITMAP_FLAG)
 
     init {
@@ -33,7 +34,13 @@ class TfliteYoloDetector(context: Context) : Closeable {
         interpreter = Interpreter(buffer, options)
         val input = interpreter.getInputTensor(0)
         val shape = input.shape()
-        inputSize = if (shape.size >= 3) shape[1] else 320
+        // The shipped file is NCHW [1, 3, 320, 320]. An NHWC file would be [1, 320, 320, 3].
+        channelsFirst = shape.size == 4 && shape[1] == 3 && shape[2] > 3
+        inputSize = when {
+            channelsFirst -> shape[2]
+            shape.size >= 3 && shape[1] > 3 -> shape[1]
+            else -> 320
+        }
         inputFloat = input.dataType() == DataType.FLOAT32
     }
 
@@ -94,18 +101,34 @@ class TfliteYoloDetector(context: Context) : Closeable {
             ByteBuffer.allocateDirect(inputSize * inputSize * 3)
         }
         buffer.order(ByteOrder.nativeOrder())
-        for (pixel in pixels) {
-            val r = (pixel shr 16) and 0xFF
-            val g = (pixel shr 8) and 0xFF
-            val b = pixel and 0xFF
-            if (inputFloat) {
-                buffer.putFloat(r / 255f)
-                buffer.putFloat(g / 255f)
-                buffer.putFloat(b / 255f)
-            } else {
-                buffer.put(r.toByte())
-                buffer.put(g.toByte())
-                buffer.put(b.toByte())
+        val plane = inputSize * inputSize
+        if (channelsFirst && inputFloat) {
+            val reds = FloatArray(plane)
+            val greens = FloatArray(plane)
+            val blues = FloatArray(plane)
+            for (index in pixels.indices) {
+                val pixel = pixels[index]
+                reds[index] = ((pixel shr 16) and 0xFF) / 255f
+                greens[index] = ((pixel shr 8) and 0xFF) / 255f
+                blues[index] = (pixel and 0xFF) / 255f
+            }
+            reds.forEach { buffer.putFloat(it) }
+            greens.forEach { buffer.putFloat(it) }
+            blues.forEach { buffer.putFloat(it) }
+        } else {
+            for (pixel in pixels) {
+                val r = (pixel shr 16) and 0xFF
+                val g = (pixel shr 8) and 0xFF
+                val b = pixel and 0xFF
+                if (inputFloat) {
+                    buffer.putFloat(r / 255f)
+                    buffer.putFloat(g / 255f)
+                    buffer.putFloat(b / 255f)
+                } else {
+                    buffer.put(r.toByte())
+                    buffer.put(g.toByte())
+                    buffer.put(b.toByte())
+                }
             }
         }
         buffer.rewind()

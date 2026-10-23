@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- English is the source wording. Other languages are drafts. -->
 <resources>
-    <string name="app_name">Obstacle Guide</string>
+    <string name="app_name">RaahiSense</string>
     <string name="tagline">An extra to your white cane. Not a replacement. Works fully offline.</string>
     <string name="hold_phone">Hold the phone upright. The rear camera faces the way you walk.</string>
     <string name="safety_note">Practice indoors with a helper first. This app misses steps, holes, poles, and many other obstacles. Keep using your cane.</string>

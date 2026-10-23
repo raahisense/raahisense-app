@@ -2,7 +2,7 @@
 <!-- DRAFT TRANSLATION. Needs native-speaker review before field use.
      Each warning is a fixed pattern. The only placeholder is the object name. -->
 <resources>
-    <string name="app_name">Guía de obstáculos</string>
+    <string name="app_name">RaahiSense</string>
     <string name="tagline">Es una ayuda para el bastón blanco, no un reemplazo. Funciona sin internet.</string>
     <string name="hold_phone">Sostenga el teléfono vertical. La cámara trasera mira hacia donde camina.</string>
     <string name="safety_note">Practique adentro con un ayudante primero. Esta aplicación no ve escalones, huecos ni postes. Siga usando el bastón.</string>

@@ -2,7 +2,7 @@
 <!-- DRAFT TRANSLATION. Needs native-speaker review before field use.
      Each warning is a fixed pattern. The only placeholder is the object name. -->
 <resources>
-    <string name="app_name">बाधा मार्गदर्शक</string>
+    <string name="app_name">RaahiSense</string>
     <string name="tagline">यह सफेद छड़ी के साथ है, उसकी जगह नहीं। इंटरनेट के बिना चलता है।</string>
     <string name="hold_phone">फ़ोन सीधा रखें। पिछला कैमरा चलने की तरफ़ हो।</string>
     <string name="safety_note">पहले घर के अंदर किसी सहायक के साथ अभ्यास करें। यह ऐप सीढ़ियाँ, गड्ढे और खंभे नहीं देखता। छड़ी साथ रखें।</string>

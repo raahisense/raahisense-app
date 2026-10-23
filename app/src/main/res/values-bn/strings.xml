@@ -2,7 +2,7 @@
 <!-- DRAFT TRANSLATION. Needs native-speaker review before field use.
      Each warning is a fixed pattern. The only placeholder is the object name. -->
 <resources>
-    <string name="app_name">বাধা নির্দেশিকা</string>
+    <string name="app_name">RaahiSense</string>
     <string name="tagline">এটি সাদা ছড়ির সহায়ক, বদলি নয়। ইন্টারনেট ছাড়াই চলে।</string>
     <string name="hold_phone">ফোন সোজা রাখুন। পেছনের ক্যামেরা হাঁটার দিকে থাকুক।</string>
     <string name="safety_note">আগে সাহায্যকারীর সাথে ঘরের ভিতরে অভ্যাস করুন। সিঁড়ি, গর্ত ও খুঁটি এটি দেখে না। ছড়ি সঙ্গে রাখুন।</string>

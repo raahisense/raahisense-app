@@ -2,7 +2,7 @@
 <!-- DRAFT TRANSLATION. Needs native-speaker review before field use.
      Each warning is a fixed pattern. The only placeholder is the object name. -->
 <resources>
-    <string name="app_name">தடை வழிகாட்டி</string>
+    <string name="app_name">RaahiSense</string>
     <string name="tagline">இது வெள்ளைப் பிரம்புக்கு உதவி. அதற்குப் பதில் அல்ல. இணையம் இல்லாமல் வேலை செய்யும்.</string>
     <string name="hold_phone">தொலைபேசியை நேராகப் பிடிக்கவும். பின் கேமரா நீங்கள் நடக்கும் திசையில் இருக்கட்டும்.</string>
     <string name="safety_note">முதலில் உதவியாளருடன் வீட்டுக்குள் பயிற்சி செய்யுங்கள். படிகள், குழிகள், கம்பங்கள் இதில் தெரியாது. பிரம்பை வைத்திருங்கள்.</string>

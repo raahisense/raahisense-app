@@ -26,6 +26,8 @@ targets:
         product: RaahiSenseLogic
       - package: TensorFlowLiteSwift
         product: TensorFlowLiteSwift
+      - sdk: CoreML.framework
+      - sdk: Accelerate.framework
     preBuildScripts:
       - name: Copy shared models and phrases
         basedOnDependencyAnalysis: false

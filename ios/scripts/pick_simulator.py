@@ -40,4 +40,4 @@ if compatible:
 
 found.sort(key=lambda item: (0 if "iPhone 16" in item[1] else 1, [-part for part in version_key(item[0])]))
 _version, name, udid = found[0]
-print(f"platform=iOS Simulator,id={udid},name={name}")
+print(f"platform=iOS Simulator,id={udid},OS={_version}")

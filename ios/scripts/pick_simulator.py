@@ -11,7 +11,7 @@ found = []
 for runtime, items in devices.items():
     if "iOS" not in runtime:
         continue
-    version = runtime.rsplit(".", 1)[-1].replace("-", ".")
+    version = runtime.rsplit(".", 1)[-1].split("iOS-", 1)[-1].replace("-", ".")
     for device in items:
         name = device.get("name", "")
         if not device.get("isAvailable", False):

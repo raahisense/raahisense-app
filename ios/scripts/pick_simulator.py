@@ -6,6 +6,7 @@ import sys
 
 raw = subprocess.check_output(["xcrun", "simctl", "list", "devices", "available", "-j"])
 devices = json.loads(raw).get("devices", {})
+sdk = subprocess.check_output(["xcrun", "--sdk", "iphonesimulator", "--show-sdk-version"]).decode().strip()
 found = []
 for runtime, items in devices.items():
     if "iOS" not in runtime:
@@ -31,6 +32,11 @@ def version_key(version: str):
         except ValueError:
             parts.append(0)
     return parts
+
+sdk_key = version_key(sdk)[:2]
+compatible = [item for item in found if version_key(item[0])[:2] <= sdk_key]
+if compatible:
+    found = compatible
 
 found.sort(key=lambda item: (0 if "iPhone 16" in item[1] else 1, [-part for part in version_key(item[0])]))
 _version, name, udid = found[0]

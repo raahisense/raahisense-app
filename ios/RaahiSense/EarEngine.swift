@@ -44,7 +44,7 @@ final class EarEngine {
     func setDucked(_ ducked: Bool) {
         self.ducked = ducked
         queue.async { [weak self] in
-            self?.applySession()
+            try? self?.applySession()
         }
     }
 

@@ -25,13 +25,13 @@ jobs:
 
       - name: Set up the Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
 
       - name: Install the compile SDK
         run: |
-          set -euo pipefail
-          sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
-          set +o pipefail
           yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
 
       - name: Assemble the debug APK
         run: ./gradlew :app:assembleDebug --stacktrace --no-daemon

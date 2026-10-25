@@ -13,6 +13,9 @@
     <string name="cd_start">Start obstacle warnings</string>
     <string name="cd_stop">Stop obstacle warnings</string>
     <string name="cd_quit">Stop RaahiSense</string>
+    <!-- Launcher long-press labels. TalkBack reads these. -->
+    <string name="shortcut_start">Start guidance</string>
+    <string name="shortcut_stop">Stop RaahiSense</string>
     <string name="cd_allow_camera">Allow the camera so obstacle warnings can start</string>
     <string name="cd_open_settings">Open phone settings to allow the camera</string>
     <string name="status_ready">Ready. Tap the big button to start.</string>

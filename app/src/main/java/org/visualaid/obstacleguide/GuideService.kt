@@ -216,6 +216,9 @@ class GuideService : LifecycleService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         settings = SettingsStore.load(this)
+        // A shortcut can ask the screen to listen again while a full stop is
+        // still speaking. Do not bring the camera or the microphone back.
+        if (quitting) return START_NOT_STICKY
         if (intent == null) {
             if (settings.voiceEnabled) startSpotting()
             return stickyResult()

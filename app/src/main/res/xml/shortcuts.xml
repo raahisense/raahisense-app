@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Launcher shortcuts work as soon as the app is installed.
+  Assistant capabilities are fulfilled only after Play Store publishing.
+  Stop opens raahisense://stop, which runs GuideService.ACTION_QUIT.
+-->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <capability android:name="actions.intent.OPEN_APP_FEATURE">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="org.visualaid.obstacleguide.AssistantActionActivity"
+            android:targetPackage="org.visualaid.obstacleguide">
+            <url-template android:value="raahisense://{feature}" />
+            <parameter
+                android:name="feature"
+                android:key="feature"
+                android:mimeType="https://schema.org/Text" />
+        </intent>
+    </capability>
+
+    <capability android:name="custom.actions.intent.START_GUIDANCE">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="org.visualaid.obstacleguide.AssistantActionActivity"
+            android:targetPackage="org.visualaid.obstacleguide">
+            <url-template android:value="raahisense://start" />
+        </intent>
+    </capability>
+
+    <capability android:name="custom.actions.intent.STOP_RAAHISENSE">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="org.visualaid.obstacleguide.AssistantActionActivity"
+            android:targetPackage="org.visualaid.obstacleguide">
+            <url-template android:value="raahisense://stop" />
+        </intent>
+    </capability>
+
+    <capability android:name="custom.actions.intent.CLOSE_RAAHISENSE">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="org.visualaid.obstacleguide.AssistantActionActivity"
+            android:targetPackage="org.visualaid.obstacleguide">
+            <url-template android:value="raahisense://close" />
+        </intent>
+    </capability>
+
+    <shortcut
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutId="start_guidance"
+        android:shortcutLongLabel="@string/shortcut_start"
+        android:shortcutShortLabel="@string/shortcut_start">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="raahisense://start"
+            android:targetClass="org.visualaid.obstacleguide.AssistantActionActivity"
+            android:targetPackage="org.visualaid.obstacleguide" />
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+            <parameter-binding
+                android:key="feature"
+                android:value="@array/assistant_start_features" />
+        </capability-binding>
+        <capability-binding android:key="custom.actions.intent.START_GUIDANCE" />
+    </shortcut>
+
+    <shortcut
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutId="stop_raahisense"
+        android:shortcutLongLabel="@string/shortcut_stop"
+        android:shortcutShortLabel="@string/shortcut_stop">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="raahisense://stop"
+            android:targetClass="org.visualaid.obstacleguide.AssistantActionActivity"
+            android:targetPackage="org.visualaid.obstacleguide" />
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+            <parameter-binding
+                android:key="feature"
+                android:value="@array/assistant_stop_features" />
+        </capability-binding>
+        <capability-binding android:key="custom.actions.intent.STOP_RAAHISENSE" />
+        <capability-binding android:key="custom.actions.intent.CLOSE_RAAHISENSE" />
+    </shortcut>
+</shortcuts>

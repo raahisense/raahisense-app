@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Host names for actions.intent.OPEN_APP_FEATURE. Each item is a raahisense:// host. -->
+    <string-array name="assistant_start_features">
+        <item>start</item>
+        <item>guidance</item>
+    </string-array>
+    <string-array name="assistant_stop_features">
+        <item>stop</item>
+        <item>close</item>
+    </string-array>
+</resources>

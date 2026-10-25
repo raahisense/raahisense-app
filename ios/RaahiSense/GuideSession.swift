@@ -89,6 +89,7 @@ final class GuideSession: ObservableObject {
         if !speech.voiceAvailable("en") {
             speakKey("status_tts_error", flush: false)
         }
+        GuideCommandCenter.shared.bind(self)
     }
 
     func setInForeground(_ foreground: Bool) {
@@ -105,10 +106,28 @@ final class GuideSession: ObservableObject {
     }
 
     func bigButton() {
+        beginGuidance(toggleOffIfRunning: true)
+    }
+
+    /// Siri "Start RaahiSense". Starts warnings, and does not turn them off if they are already on.
+    func startFromAssistant() {
+        prepare()
+        beginGuidance(toggleOffIfRunning: false)
+    }
+
+    private func beginGuidance(toggleOffIfRunning: Bool) {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
             cameraAllowed = true
-            guiding ? stopGuide() : startGuide()
+            if guiding {
+                if toggleOffIfRunning {
+                    stopGuide()
+                } else {
+                    speakKey("confirm_started_already", flush: true)
+                }
+            } else {
+                startGuide()
+            }
         case .notDetermined:
             speakKey("prompt_allow_camera", flush: true)
             AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in

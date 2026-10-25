@@ -39,6 +39,12 @@ The screen is black and yellow, with one big button.
 5. Lock the screen if you want. A notification stays up: **Obstacle Guide is on**. That means it is still working.
 6. To close RaahiSense, say **stop** (or **stop app**, **exit**, or **close**), tap **Stop RaahiSense**, or open the notification and tap Stop. The phone says "RaahiSense stopped", then stops the camera, the warnings, speech, and the listening service, and removes the notification. On Android the app closes. On iPhone the work stops and the screen can sleep; iOS does not let an app remove itself. The big **STOP** button only turns warnings off and leaves the app open. **Pause** does that by voice, and **resume** turns warnings on again.
 
+On Android you can also touch and hold the RaahiSense icon. TalkBack reads two shortcuts: **Start guidance** and **Stop RaahiSense**. Start guidance opens the app and starts warnings, the same as the big START button. Stop RaahiSense is the full stop above, not the big STOP button. Those long-press shortcuts work as soon as the app is installed.
+
+"Hey Google, start RaahiSense", "Hey Google, stop RaahiSense", and "Hey Google, close RaahiSense" are Assistant App Actions. Google turns those voice phrases on fully only after the app is published on the Play Store. Until then, Hey Google may only open the app, or it may do nothing for stop. The long-press shortcuts still work on a sideloaded APK.
+
+On iPhone, Siri Shortcuts **Start RaahiSense** and **Stop RaahiSense** are built in. You can say "Hey Siri, start RaahiSense", "Hey Siri, stop RaahiSense", or "Hey Siri, close RaahiSense". Stop is the same full stop as the Stop RaahiSense button. Open RaahiSense once after installing so Siri can learn the shortcuts. iOS still cannot remove the app from the screen.
+
 Warnings sound like "Very close chair ahead" or "Near car on the left." The same warning is not repeated for about 4 seconds. A very close object straight ahead can interrupt other speech, and the phone vibrates in three pulses if vibration is on.
 
 If something close has no name the detector knows, you hear "Unknown object ahead, very close," or the same phrase on the left or the right, near or very close. You hear "Wall ahead" only when a close, flat surface spans most of the picture. If a region gets closer across several looks, you hear "Something approaching on your left" (or ahead, or on the right). That warning is spoken before a warning about something that is standing still. A one-frame shadow or a camera shake does not speak.
@@ -157,7 +163,7 @@ Until the voice is installed, the app tells you in spoken English, and it keeps 
 - The wake phrase is English. A noisy street can hide it. The noise test above was synthetic speech, not a recorded street.
 - Volume-key and double-tap commands work only while this app's screen is open. They do not work on the lock screen.
 - A hard shake can be triggered by a drop or by shaking the phone in a bag. Voice commands off also turns the shake off.
-- With TalkBack on, double-tap is left for TalkBack. Use the wake phrase or a shake instead.
+- With TalkBack on, double-tap is left for TalkBack. Use the wake phrase, a shake, or the launcher shortcuts. Touch and hold the RaahiSense icon. TalkBack reads **Start guidance** and **Stop RaahiSense**.
 
 ## For developers
 
@@ -234,6 +240,8 @@ Command phrases live in `logic/VoiceCommands.kt` and in `cmd_*` strings. English
 - `logic/ShakeWatch.kt` — backup shake.
 - `GuideService.kt` — foreground camera and microphone service.
 - `MainActivity.kt` — the high-contrast screen, permission flow, settings, volume-key long-press, and double-tap.
+- `AssistantActionActivity.kt` — exported deep link `raahisense://start`, `raahisense://stop`, and `raahisense://close`. It only accepts those hosts. Stop calls `GuideService.ACTION_QUIT`.
+- `res/xml/shortcuts.xml` — launcher shortcuts **Start guidance** and **Stop RaahiSense**, plus Assistant capabilities `actions.intent.OPEN_APP_FEATURE` and custom start, stop, and close intents. Launcher shortcuts work immediately. Assistant voice phrases work fully only after Play Store publishing.
 - `AboutActivity.kt` — speech and picture credits.
 - `res/values-hi`, `values-ta`, `values-bn`, `values-sw`, `values-es` — draft translations.
 
@@ -251,6 +259,7 @@ There is no Mac in the environment that built this repository, and this reposito
 - Hey Guide, then one command. A large Listen button does the same job without the wake phrase. A hard shake, or a double-tap on the screen when VoiceOver is off, also opens that command window.
 - English is the default. Hindi, Tamil, Bengali, Swahili, and Spanish are the same drafts as Android. The wake ear is English on both phones.
 - VoiceOver: the big button, Listen, and each setting have labels. Warnings are spoken by the speech synthesizer and are not announced a second time by VoiceOver.
+- Siri Shortcuts **Start RaahiSense** and **Stop RaahiSense** (also "close"). Stop uses the same full stop as the Stop RaahiSense button. The phrases are App Intents in `ios/RaahiSense/GuideShortcuts.swift`.
 - Black and yellow, one large Start/Stop button.
 - Auto flashlight from the picture brightness, plus ISO and exposure time when the camera provides them. There is no ambient light sensor API on iOS.
 - Distance calibration, battery saver, speech rate, speech volume, and vibration match the Android settings.

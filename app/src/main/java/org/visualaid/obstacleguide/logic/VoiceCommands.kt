@@ -20,6 +20,9 @@ enum class VoiceCommand {
     SLOWER,
     CHANGE_LANGUAGE,
     HELP,
+    START_COLLECTING,
+    STOP_COLLECTING,
+    MISSED,
 }
 
 enum class VoiceAction {
@@ -38,6 +41,9 @@ enum class VoiceAction {
     SLOWER,
     CHANGE_LANGUAGE,
     HELP,
+    START_COLLECTING,
+    STOP_COLLECTING,
+    MISSED,
 }
 
 data class CommandLexicon(
@@ -74,6 +80,9 @@ data class CommandLexicon(
                 VoiceCommand.SLOWER to listOf("slower", "speak slower"),
                 VoiceCommand.CHANGE_LANGUAGE to listOf("change language", "next language"),
                 VoiceCommand.HELP to listOf("help", "list commands", "what can i say"),
+                VoiceCommand.START_COLLECTING to listOf("start collecting"),
+                VoiceCommand.STOP_COLLECTING to listOf("stop collecting"),
+                VoiceCommand.MISSED to listOf("missed"),
             ),
         )
 
@@ -227,4 +236,7 @@ private fun VoiceCommand.toAction(): VoiceAction = when (this) {
     VoiceCommand.SLOWER -> VoiceAction.SLOWER
     VoiceCommand.CHANGE_LANGUAGE -> VoiceAction.CHANGE_LANGUAGE
     VoiceCommand.HELP -> VoiceAction.HELP
+    VoiceCommand.START_COLLECTING -> VoiceAction.START_COLLECTING
+    VoiceCommand.STOP_COLLECTING -> VoiceAction.STOP_COLLECTING
+    VoiceCommand.MISSED -> VoiceAction.MISSED
 }

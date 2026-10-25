@@ -11,6 +11,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
+import android.graphics.Bitmap
 import android.os.Binder
 import android.os.Build
 import android.os.Handler
@@ -32,6 +33,8 @@ import android.view.WindowManager
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.core.resolutionselector.ResolutionSelector
@@ -39,6 +42,9 @@ import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleService
+import org.visualaid.obstacleguide.collect.CollectLocation
+import org.visualaid.obstacleguide.collect.CollectSnapshot
+import org.visualaid.obstacleguide.collect.CollectStore
 import org.visualaid.obstacleguide.detect.ArcoreDepthCamera
 import org.visualaid.obstacleguide.detect.ObstacleDetector
 import org.visualaid.obstacleguide.detect.TfliteDepth
@@ -46,6 +52,9 @@ import org.visualaid.obstacleguide.detect.captureExposure
 import org.visualaid.obstacleguide.detect.meanLuma
 import org.visualaid.obstacleguide.detect.meanLumaY
 import org.visualaid.obstacleguide.detect.toUprightBitmap
+import org.visualaid.obstacleguide.logic.CollectCapture
+import org.visualaid.obstacleguide.logic.CollectEvent
+import org.visualaid.obstacleguide.logic.CollectScheduler
 import org.visualaid.obstacleguide.logic.CommandLexicon
 import org.visualaid.obstacleguide.logic.DepthCalibration
 import org.visualaid.obstacleguide.logic.DepthField
@@ -68,6 +77,7 @@ import org.visualaid.obstacleguide.speech.PhraseBook
 import org.visualaid.obstacleguide.speech.VoiceStatus
 import org.visualaid.obstacleguide.voice.VoskEar
 import org.visualaid.obstacleguide.voice.VoskVocab
+import java.io.File
 import java.util.concurrent.Executors
 import kotlin.math.roundToInt
 import java.util.concurrent.atomic.AtomicBoolean
@@ -85,6 +95,7 @@ class GuideService : LifecycleService() {
         fun onNeedCameraPermission()
         fun onNeedMicPermission()
         fun onQuit()
+        fun onCollectChanged(photos: Int, bytes: Long)
     }
 
     inner class LocalBinder : Binder() {
@@ -99,6 +110,10 @@ class GuideService : LifecycleService() {
     private val depthExecutor = Executors.newSingleThreadExecutor { runnable ->
         Thread(runnable, "obstacle-guide-depth").apply { priority = Thread.NORM_PRIORITY - 1 }
     }
+    private val collectExecutor = Executors.newSingleThreadExecutor { runnable ->
+        Thread(runnable, "obstacle-guide-collect").apply { priority = Thread.NORM_PRIORITY - 1 }
+    }
+    private val collectScheduler = CollectScheduler()
     private val speechBusy = AtomicBoolean(false)
     private val throttle = WarningThrottle()
 
@@ -161,6 +176,32 @@ class GuideService : LifecycleService() {
     private var latestDepth: List<ObstacleWarning> = emptyList()
     @Volatile
     private var latestAheadMedian = Float.NaN
+    @Volatile
+    private var latestBoxes: List<DetectionBox> = emptyList()
+    @Volatile
+    private var latestDepthField: DepthField? = null
+    private var imageCapture: ImageCapture? = null
+    private val captureBusy = AtomicBoolean(false)
+    @Volatile
+    private var pendingSnapshot: CollectSnapshot? = null
+    private var collectTicking = false
+    private var collectHot = false
+    private var boundCollectMode = false
+    private var cameraBindTries = 0
+    private val collectTick: Runnable = object : Runnable {
+        override fun run() {
+            if (!running || stopping) {
+                collectTicking = false
+                return
+            }
+            maybeCapture()
+            if (running && settings.collectEnabled) {
+                handler.postDelayed(this, CollectCapture.POLL_MS)
+            } else {
+                collectTicking = false
+            }
+        }
+    }
 
     fun aheadMedian(): Float = latestAheadMedian
 
@@ -424,6 +465,47 @@ class GuideService : LifecycleService() {
                 val help = speech.getString(R.string.help_commands, settings.wakePhrase)
                 speakTracked(help, flush = true)
             }
+            VoiceAction.START_COLLECTING -> setCollectingFromVoice(on = true)
+            VoiceAction.STOP_COLLECTING -> setCollectingFromVoice(on = false)
+            VoiceAction.MISSED -> markMissed()
+        }
+    }
+
+    private fun setCollectingFromVoice(on: Boolean) {
+        val speech = speechContext()
+        if (settings.collectEnabled == on) {
+            val phrase = if (on) R.string.confirm_collect_already_on else R.string.confirm_collect_already_off
+            speakTracked(speech.getString(phrase), flush = true)
+            if (on && !running) startGuidingIfCameraAllowed()
+            return
+        }
+        settings = settings.copy(collectEnabled = on).normalized()
+        SettingsStore.save(this, settings)
+        applySettings(settings, announceMissing = false)
+        handler.post { listener?.onVoiceSettingsChanged(languageChanged = false) }
+        val phrase = if (on) R.string.confirm_collect_on else R.string.confirm_collect_off
+        speakTracked(speech.getString(phrase), flush = true)
+        if (on && !running) startGuidingIfCameraAllowed()
+    }
+
+    private fun markMissed() {
+        val speech = speechContext()
+        if (!settings.collectEnabled) {
+            speakTracked(speech.getString(R.string.confirm_missed_off), flush = true)
+            return
+        }
+        collectScheduler.onMissed()
+        handler.post { maybeCapture() }
+        speakTracked(speech.getString(R.string.confirm_missed), flush = true)
+        if (!running) startGuidingIfCameraAllowed()
+    }
+
+    private fun startGuidingIfCameraAllowed() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            speakTracked(speechContext().getString(R.string.prompt_allow_camera), flush = true)
+            handler.post { listener?.onNeedCameraPermission() }
+        } else {
+            startGuiding()
         }
     }
 
@@ -492,6 +574,9 @@ class GuideService : LifecycleService() {
                 VoiceCommand.SLOWER to phrases(R.string.cmd_slower),
                 VoiceCommand.CHANGE_LANGUAGE to phrases(R.string.cmd_language),
                 VoiceCommand.HELP to phrases(R.string.cmd_help),
+                VoiceCommand.START_COLLECTING to phrases(R.string.cmd_collect_start),
+                VoiceCommand.STOP_COLLECTING to phrases(R.string.cmd_collect_stop),
+                VoiceCommand.MISSED to phrases(R.string.cmd_missed),
             ),
         )
     }
@@ -644,6 +729,9 @@ class GuideService : LifecycleService() {
         var types = 0
         if (guiding) types = types or ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA
         if (settings.voiceEnabled) types = types or ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE
+        if (guiding && settings.collectEnabled && settings.collectGps && Build.VERSION.SDK_INT >= 29) {
+            types = types or ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
+        }
         if (types == 0) types = ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA
         return types
     }
@@ -658,6 +746,8 @@ class GuideService : LifecycleService() {
     }
 
     fun applySettings(newSettings: GuideSettings, announceMissing: Boolean = true) {
+        val previousCollect = settings.collectEnabled
+        val previousGps = settings.collectGps
         settings = newSettings.normalized()
         when (speaker.setLanguage(settings.languageTag, settings.speechRate, settings.speechVolume)) {
             VoiceStatus.AVAILABLE -> {
@@ -671,6 +761,23 @@ class GuideService : LifecycleService() {
             VoiceStatus.UNKNOWN -> {
                 effectiveLanguage = settings.languageTag
             }
+        }
+        if (!settings.collectEnabled) {
+            pendingSnapshot = null
+            collectHot = false
+        }
+        collectScheduler.setEnabled(settings.collectEnabled)
+        if (running && settings.collectEnabled) {
+            ensureCollectTicker()
+        } else if (!settings.collectEnabled) {
+            stopCollectTicker()
+        }
+        CollectLocation.setActive(this, running && settings.collectEnabled && settings.collectGps)
+        if (running && (previousCollect != settings.collectEnabled || previousGps != settings.collectGps)) {
+            refreshForeground()
+        }
+        if (cameraBound && running && settings.collectEnabled != boundCollectMode) {
+            restartCameraForCollect()
         }
         if (running) {
             val scene = lastScene
@@ -739,7 +846,14 @@ class GuideService : LifecycleService() {
     private fun bindCamera() {
         if (cameraBound) return
         cameraBound = true
+        boundCollectMode = settings.collectEnabled
         val token = ++cameraToken
+        if (settings.collectEnabled) {
+            handler.post {
+                if (running && !stopping && token == cameraToken) bindCameraX(fullResolution = true)
+            }
+            return
+        }
         cameraExecutor.execute {
             if (!running || stopping || token != cameraToken) return@execute
             val ar = ArcoreDepthCamera(applicationContext)
@@ -752,7 +866,7 @@ class GuideService : LifecycleService() {
             if (!started || !running || stopping || token != cameraToken) {
                 ar.close()
                 handler.post {
-                    if (running && !stopping && token == cameraToken) bindCameraX()
+                    if (running && !stopping && token == cameraToken) bindCameraX(fullResolution = false)
                 }
                 return@execute
             }
@@ -810,7 +924,7 @@ class GuideService : LifecycleService() {
         if (fallback && running && !stopping && token == cameraToken) {
             Log.w(TAG, "ARCore depth failed, using the monocular model")
             handler.post {
-                if (running && !stopping && token == cameraToken) bindCameraX()
+                if (running && !stopping && token == cameraToken) bindCameraX(fullResolution = settings.collectEnabled)
             }
         }
     }
@@ -828,7 +942,7 @@ class GuideService : LifecycleService() {
         }
     }
 
-    private fun bindCameraX() {
+    private fun bindCameraX(fullResolution: Boolean) {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
             != PackageManager.PERMISSION_GRANTED
         ) {
@@ -858,12 +972,34 @@ class GuideService : LifecycleService() {
                         .build()
                     imageAnalysis.setAnalyzer(cameraExecutor) { image -> analyze(image) }
                     analysis = imageAnalysis
+                    val still = if (fullResolution) fullResCapture() else null
+                    imageCapture = still
                     provider.unbindAll()
-                    val camera = provider.bindToLifecycle(
-                        this,
-                        CameraSelector.DEFAULT_BACK_CAMERA,
-                        imageAnalysis,
-                    )
+                    val camera = if (still != null) {
+                        try {
+                            provider.bindToLifecycle(
+                                this,
+                                CameraSelector.DEFAULT_BACK_CAMERA,
+                                imageAnalysis,
+                                still,
+                            )
+                        } catch (error: Exception) {
+                            Log.w(TAG, "Full-resolution capture unavailable, warnings continue", error)
+                            imageCapture = null
+                            provider.unbindAll()
+                            provider.bindToLifecycle(
+                                this,
+                                CameraSelector.DEFAULT_BACK_CAMERA,
+                                imageAnalysis,
+                            )
+                        }
+                    } else {
+                        provider.bindToLifecycle(
+                            this,
+                            CameraSelector.DEFAULT_BACK_CAMERA,
+                            imageAnalysis,
+                        )
+                    }
                     boundCamera = camera
                     flashUnit = try {
                         camera.cameraInfo.hasFlashUnit()
@@ -873,6 +1009,7 @@ class GuideService : LifecycleService() {
                     }
                     appliedTorch = null
                     appliedExposureBoost = null
+                    cameraBindTries = 0
                     onCameraReady()
                     if (settings.torchMode == TorchMode.ON) {
                         updateLight(lastScene ?: SceneLight(Float.NaN), flashUnit)
@@ -881,11 +1018,33 @@ class GuideService : LifecycleService() {
                     }
                 } catch (error: Exception) {
                     Log.e(TAG, "Camera bind failed", error)
-                    failAndStop(speechContext().getString(R.string.status_camera_error))
+                    if (cameraBindTries < 2 && running && !stopping) {
+                        cameraBindTries += 1
+                        releaseCamera()
+                        handler.postDelayed({
+                            if (running && !stopping && !cameraBound) bindCamera()
+                        }, 600)
+                    } else {
+                        cameraBindTries = 0
+                        failAndStop(speechContext().getString(R.string.status_camera_error))
+                    }
                 }
             },
             ContextCompat.getMainExecutor(this),
         )
+    }
+
+    private fun fullResCapture(): ImageCapture {
+        val highest = ResolutionSelector.Builder()
+            .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
+            .build()
+        return ImageCapture.Builder()
+            .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+            .setJpegQuality(CollectCapture.JPEG_QUALITY)
+            .setFlashMode(ImageCapture.FLASH_MODE_OFF)
+            .setResolutionSelector(highest)
+            .setTargetRotation(displayRotation())
+            .build()
     }
 
     private fun onCameraReady() {
@@ -948,6 +1107,8 @@ class GuideService : LifecycleService() {
         val threshold = scoreThreshold
         val boxes = current.detect(bitmap, threshold)
         frameErrors = 0
+        latestBoxes = boxes
+        saveFallbackFrame(bitmap)
         if (depthField != null) {
             publishDepth(depthField, boxes, settings.depthCalibration(), threshold)
         } else if (allowMonocular) {
@@ -965,6 +1126,10 @@ class GuideService : LifecycleService() {
         val phrase = PhraseBook.warning(speechContext(), choice)
         if (phrase.isBlank()) return
         lastWarningPhrase = phrase
+        if (settings.collectEnabled) {
+            collectScheduler.onWarning()
+            handler.post { maybeCapture() }
+        }
         speechBusy.set(true)
         if (choice.urgent && settings.vibrationEnabled) {
             handler.post { vibrateUrgent() }
@@ -1037,6 +1202,7 @@ class GuideService : LifecycleService() {
             depthTracker.update(field, boxes, calibration, scoreThreshold)
         }
         latestAheadMedian = DepthWarnings.aheadMedian(field)
+        latestDepthField = field
         latestDepth = warnings
     }
 
@@ -1076,6 +1242,7 @@ class GuideService : LifecycleService() {
         stopping = true
         running = false
         commandCapturing = false
+        stopCollectWork()
         cancelDelayedStop()
         ear?.setIgnoreRecognition(true)
         stopEar()
@@ -1139,6 +1306,7 @@ class GuideService : LifecycleService() {
         if (!running) return
         running = false
         cameraReady = false
+        stopCollectWork()
         unregisterLight()
         releaseCamera()
         releaseDetector()
@@ -1197,6 +1365,7 @@ class GuideService : LifecycleService() {
             Log.w(TAG, "unbind", error)
         }
         analysis = null
+        imageCapture = null
         boundCamera = null
         flashUnit = false
         appliedTorch = null
@@ -1356,6 +1525,183 @@ class GuideService : LifecycleService() {
         else -> R.string.status_tts_error
     }
 
+    private fun ensureCollectTicker() {
+        if (collectTicking) return
+        collectTicking = true
+        handler.post(collectTick)
+    }
+
+    private fun stopCollectTicker() {
+        collectTicking = false
+        handler.removeCallbacks(collectTick)
+    }
+
+    private fun stopCollectWork() {
+        stopCollectTicker()
+        pendingSnapshot = null
+        captureBusy.set(false)
+        collectHot = false
+        CollectLocation.stop(this)
+    }
+
+    private fun restartCameraForCollect() {
+        if (!running || stopping || !cameraBound) return
+        releaseCamera()
+        handler.postDelayed({
+            if (running && !stopping && !cameraBound) bindCamera()
+        }, 400)
+    }
+
+    private fun currentSnapshot(event: CollectEvent, fullResolution: Boolean): CollectSnapshot {
+        val scene = lastScene ?: SceneLight(Float.NaN)
+        val gpsOn = settings.collectGps
+        return CollectSnapshot(
+            event = event,
+            requestedAtMs = System.currentTimeMillis(),
+            detections = latestBoxes,
+            depth = CollectCapture.summarizeDepth(latestDepthField),
+            lighting = CollectCapture.lightingOf(scene),
+            gpsEnabled = gpsOn,
+            gps = CollectLocation.readingIfAllowed(gpsOn),
+            fullResolution = fullResolution,
+        )
+    }
+
+    private fun noteHeat(hot: Boolean) {
+        if (!settings.collectEnabled || !running || hot == collectHot) return
+        collectHot = hot
+        val phrase = speechContext().getString(
+            if (hot) R.string.collect_paused_hot else R.string.collect_resumed,
+        )
+        postStatus(phrase)
+        speakTracked(phrase, flush = false)
+    }
+
+    private fun maybeCapture() {
+        if (!running || stopping || !settings.collectEnabled) return
+        val hot = try {
+            CollectStore.isHot(this)
+        } catch (error: Exception) {
+            Log.w(TAG, "Thermal read failed", error)
+            false
+        }
+        noteHeat(hot)
+        val event = collectScheduler.poll(
+            SystemClock.elapsedRealtime(),
+            settings.collectIntervalMs,
+            hot,
+            captureBusy.get() || pendingSnapshot != null,
+        ) ?: return
+        val still = imageCapture
+        val snapshot = currentSnapshot(event, fullResolution = still != null)
+        if (still == null) {
+            pendingSnapshot = snapshot
+            return
+        }
+        if (!captureBusy.compareAndSet(false, true)) {
+            collectScheduler.requeue(event)
+            return
+        }
+        val jpg: File
+        val json: File
+        try {
+            val files = CollectStore.allocate(this, event, snapshot.requestedAtMs)
+            jpg = files.first
+            json = files.second
+        } catch (error: Exception) {
+            captureBusy.set(false)
+            collectScheduler.requeue(event)
+            Log.w(TAG, "Collect folder failed", error)
+            return
+        }
+        try {
+            still.takePicture(
+                ImageCapture.OutputFileOptions.Builder(jpg).build(),
+                collectExecutor,
+                object : ImageCapture.OnImageSavedCallback {
+                    override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                        try {
+                            val (width, height) = CollectStore.imageSize(jpg)
+                            CollectStore.writeSidecar(json, jpg, snapshot, width, height)
+                            collectScheduler.onCaptured(SystemClock.elapsedRealtime())
+                            publishCollectUsage()
+                        } catch (error: Exception) {
+                            Log.w(TAG, "Collect sidecar failed", error)
+                            jpg.delete()
+                            json.delete()
+                            collectScheduler.onCaptured(SystemClock.elapsedRealtime())
+                        } finally {
+                            captureBusy.set(false)
+                            handler.post { maybeCapture() }
+                        }
+                    }
+
+                    override fun onError(exception: ImageCaptureException) {
+                        Log.w(TAG, "Collect capture failed", exception)
+                        jpg.delete()
+                        json.delete()
+                        collectScheduler.onCaptured(SystemClock.elapsedRealtime())
+                        captureBusy.set(false)
+                        handler.post { maybeCapture() }
+                    }
+                },
+            )
+        } catch (error: Exception) {
+            Log.w(TAG, "Collect capture failed", error)
+            jpg.delete()
+            json.delete()
+            captureBusy.set(false)
+            collectScheduler.onCaptured(SystemClock.elapsedRealtime())
+        }
+    }
+
+    private fun saveFallbackFrame(bitmap: Bitmap) {
+        val snapshot = pendingSnapshot ?: return
+        if (imageCapture != null) {
+            pendingSnapshot = null
+            collectScheduler.requeue(snapshot.event)
+            handler.post { maybeCapture() }
+            return
+        }
+        if (!captureBusy.compareAndSet(false, true)) return
+        pendingSnapshot = null
+        val copy = try {
+            bitmap.copy(Bitmap.Config.ARGB_8888, false)
+        } catch (error: Exception) {
+            Log.w(TAG, "Collect copy failed", error)
+            null
+        }
+        if (copy == null) {
+            captureBusy.set(false)
+            collectScheduler.requeue(snapshot.event)
+            return
+        }
+        collectExecutor.execute {
+            try {
+                CollectStore.writeBitmap(applicationContext, copy, snapshot.copy(fullResolution = false))
+                collectScheduler.onCaptured(SystemClock.elapsedRealtime())
+                publishCollectUsage()
+            } catch (error: Exception) {
+                Log.w(TAG, "Collect save failed", error)
+                collectScheduler.onCaptured(SystemClock.elapsedRealtime())
+            } finally {
+                copy.recycle()
+                captureBusy.set(false)
+                handler.post { maybeCapture() }
+            }
+        }
+    }
+
+    private fun publishCollectUsage() {
+        val usage = try {
+            CollectStore.usage(applicationContext)
+        } catch (error: Exception) {
+            Log.w(TAG, "Collect usage failed", error)
+            return
+        }
+        handler.post { listener?.onCollectChanged(usage.photos, usage.bytes) }
+    }
+
     override fun onDestroy() {
         stopping = true
         running = false
@@ -1367,8 +1713,10 @@ class GuideService : LifecycleService() {
         cancelVibration()
         releaseDetector()
         if (::speaker.isInitialized) speaker.shutdown()
+        stopCollectWork()
         cameraExecutor.shutdown()
         depthExecutor.shutdown()
+        collectExecutor.shutdown()
         super.onDestroy()
     }
 

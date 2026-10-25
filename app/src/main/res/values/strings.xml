@@ -151,7 +151,7 @@
     <string name="confirm_language">Language changed.</string>
     <string name="confirm_unknown">That was not a command. Say help for the list.</string>
     <string name="ahead_clear">Nothing is in front of you right now.</string>
-    <string name="help_commands">After %1$s, say one command: start, stop, stop app, exit, close, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, or help. Stop closes RaahiSense. Pause turns warnings off, and resume turns them on. You can also shake the phone hard, double-tap the screen when TalkBack is off, or hold a volume key while this screen is open.</string>
+    <string name="help_commands">After %1$s, say one command: start, stop, stop app, exit, close, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, start collecting, stop collecting, missed, or help. Stop closes RaahiSense. Pause turns warnings off, and resume turns them on. Start collecting saves training photos while warnings stay on. Say missed when an obstacle was not warned. You can also shake the phone hard, double-tap the screen when TalkBack is off, or hold a volume key while this screen is open.</string>
     <string name="cmd_start">start|start guide|begin</string>
     <string name="cmd_stop">stop|stop app|exit|close|stop guide</string>
     <string name="cmd_pause">pause</string>
@@ -201,5 +201,35 @@
     <string name="about_body">Speech. Wake-word listening uses Vosk, the small English model vosk-model-small-en-us-0.15, by Alpha Cephei. The library and the model are Apache License 2.0. Your voice stays on the phone. The ear is English, so say the English command words. The spoken warnings can still use the language you picked. Pictures. The camera uses a small YOLO model trained for this app. It can speak people, bicycles, motorcycles, cars, buses, trucks, cows, dogs, cats, auto-rickshaws, cycle rickshaws, handcarts, potholes, open drains, curbs, stairs, poles, barriers, street objects, trees, chairs, couches, tables, beds, toilets, plants, refrigerators, televisions, and doors. Speed bump and low branch are not included. Curb pictures are few, so curbs are easy to miss. Depth. Walls and unnamed close objects use Depth Anything V2 Small, Apache License 2.0. The number is relative depth, not meters. Calibrate distance on this phone. Glass doors and glass walls are often missed. If this phone already has ARCore with depth, that map is used instead. This app does not download ARCore. Picture sources. ROD: Amirkabir University of Technology, Zandi and colleagues, MIT, from Roboflow sets that are mostly CC BY 4.0. RDD2022 India potholes: Arya and colleagues, Geoscience Data Journal 2024, CC BY 4.0. Open Images, including doors, stairs, street lights, carts, and cattle: annotations CC BY 4.0, Flickr photos CC BY 2.0. COCO 2017 indoor pictures: annotations CC BY 4.0. Those photos are from Flickr and are not all cleared for commercial use. Roboflow pothole sets, CC BY 4.0. Tuk-tuk and rickshaw pictures via shravya11, CC BY 4.0. Datacluster Labs auto-rickshaw sample, CC BY 4.0 on the dataset card. AssistEye road obstacles: MIT for the collection. Some upstream pictures are CC0 or CC BY 4.0. Some curb pictures in that collection carry stock-photo watermarks and are not redistributed. This app is an extra to a white cane. It is not a replacement.</string>
     <string name="action_back">Back</string>
     <string name="cd_back">Go back to the main screen</string>
+
+    <string name="collect_on">Collect training photos: on</string>
+    <string name="collect_off">Collect training photos: off</string>
+    <string name="cd_collect_turn_on">Collect training photos is off. Double tap to turn it on.</string>
+    <string name="cd_collect_turn_off">Collect training photos is on. Double tap to turn it off. Warnings keep running.</string>
+    <string name="collect_interval">Photo interval: %1$s seconds</string>
+    <string name="cd_collect_interval">Time between saved photos. Double tap to change it. It is %1$s seconds now.</string>
+    <string name="collect_gps_on">Save GPS with photos: on</string>
+    <string name="collect_gps_off">Save GPS with photos: off</string>
+    <string name="cd_collect_gps_turn_on">GPS is not saved with photos. Double tap to include it.</string>
+    <string name="cd_collect_gps_turn_off">GPS is saved with photos. Double tap to turn GPS off.</string>
+    <string name="collect_gps_denied">Location was not allowed. GPS stays off.</string>
+    <string name="collect_usage">%1$s photos, %2$s</string>
+    <string name="collect_export">Export training photos</string>
+    <string name="cd_collect_export">Zip this collection and open the share sheet. Nothing is uploaded until you choose where to send it.</string>
+    <string name="collect_export_empty">There are no training photos to export.</string>
+    <string name="collect_export_failed">The photos could not be zipped.</string>
+    <string name="collect_export_working">Preparing the zip.</string>
+    <string name="collect_paused_hot">Photo collection paused. The phone is hot.</string>
+    <string name="collect_resumed">Collecting photos again.</string>
+    <string name="confirm_collect_on">Collecting training photos. Warnings stay on.</string>
+    <string name="confirm_collect_off">Stopped collecting photos. Warnings stay on.</string>
+    <string name="confirm_collect_already_on">Already collecting training photos.</string>
+    <string name="confirm_collect_already_off">Training photos are already off.</string>
+    <string name="confirm_missed">Marked as missed.</string>
+    <string name="confirm_missed_off">Collect training photos is off, so nothing was saved.</string>
+    <string name="cmd_collect_start">start collecting</string>
+    <string name="cmd_collect_stop">stop collecting</string>
+    <string name="cmd_missed">missed</string>
+    <string name="collect_note">Full photos stay on this phone. Warnings keep running. Nothing is uploaded. Export shares a zip only when you tap Export.</string>
 </resources>
 

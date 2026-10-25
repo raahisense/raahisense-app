@@ -217,6 +217,44 @@
             android:text="@string/wake_on"
             app:backgroundTint="@null" />
 
+        <Button
+            android:id="@+id/collectPhotos"
+            style="@style/GuideRow"
+            android:text="@string/collect_off"
+            app:backgroundTint="@null" />
+
+        <Button
+            android:id="@+id/collectInterval"
+            style="@style/GuideRow"
+            android:text="@string/collect_interval"
+            app:backgroundTint="@null" />
+
+        <Button
+            android:id="@+id/collectGps"
+            style="@style/GuideRow"
+            android:text="@string/collect_gps_off"
+            app:backgroundTint="@null" />
+
+        <TextView
+            android:id="@+id/collectUsage"
+            style="@style/GuideText"
+            android:paddingBottom="4dp"
+            android:text="@string/collect_usage"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/collectNote"
+            style="@style/GuideText"
+            android:paddingBottom="8dp"
+            android:text="@string/collect_note"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/collectExport"
+            style="@style/GuideRow"
+            android:text="@string/collect_export"
+            app:backgroundTint="@null" />
+
         <TextView
             style="@style/GuideText"
             android:paddingTop="8dp"

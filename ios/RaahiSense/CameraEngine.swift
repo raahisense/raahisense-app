@@ -3,6 +3,7 @@ import CoreMedia
 import CoreVideo
 import Foundation
 import RaahiSenseLogic
+import UIKit
 
 struct CameraFrame {
     var image: RGBImage
@@ -11,7 +12,7 @@ struct CameraFrame {
 }
 
 /// Rear camera, portrait, so a shirt pocket with the camera facing forward matches the walk.
-final class CameraEngine: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
+final class CameraEngine: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, AVCapturePhotoCaptureDelegate {
     var onFrame: ((CameraFrame) -> Void)?
     var onFailed: (() -> Void)?
 
@@ -21,6 +22,10 @@ final class CameraEngine: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
     private var running = false
     private var appliedTorch: Bool?
     private var appliedBias: Float?
+    private var collecting = false
+    private var photoOutput: AVCapturePhotoOutput?
+    private var stillBusy = false
+    private var stillDone: ((Data?, Int, Int) -> Void)?
 
     func start() {
         queue.async { [weak self] in
@@ -50,6 +55,38 @@ final class CameraEngine: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
     func setTorch(on: Bool) {
         queue.async { [weak self] in
             self?.setTorchOnQueue(on)
+        }
+    }
+
+    /// Full-resolution stills only while training photos are being collected.
+    func setCollecting(_ on: Bool) {
+        queue.async { [weak self] in
+            self?.setCollectingOnQueue(on)
+        }
+    }
+
+    func takePhoto(_ done: @escaping (Data?, Int, Int) -> Void) {
+        queue.async { [weak self] in
+            guard let self, let photoOutput = self.photoOutput, !self.stillBusy else {
+                done(nil, 0, 0)
+                return
+            }
+            self.stillBusy = true
+            self.stillDone = done
+            let settings = AVCapturePhotoSettings()
+            if photoOutput.supportedFlashModes.contains(.off) {
+                settings.flashMode = .off
+            }
+            settings.photoQualityPrioritization = .speed
+            if let device = self.device {
+                let largest = device.activeFormat.supportedMaxPhotoDimensions.max { lhs, rhs in
+                    lhs.width * lhs.height < rhs.width * rhs.height
+                }
+                if let largest {
+                    settings.maxPhotoDimensions = largest
+                }
+            }
+            photoOutput.capturePhoto(with: settings, delegate: self)
         }
     }
 
@@ -125,6 +162,12 @@ final class CameraEngine: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         }
         session.commitConfiguration()
         device = nil
+        photoOutput = nil
+        collecting = false
+        let done = stillDone
+        stillDone = nil
+        stillBusy = false
+        done?(nil, 0, 0)
     }
 
     private func setTorchOnQueue(_ on: Bool) {
@@ -227,6 +270,59 @@ final class CameraEngine: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
             image: RGBImage(width: outW, height: outH, rgb: rgb),
             meanLuma: count > 0 ? lumaSum / count : .nan
         )
+    }
+
+    private func setCollectingOnQueue(_ on: Bool) {
+        if collecting == on && ((photoOutput != nil) == on) { return }
+        collecting = on
+        session.beginConfiguration()
+        defer { session.commitConfiguration() }
+        if on {
+            if photoOutput == nil {
+                let photo = AVCapturePhotoOutput()
+                photo.maxPhotoQualityPrioritization = .speed
+                if session.canAddOutput(photo) {
+                    session.addOutput(photo)
+                    photoOutput = photo
+                }
+            }
+            if session.canSetSessionPreset(.photo) {
+                session.sessionPreset = .photo
+            } else if session.canSetSessionPreset(.high) {
+                session.sessionPreset = .high
+            }
+        } else {
+            if let photo = photoOutput {
+                session.removeOutput(photo)
+                photoOutput = nil
+            }
+            if session.canSetSessionPreset(.hd1280x720) {
+                session.sessionPreset = .hd1280x720
+            }
+        }
+    }
+
+    func photoOutput(
+        _ output: AVCapturePhotoOutput,
+        didFinishProcessingPhoto photo: AVCapturePhoto,
+        error: Error?
+    ) {
+        let result: (Data?, Int, Int)
+        if error == nil, let data = photo.fileDataRepresentation(), let image = UIImage(data: data) {
+            let jpeg = image.jpegData(compressionQuality: 0.9) ?? data
+            let width = image.cgImage?.width ?? 0
+            let height = image.cgImage?.height ?? 0
+            result = (jpeg, width, height)
+        } else {
+            result = (nil, 0, 0)
+        }
+        queue.async { [weak self] in
+            guard let self else { return }
+            let done = self.stillDone
+            self.stillDone = nil
+            self.stillBusy = false
+            done?(result.0, result.1, result.2)
+        }
     }
 }
 

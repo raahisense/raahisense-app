@@ -25,9 +25,12 @@ import android.view.inputmethod.EditorInfo
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import org.visualaid.obstacleguide.collect.CollectStore
 import org.visualaid.obstacleguide.databinding.ActivityMainBinding
+import org.visualaid.obstacleguide.logic.CollectCapture
 import org.visualaid.obstacleguide.logic.DepthCalibration
 import org.visualaid.obstacleguide.logic.TorchMode
+import kotlin.concurrent.thread
 import org.visualaid.obstacleguide.speech.GuideSpeaker
 import org.visualaid.obstacleguide.voice.VoskVocab
 
@@ -47,6 +50,8 @@ class MainActivity : AppCompatActivity() {
     private var calibrateStep = 0
     private var pendingOpenRaw = 0f
     private var quitRequested = false
+    private var collectPhotos = 0
+    private var collectBytes = 0L
     private val tapHandler = Handler(Looper.getMainLooper())
     private lateinit var gestures: GestureDetector
 
@@ -86,6 +91,23 @@ class MainActivity : AppCompatActivity() {
             )
             showStatus(message)
             speakUi(message)
+        }
+        render()
+    }
+
+    private val locationLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions(),
+    ) { result ->
+        val granted = result[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+            result[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        if (granted) {
+            settings = settings.copy(collectGps = true)
+            persist()
+            speakUi(getString(R.string.collect_gps_on))
+        } else {
+            settings = settings.copy(collectGps = false)
+            persist()
+            speakUi(getString(R.string.collect_gps_denied))
         }
         render()
     }
@@ -140,6 +162,12 @@ class MainActivity : AppCompatActivity() {
 
         override fun onQuit() {
             if (!isFinishing) finishAndRemoveTask()
+        }
+
+        override fun onCollectChanged(photos: Int, bytes: Long) {
+            collectPhotos = photos
+            collectBytes = bytes
+            if (::binding.isInitialized) showCollectUsage()
         }
     }
 
@@ -196,6 +224,7 @@ class MainActivity : AppCompatActivity() {
             bindService(Intent(this, GuideService::class.java), connection, Context.BIND_AUTO_CREATE)
         }
         updateBatteryHint()
+        refreshCollectUsage()
         render()
     }
 
@@ -291,6 +320,25 @@ class MainActivity : AppCompatActivity() {
             }
         }
         binding.voiceCommands.setOnClickListener { afterTap { onVoiceToggle() } }
+        binding.collectPhotos.setOnClickListener {
+            afterTap {
+                settings = settings.copy(collectEnabled = !settings.collectEnabled)
+                persist()
+                speakUi(getString(if (settings.collectEnabled) R.string.collect_on else R.string.collect_off))
+                render()
+            }
+        }
+        binding.collectInterval.setOnClickListener {
+            afterTap {
+                settings = settings.nextCollectInterval()
+                persist()
+                val label = CollectCapture.intervalLabel(settings.collectIntervalMs)
+                speakUi(getString(R.string.collect_interval, label))
+                render()
+            }
+        }
+        binding.collectGps.setOnClickListener { afterTap { onCollectGps() } }
+        binding.collectExport.setOnClickListener { afterTap { exportCollect() } }
         binding.about.setOnClickListener { afterTap { startActivity(Intent(this, AboutActivity::class.java)) } }
         binding.calibrate.setOnClickListener { afterTap { onCalibrate() } }
         binding.batteryOpt.setOnClickListener { afterTap { openBatterySettings() } }
@@ -535,10 +583,117 @@ class MainActivity : AppCompatActivity() {
             binding.wakePhrase.setText(settings.wakePhrase)
         }
         binding.voiceEarNote.text = getString(R.string.voice_ear_note)
+        showCollectControls()
         val draft = getString(R.string.draft_banner)
         binding.draftBanner.visibility = if (draft.isBlank()) View.GONE else View.VISIBLE
         binding.draftBanner.text = draft
         updateBatteryHint()
+    }
+
+    private fun showCollectControls() {
+        val collectOn = settings.collectEnabled
+        binding.collectPhotos.text = getString(if (collectOn) R.string.collect_on else R.string.collect_off)
+        binding.collectPhotos.contentDescription = getString(
+            if (collectOn) R.string.cd_collect_turn_off else R.string.cd_collect_turn_on,
+        )
+        val interval = CollectCapture.intervalLabel(settings.collectIntervalMs)
+        binding.collectInterval.text = getString(R.string.collect_interval, interval)
+        binding.collectInterval.contentDescription = getString(R.string.cd_collect_interval, interval)
+        val gpsOn = settings.collectGps
+        binding.collectGps.text = getString(if (gpsOn) R.string.collect_gps_on else R.string.collect_gps_off)
+        binding.collectGps.contentDescription = getString(
+            if (gpsOn) R.string.cd_collect_gps_turn_off else R.string.cd_collect_gps_turn_on,
+        )
+        binding.collectNote.text = getString(R.string.collect_note)
+        binding.collectExport.text = getString(R.string.collect_export)
+        binding.collectExport.contentDescription = getString(R.string.cd_collect_export)
+        showCollectUsage()
+    }
+
+    private fun showCollectUsage() {
+        binding.collectUsage.text = getString(
+            R.string.collect_usage,
+            collectPhotos.toString(),
+            CollectCapture.formatBytes(collectBytes),
+        )
+    }
+
+    private fun refreshCollectUsage() {
+        thread(name = "collect-usage") {
+            val usage = try {
+                CollectStore.usage(applicationContext)
+            } catch (_: Exception) {
+                return@thread
+            }
+            runOnUiThread {
+                if (isDestroyed) return@runOnUiThread
+                collectPhotos = usage.photos
+                collectBytes = usage.bytes
+                if (::binding.isInitialized) showCollectUsage()
+            }
+        }
+    }
+
+    private fun onCollectGps() {
+        if (settings.collectGps) {
+            settings = settings.copy(collectGps = false)
+            persist()
+            speakUi(getString(R.string.collect_gps_off))
+            render()
+            return
+        }
+        val fine = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ==
+            PackageManager.PERMISSION_GRANTED
+        val coarse = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) ==
+            PackageManager.PERMISSION_GRANTED
+        if (fine || coarse) {
+            settings = settings.copy(collectGps = true)
+            persist()
+            speakUi(getString(R.string.collect_gps_on))
+            render()
+        } else {
+            locationLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                ),
+            )
+        }
+    }
+
+    private fun exportCollect() {
+        val working = getString(R.string.collect_export_working)
+        showStatus(working)
+        speakUi(working)
+        thread(name = "collect-export") {
+            val zip = try {
+                CollectStore.exportLatest(applicationContext)
+            } catch (_: Exception) {
+                runOnUiThread {
+                    if (isDestroyed) return@runOnUiThread
+                    val message = getString(R.string.collect_export_failed)
+                    showStatus(message)
+                    speakUi(message)
+                }
+                return@thread
+            }
+            runOnUiThread {
+                if (isDestroyed) return@runOnUiThread
+                if (zip == null) {
+                    val message = getString(R.string.collect_export_empty)
+                    showStatus(message)
+                    speakUi(message)
+                } else {
+                    try {
+                        CollectStore.share(this, zip)
+                    } catch (_: Exception) {
+                        val message = getString(R.string.collect_export_failed)
+                        showStatus(message)
+                        speakUi(message)
+                    }
+                }
+            }
+        }
     }
 
     private fun showStatus(text: String) {

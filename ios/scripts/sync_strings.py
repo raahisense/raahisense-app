@@ -53,6 +53,7 @@ def unescape(value: str) -> str:
         .replace("&lt;", "<")
         .replace("&gt;", ">")
         .replace("%1$s", "%@")
+        .replace("%2$s", "%@")
         .strip()
     )
 

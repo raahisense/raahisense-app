@@ -1,6 +1,6 @@
 # RaahiSense
 
-Raahi means traveller. RaahiSense speaks short warnings about things the rear camera sees, while you walk. It is an extra to a white cane. It is not a replacement. It does not need the internet. It does not save photos. The Android app and the iPhone app live in this same project. Prepared for Dr. Chindanoor Rajesh.
+Raahi means traveller. RaahiSense speaks short warnings about things the rear camera sees, while you walk. It is an extra to a white cane. It is not a replacement. It does not need the internet. It does not save photos unless **Collect training photos** is on, and then the photos stay on that phone until you export them. The Android app and the iPhone app live in this same project. Prepared for Dr. Chindanoor Rajesh.
 
 The Android package name is still `org.visualaid.obstacleguide`. The name on the phone is RaahiSense.
 
@@ -33,7 +33,7 @@ On older phones the switch is under Settings, Security, Unknown sources. On newe
 The screen is black and yellow, with one big button.
 
 1. Tap the big button.
-2. The phone asks to use the camera. Allow it. Photos are not saved.
+2. The phone asks to use the camera. Allow it. Photos are not saved unless Collect training photos is on.
 3. The big button then says **START**. Tap it.
 4. You should hear "Started. Listening for obstacles."
 5. Lock the screen if you want. A notification stays up: **Obstacle Guide is on**. That means it is still working.
@@ -74,6 +74,8 @@ Commands, in English:
 - louder, or quieter
 - faster, or slower
 - change language
+- start collecting, or stop collecting (saves training photos, warnings stay on)
+- missed (an obstacle was not warned)
 - help
 
 You can also say the wake phrase and the command in one breath, such as "Hey Guide, start."
@@ -124,6 +126,10 @@ At equal speech and noise (0 dB) it started to miss. In louder noise, say the ph
 **Vibration.** When this is on, a very close object ahead makes the phone vibrate in three pulses, as well as speak. Turn it off if you do not want vibration.
 
 **Voice commands.** On or off. On means the phone listens for "Hey Guide" even when the screen is locked, as long as the notification is showing. Off closes the microphone. The wake phrase box is next to this button.
+
+**Collect training photos.** Off unless you turn it on. This is for the developer walking around to gather training pictures. Warnings keep running. About every 1.5 seconds the phone saves a full-resolution photo, and it also saves a short burst when a warning is spoken or when you say **missed**. Each photo has a JSON file next to it with the time, the detections, a depth summary, the kind of event (periodic, warning, or missed), and a lighting estimate. GPS is off unless you turn on **Save GPS with photos**. On Android the files are in the app's own external folder `RaahiSense/collect/`, one folder per date. The screen shows how many photos are saved and how much space they use. **Export training photos** zips the newest day and opens the share sheet, so you can send it to Google Drive yourself. The app does not upload anything. JPEG quality is about 90 percent. If the phone gets hot, saving pauses and warnings continue. Faces are not blurred in this personal collection. Blur them before sharing the zip with anyone else.
+
+The interval button steps through 1 second, 1.5 seconds, and 3 seconds. Say **start collecting** or **stop collecting** after Hey Guide, or tap the button. **Stop collecting** does not close the app and does not turn warnings off.
 
 **Calibrate distance.** Two taps while the guide is running: an open path, then a wall one step away. This teaches the phone what "close" looks like on this camera.
 

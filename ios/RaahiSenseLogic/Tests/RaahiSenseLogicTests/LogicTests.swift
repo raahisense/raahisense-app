@@ -135,6 +135,58 @@ final class LogicTests: XCTestCase {
         XCTAssertEqual(found[0].label, "person")
     }
 
+    func testCollectPhotosStayOffUntilAskedAndDoNotStealStop() {
+        XCTAssertEqual(CollectCapture.defaultIntervalMs, 1_500)
+        XCTAssertEqual(CollectCapture.jpegQuality, 90)
+        XCTAssertEqual(CollectCapture.clampInterval(1), 500)
+        XCTAssertEqual(CollectCapture.nextIntervalMs(1_500), 3_000)
+        XCTAssertEqual(CollectCapture.intervalLabel(1_500), "1.5")
+        XCTAssertFalse(CollectCapture.isHot(thermalStatus: 2, batteryTenthsC: nil))
+        XCTAssertTrue(CollectCapture.isHot(thermalStatus: 3, batteryTenthsC: nil))
+        let scheduler = CollectScheduler()
+        XCTAssertNil(scheduler.poll(nowMs: 10_000, intervalMs: 1_500, hot: false, busy: false))
+        scheduler.setEnabled(true)
+        XCTAssertEqual(scheduler.poll(nowMs: 10_000, intervalMs: 1_500, hot: false, busy: false), .periodic)
+        scheduler.onCaptured(nowMs: 10_000)
+        scheduler.onWarning()
+        XCTAssertEqual(scheduler.poll(nowMs: 11_000, intervalMs: 1_500, hot: false, busy: false), .warning)
+        XCTAssertNil(scheduler.poll(nowMs: 11_100, intervalMs: 1_500, hot: true, busy: false))
+        XCTAssertEqual(scheduler.poll(nowMs: 11_200, intervalMs: 1_500, hot: false, busy: false), .warning)
+        XCTAssertEqual(CommandParser.parse("start collecting"), .startCollecting)
+        XCTAssertEqual(CommandParser.parse("stop collecting"), .stopCollecting)
+        XCTAssertEqual(CommandParser.parse("missed"), .missed)
+        XCTAssertEqual(CommandParser.parse("stop"), .stop)
+        XCTAssertEqual(CommandParser.parse("start"), .start)
+        XCTAssertEqual(VoiceInterpreter.interpret("hey guide start collecting", requireWake: true), .startCollecting)
+        let lighting = CollectCapture.lightingOf(SceneLight(meanLuma: 0.1, lux: 4, iso: 800, exposureTimeNs: 50))
+        XCTAssertEqual(lighting.estimate, "dark")
+        let json = CollectCapture.sidecarJson(
+            timestampIso: "2026-10-25T12:00:00.000+00:00",
+            event: .missed,
+            detections: [DetectionBox(label: "person", score: 0.82, left: 0.1, top: 0.2, right: 0.4, bottom: 0.9)],
+            depth: DepthSummary(aheadMedian: nil, corridorMin: nil, corridorMax: nil, finiteSamples: 0),
+            lighting: lighting,
+            gpsEnabled: false,
+            gps: GpsReading(latitude: 1, longitude: 2, accuracyMeters: 3, timeIso: "t"),
+            width: 4000,
+            height: 3000,
+            fullResolution: true
+        )
+        XCTAssertTrue(json.contains("\"event\": \"missed\""))
+        XCTAssertTrue(json.contains("\"gps\": null"))
+        XCTAssertTrue(json.contains("\"label\": \"person\""))
+        XCTAssertTrue(json.contains("blur faces"))
+        XCTAssertEqual(CollectCapture.folder, "RaahiSense/collect")
+        let zip = CollectZip.store(files: [("2026-10-25/a.jpg", Data([1, 2, 3]))])
+        XCTAssertEqual(zip.first, 0x50)
+        XCTAssertEqual(zip.dropFirst().first, 0x4B)
+        var settings = GuideSettings(collectEnabled: true, collectIntervalMs: 50, collectGps: true)
+        settings = settings.normalized()
+        XCTAssertEqual(settings.collectIntervalMs, CollectCapture.minIntervalMs)
+        XCTAssertFalse(GuideSettings().collectEnabled)
+        XCTAssertFalse(GuideSettings().collectGps)
+    }
+
     func testWakeWordAndCommands() {
         XCTAssertEqual(VoiceInterpreter.interpret("hey guide", requireWake: true), .wakeOnly)
         XCTAssertEqual(VoiceInterpreter.interpret("hey guide what is ahead", requireWake: true), .whatIsAhead)

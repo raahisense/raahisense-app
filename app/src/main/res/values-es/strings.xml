@@ -137,7 +137,7 @@
     <string name="confirm_language">Idioma cambiado.</string>
     <string name="confirm_unknown">Eso no fue una orden. Diga help para oír la lista.</string>
     <string name="ahead_clear">Ahora no hay nada delante de usted.</string>
-    <string name="help_commands">Después de %1$s, diga una orden en inglés: start, stop, stop app, exit, close, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, o help. Stop cierra RaahiSense. Pause apaga los avisos y resume los enciende. También puede sacudir el teléfono con fuerza, tocar dos veces la pantalla si TalkBack está apagado, o mantener pulsada una tecla de volumen con esta pantalla abierta.</string>
+    <string name="help_commands">Después de %1$s, diga una orden en inglés: start, stop, stop app, exit, close, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, start collecting, stop collecting, missed, o help. Stop cierra RaahiSense. Pause apaga los avisos y resume los enciende. Start collecting guarda fotos de entrenamiento y los avisos siguen. Diga missed si un obstáculo no fue avisado. También puede sacudir el teléfono con fuerza, tocar dos veces la pantalla si TalkBack está apagado, o mantener pulsada una tecla de volumen con esta pantalla abierta.</string>
     <string name="cmd_start">empezar|iniciar|start|start guide|begin</string>
     <string name="cmd_stop">parar|detener|stop|stop app|exit|close|stop guide</string>
     <string name="cmd_pause">pausa|pause</string>
@@ -188,5 +188,35 @@
     <string name="cd_back">Volver a la pantalla principal</string>
     <string name="about_body">Speech. Wake-word listening uses Vosk, the small English model vosk-model-small-en-us-0.15, by Alpha Cephei. The library and the model are Apache License 2.0. Your voice stays on the phone. The ear is English, so say the English command words. The spoken warnings can still use the language you picked. Pictures. The camera uses a small YOLO model trained for this app. It can speak people, bicycles, motorcycles, cars, buses, trucks, cows, dogs, cats, auto-rickshaws, cycle rickshaws, handcarts, potholes, open drains, curbs, stairs, poles, barriers, street objects, trees, chairs, couches, tables, beds, toilets, plants, refrigerators, televisions, and doors. Speed bump and low branch are not included. Curb pictures are few, so curbs are easy to miss. Depth. Walls and unnamed close objects use Depth Anything V2 Small, Apache License 2.0. The number is relative depth, not meters. Calibrate distance on this phone. Glass doors and glass walls are often missed. If this phone already has ARCore with depth, that map is used instead. This app does not download ARCore. Picture sources. ROD: Amirkabir University of Technology, Zandi and colleagues, MIT, from Roboflow sets that are mostly CC BY 4.0. RDD2022 India potholes: Arya and colleagues, Geoscience Data Journal 2024, CC BY 4.0. Open Images, including doors, stairs, street lights, carts, and cattle: annotations CC BY 4.0, Flickr photos CC BY 2.0. COCO 2017 indoor pictures: annotations CC BY 4.0. Those photos are from Flickr and are not all cleared for commercial use. Roboflow pothole sets, CC BY 4.0. Tuk-tuk and rickshaw pictures via shravya11, CC BY 4.0. Datacluster Labs auto-rickshaw sample, CC BY 4.0 on the dataset card. AssistEye road obstacles: MIT for the collection. Some upstream pictures are CC0 or CC BY 4.0. Some curb pictures in that collection carry stock-photo watermarks and are not redistributed. This app is an extra to a white cane. It is not a replacement.</string>
     <string name="wake_phrase_hint">Hey Guide</string>
+
+    <string name="collect_on">Recoger fotos de entrenamiento: activado</string>
+    <string name="collect_off">Recoger fotos de entrenamiento: desactivado</string>
+    <string name="cd_collect_turn_on">Recoger fotos de entrenamiento está desactivado. Toque dos veces para activarlo.</string>
+    <string name="cd_collect_turn_off">Recoger fotos de entrenamiento está activado. Toque dos veces para desactivarlo. Los avisos siguen.</string>
+    <string name="collect_interval">Intervalo de fotos: %1$s segundos</string>
+    <string name="cd_collect_interval">Tiempo entre fotos guardadas. Toque dos veces para cambiarlo. Ahora es de %1$s segundos.</string>
+    <string name="collect_gps_on">Guardar GPS con las fotos: activado</string>
+    <string name="collect_gps_off">Guardar GPS con las fotos: desactivado</string>
+    <string name="cd_collect_gps_turn_on">El GPS no se guarda con las fotos. Toque dos veces para incluirlo.</string>
+    <string name="cd_collect_gps_turn_off">El GPS se guarda con las fotos. Toque dos veces para desactivarlo.</string>
+    <string name="collect_gps_denied">No se permitió la ubicación. El GPS sigue desactivado.</string>
+    <string name="collect_usage">%1$s fotos, %2$s</string>
+    <string name="collect_export">Exportar fotos de entrenamiento</string>
+    <string name="cd_collect_export">Comprime esta colección y abre la hoja de compartir. No se sube nada hasta que elija un destino.</string>
+    <string name="collect_export_empty">No hay fotos de entrenamiento para exportar.</string>
+    <string name="collect_export_failed">No se pudo comprimir las fotos.</string>
+    <string name="collect_export_working">Preparando el archivo comprimido.</string>
+    <string name="collect_paused_hot">La recolección de fotos se pausó. El teléfono está caliente.</string>
+    <string name="collect_resumed">Volviendo a recoger fotos.</string>
+    <string name="confirm_collect_on">Recogiendo fotos de entrenamiento. Los avisos siguen.</string>
+    <string name="confirm_collect_off">Se dejó de recoger fotos. Los avisos siguen.</string>
+    <string name="confirm_collect_already_on">Ya se están recogiendo fotos de entrenamiento.</string>
+    <string name="confirm_collect_already_off">Las fotos de entrenamiento ya están desactivadas.</string>
+    <string name="confirm_missed">Marcado como no avisado.</string>
+    <string name="confirm_missed_off">Recoger fotos de entrenamiento está desactivado, así que no se guardó nada.</string>
+    <string name="cmd_collect_start">start collecting</string>
+    <string name="cmd_collect_stop">stop collecting</string>
+    <string name="cmd_missed">missed</string>
+    <string name="collect_note">Las fotos completas se quedan en este teléfono. Los avisos siguen. No se sube nada. Exportar comparte un archivo comprimido solo cuando lo toca.</string>
 </resources>
 

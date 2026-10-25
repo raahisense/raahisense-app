@@ -15,6 +15,9 @@ final class GuideSession: ObservableObject {
     @Published var cameraAllowed = false
     @Published var capturing = false
     @Published var showAbout = false
+    @Published var collectPhotos = 0
+    @Published var collectBytes: Int64 = 0
+    @Published var shareItem: ShareItem?
 
     let speech = SpeechEngine()
     private let camera = CameraEngine()
@@ -61,6 +64,16 @@ final class GuideSession: ObservableObject {
     private let guidingFlag = BusyFlag()
     private let captureFlag = BusyFlag()
     private let foregroundFlag = BusyFlag(true)
+    private let collectScheduler = CollectScheduler()
+    private let collectQueue = DispatchQueue(label: "app.raahisense.collect", qos: .utility)
+    private let locator = CollectLocator()
+    private var collectBusy = false
+    private var collectHot = false
+    private var collectSequence = 0
+    private var latestBoxes: [DetectionBox] = []
+    private var latestField: DepthField?
+    private var latestScene = SceneLight(meanLuma: .nan)
+    private var collectTimer: DispatchSourceTimer?
 
     func prepare() {
         guard !prepared else { return }
@@ -90,16 +103,24 @@ final class GuideSession: ObservableObject {
             speakKey("status_tts_error", flush: false)
         }
         GuideCommandCenter.shared.bind(self)
+        locator.onDenied = { [weak self] in
+            guard let self else { return }
+            self.mutateSettings { $0.collectGps = false }
+            self.speakKey("collect_gps_denied", flush: true)
+        }
+        refreshCollectUsage()
     }
 
     func setInForeground(_ foreground: Bool) {
         sceneInForeground = foreground
         foregroundFlag.set(foreground)
         if !foreground && guiding {
+            camera.setCollecting(false)
             camera.stop()
             speakKey("ios_limit_locked", flush: false)
         } else if foreground && guiding {
             camera.start()
+            camera.setCollecting(settings.collectEnabled)
             speakKey("status_listening", flush: false)
         }
         UIApplication.shared.isIdleTimerDisabled = guiding && foreground
@@ -271,6 +292,7 @@ final class GuideSession: ObservableObject {
         toldFrameError = false
         UIApplication.shared.isIdleTimerDisabled = sceneInForeground
         camera.start()
+        syncCollectRuntime()
         pipeline.async { [weak self] in
             guard let self else { return }
             self.throttleMarkReset()
@@ -301,7 +323,9 @@ final class GuideSession: ObservableObject {
         guidingFlag.set(false)
         UIApplication.shared.isIdleTimerDisabled = false
         camera.setTorch(on: false)
+        camera.setCollecting(false)
         camera.release()
+        stopCollectWork()
         ear.stop()
         earRunning = false
         capturing = false
@@ -330,7 +354,9 @@ final class GuideSession: ObservableObject {
         guidingFlag.set(false)
         UIApplication.shared.isIdleTimerDisabled = false
         camera.setTorch(on: false)
+        camera.setCollecting(false)
         camera.stop()
+        stopCollectWork()
         pipeline.async { [weak self] in
             self?.depthTracker.reset()
             self?.latestDepth = []
@@ -376,6 +402,8 @@ final class GuideSession: ObservableObject {
         do {
             let boxes = try models.detect(frame.image, scoreThreshold: scoreThreshold)
             frameErrors = 0
+            latestBoxes = boxes
+            latestScene = frame.scene
             scheduleDepth(frame.image, boxes: boxes, now: now)
             let ranked = rank(boxes)
             storeRanked(ranked)
@@ -390,6 +418,10 @@ final class GuideSession: ObservableObject {
             let text = PhraseBook.warning(choice, language: language)
             guard !text.isEmpty else { return }
             lastWarningPhrase = text
+            if current.collectEnabled {
+                collectScheduler.onWarning()
+                pumpCollect()
+            }
             let urgent = choice.urgent && current.vibrationEnabled
             busy.set(true)
             DispatchQueue.main.async { [weak self] in
@@ -441,6 +473,7 @@ final class GuideSession: ObservableObject {
                         scoreThreshold: threshold
                     )
                     self.latestDepth = warnings
+                    self.latestField = field
                     self.storeMedian(DepthWarnings.aheadMedian(field))
                 }
             } catch {
@@ -615,6 +648,12 @@ final class GuideSession: ObservableObject {
             refreshEarPhrases()
         case .help:
             speak(phrase("help_commands", settings.wakePhrase), flush: true)
+        case .startCollecting:
+            setCollectingFromVoice(on: true)
+        case .stopCollecting:
+            setCollectingFromVoice(on: false)
+        case .missed:
+            noteMissed()
         }
     }
 
@@ -646,6 +685,9 @@ final class GuideSession: ObservableObject {
             .slower: phrases("cmd_slower"),
             .changeLanguage: phrases("cmd_language"),
             .help: phrases("cmd_help"),
+            .startCollecting: phrases("cmd_collect_start"),
+            .stopCollecting: phrases("cmd_collect_stop"),
+            .missed: phrases("cmd_missed"),
         ])
         return CommandLexicon.english.withExtra(extra.phrases)
     }
@@ -804,9 +846,288 @@ final class GuideSession: ObservableObject {
         }
     }
 
+    func toggleCollect() {
+        let turningOn = !settings.collectEnabled
+        mutateSettings { $0.collectEnabled = turningOn }
+        syncCollectRuntime()
+        speakKey(turningOn ? "collect_on" : "collect_off", flush: true)
+        if turningOn && !guiding { bigButton() }
+    }
+
+    func cycleCollectInterval() {
+        let next = settings.nextCollectInterval()
+        mutateSettings { $0.collectIntervalMs = next.collectIntervalMs }
+        let label = CollectCapture.intervalLabel(next.collectIntervalMs)
+        speak(phrase("collect_interval", label), flush: true)
+    }
+
+    func toggleCollectGps() {
+        if settings.collectGps {
+            mutateSettings { $0.collectGps = false }
+            syncCollectRuntime()
+            speakKey("collect_gps_off", flush: true)
+        } else {
+            mutateSettings { $0.collectGps = true }
+            syncCollectRuntime()
+            speakKey("collect_gps_on", flush: true)
+        }
+    }
+
+    func exportCollect() {
+        speakKey("collect_export_working", flush: false)
+        collectQueue.async { [weak self] in
+            guard let self else { return }
+            let zip = self.makeExportZip()
+            DispatchQueue.main.async {
+                guard let zip else {
+                    self.speakKey("collect_export_empty", flush: true)
+                    return
+                }
+                self.shareItem = ShareItem(url: zip)
+            }
+        }
+    }
+
+    func refreshCollectUsage() {
+        collectQueue.async { [weak self] in
+            guard let self else { return }
+            let usage = self.scanUsage()
+            DispatchQueue.main.async {
+                self.collectPhotos = usage.photos
+                self.collectBytes = usage.bytes
+            }
+        }
+    }
+
+    private func setCollectingFromVoice(on: Bool) {
+        if settings.collectEnabled == on {
+            speakKey(on ? "confirm_collect_already_on" : "confirm_collect_already_off", flush: true)
+            if on && !guiding { bigButton() }
+            return
+        }
+        mutateSettings { $0.collectEnabled = on }
+        syncCollectRuntime()
+        speakKey(on ? "confirm_collect_on" : "confirm_collect_off", flush: true)
+        if on && !guiding { bigButton() }
+    }
+
+    private func noteMissed() {
+        guard settings.collectEnabled else {
+            speakKey("confirm_missed_off", flush: true)
+            return
+        }
+        if !guiding { bigButton() }
+        pipeline.async { [weak self] in
+            self?.collectScheduler.onMissed()
+            self?.pumpCollect()
+        }
+        speakKey("confirm_missed", flush: true)
+    }
+
+    private func syncCollectRuntime() {
+        let current = readSettings()
+        let active = guiding && current.collectEnabled
+        pipeline.async { [weak self] in
+            self?.collectScheduler.setEnabled(current.collectEnabled)
+            if active { self?.pumpCollect() }
+        }
+        camera.setCollecting(active)
+        locator.setActive(active && current.collectGps)
+        if active {
+            startCollectTimer()
+        } else {
+            stopCollectWork()
+        }
+        refreshCollectUsage()
+    }
+
+    private func startCollectTimer() {
+        if collectTimer != nil { return }
+        let timer = DispatchSource.makeTimerSource(queue: pipeline)
+        timer.schedule(deadline: .now() + .milliseconds(200), repeating: .milliseconds(200))
+        timer.setEventHandler { [weak self] in
+            self?.pumpCollect()
+        }
+        collectTimer = timer
+        timer.resume()
+    }
+
+    private func stopCollectWork() {
+        collectTimer?.cancel()
+        collectTimer = nil
+        collectHot = false
+        locator.setActive(false)
+        pipeline.async { [weak self] in
+            self?.collectBusy = false
+        }
+    }
+
+    private func pumpCollect() {
+        let current = readSettings()
+        guard current.collectEnabled, guidingFlag.get(), foregroundFlag.get() else { return }
+        let hot = Self.phoneIsHot()
+        noteHeat(hot)
+        guard let event = collectScheduler.poll(
+            nowMs: Self.nowMs(),
+            intervalMs: current.collectIntervalMs,
+            hot: hot,
+            busy: collectBusy
+        ) else { return }
+        collectBusy = true
+        let snapshot = currentSnapshot(event: event, settings: current)
+        camera.takePhoto { [weak self] data, width, height in
+            guard let self else { return }
+            self.collectQueue.async {
+                if let data, !data.isEmpty {
+                    self.writeCapture(data, width: width, height: height, snapshot: snapshot)
+                }
+                self.pipeline.async {
+                    self.collectScheduler.onCaptured(nowMs: Self.nowMs())
+                    self.collectBusy = false
+                    self.pumpCollect()
+                    self.refreshCollectUsage()
+                }
+            }
+        }
+    }
+
+    private func noteHeat(_ hot: Bool) {
+        if hot == collectHot { return }
+        collectHot = hot
+        let key = hot ? "collect_paused_hot" : "collect_resumed"
+        DispatchQueue.main.async { [weak self] in
+            guard let self, self.guiding, self.settings.collectEnabled else { return }
+            self.speakKey(key, flush: false)
+        }
+    }
+
+    private func currentSnapshot(event: CollectEvent, settings: GuideSettings) -> CollectSnapshot {
+        let gps = settings.collectGps ? locator.currentReading() : nil
+        return CollectSnapshot(
+            event: event,
+            requestedAtMs: Self.epochMs(),
+            detections: latestBoxes,
+            depth: CollectCapture.summarizeDepth(latestField),
+            lighting: CollectCapture.lightingOf(latestScene),
+            gpsEnabled: settings.collectGps,
+            gps: gps
+        )
+    }
+
+    private func writeCapture(_ data: Data, width: Int, height: Int, snapshot: CollectSnapshot) {
+        let folder = sessionFolder(snapshot.requestedAtMs)
+        try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        collectSequence += 1
+        let stem = CollectCapture.fileStem(
+            epochMs: snapshot.requestedAtMs,
+            timeZone: .current,
+            event: snapshot.event,
+            sequence: collectSequence
+        )
+        let jpg = folder.appendingPathComponent("\(stem).jpg")
+        let json = folder.appendingPathComponent("\(stem).json")
+        do {
+            try data.write(to: jpg, options: .atomic)
+            let body = CollectCapture.sidecarJson(
+                timestampIso: CollectCapture.isoTimestamp(epochMs: snapshot.requestedAtMs),
+                event: snapshot.event,
+                detections: snapshot.detections,
+                depth: snapshot.depth,
+                lighting: snapshot.lighting,
+                gpsEnabled: snapshot.gpsEnabled,
+                gps: snapshot.gps,
+                width: width > 0 ? width : nil,
+                height: height > 0 ? height : nil,
+                fullResolution: true
+            )
+            try body.write(to: json, atomically: true, encoding: .utf8)
+        } catch {
+            try? FileManager.default.removeItem(at: jpg)
+            try? FileManager.default.removeItem(at: json)
+        }
+    }
+
+    private func sessionFolder(_ epochMs: Int64) -> URL {
+        collectRoot().appendingPathComponent(CollectCapture.sessionDate(epochMs: epochMs), isDirectory: true)
+    }
+
+    private func collectRoot() -> URL {
+        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        return docs.appendingPathComponent(CollectCapture.folder, isDirectory: true)
+    }
+
+    private func scanUsage() -> (photos: Int, bytes: Int64) {
+        let root = collectRoot()
+        guard let enumerator = FileManager.default.enumerator(at: root, includingPropertiesForKeys: [.fileSizeKey]) else {
+            return (0, 0)
+        }
+        var photos = 0
+        var bytes: Int64 = 0
+        for case let url as URL in enumerator {
+            let values = try? url.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey])
+            guard values?.isRegularFile == true else { continue }
+            bytes += Int64(values?.fileSize ?? 0)
+            if url.pathExtension.lowercased() == "jpg" { photos += 1 }
+        }
+        return (photos, bytes)
+    }
+
+    /// TODO: Blur faces before any third-party sharing. This only writes a zip and opens the share sheet.
+    private func makeExportZip() -> URL? {
+        let root = collectRoot()
+        let sessions = (try? FileManager.default.contentsOfDirectory(at: root, includingPropertiesForKeys: nil))?
+            .filter { CollectCapture.isSessionDate($0.lastPathComponent) }
+            .sorted { $0.lastPathComponent < $1.lastPathComponent }
+        guard let session = sessions?.last else { return nil }
+        let files = (try? FileManager.default.contentsOfDirectory(at: session, includingPropertiesForKeys: nil)) ?? []
+        var payload: [(name: String, data: Data)] = []
+        for file in files {
+            let ext = file.pathExtension.lowercased()
+            guard ext == "jpg" || ext == "json", let data = try? Data(contentsOf: file) else { continue }
+            payload.append((name: "\(session.lastPathComponent)/\(file.lastPathComponent)", data: data))
+        }
+        guard payload.contains(where: { $0.name.hasSuffix(".jpg") }) else { return nil }
+        let zip = CollectZip.store(files: payload)
+        let export = root.deletingLastPathComponent().appendingPathComponent("export", isDirectory: true)
+        try? FileManager.default.createDirectory(at: export, withIntermediateDirectories: true)
+        let url = export.appendingPathComponent("RaahiSense-collect-\(session.lastPathComponent).zip")
+        do {
+            try zip.write(to: url, options: .atomic)
+            return url
+        } catch {
+            return nil
+        }
+    }
+
+    private static func phoneIsHot() -> Bool {
+        switch ProcessInfo.processInfo.thermalState {
+        case .serious, .critical: return true
+        default: return false
+        }
+    }
+
+    private static func epochMs() -> Int64 {
+        Int64(Date().timeIntervalSince1970 * 1000)
+    }
+
     private static func nowMs() -> Int64 {
         Int64(ProcessInfo.processInfo.systemUptime * 1000)
     }
+}
+
+struct ShareItem: Identifiable {
+    let id = UUID()
+    let url: URL
+}
+
+struct CollectSnapshot {
+    var event: CollectEvent
+    var requestedAtMs: Int64
+    var detections: [DetectionBox]
+    var depth: DepthSummary
+    var lighting: LightingEstimate
+    var gpsEnabled: Bool
+    var gps: GpsReading?
 }
 
 private final class BusyFlag {

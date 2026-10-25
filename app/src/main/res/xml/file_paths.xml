@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <external-files-path
+        name="raahi"
+        path="RaahiSense/" />
+    <files-path
+        name="raahi-internal"
+        path="RaahiSense/" />
+</paths>

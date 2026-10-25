@@ -137,7 +137,7 @@
     <string name="confirm_language">ভাষা বদলানো হয়েছে।</string>
     <string name="confirm_unknown">এটা নির্দেশ ছিল না। তালিকার জন্য help বলুন।</string>
     <string name="ahead_clear">এখন সামনে কিছু দেখা যাচ্ছে না।</string>
-    <string name="help_commands">%1$s এর পরে একটি ইংরেজি নির্দেশ বলুন: start, stop, stop app, exit, close, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, অথবা help। Stop RaahiSense বন্ধ করে। Pause সতর্কতা বন্ধ করে এবং resume চালু করে। ফোন জোরে নাড়ুন, TalkBack বন্ধ থাকলে পর্দায় দুবার চাপুন, অথবা এই পর্দা খোলা থাকলে ভলিউম চাবি চেপে ধরুন।</string>
+    <string name="help_commands">%1$s এর পরে একটি ইংরেজি নির্দেশ বলুন: start, stop, stop app, exit, close, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, start collecting, stop collecting, missed, অথবা help। Stop RaahiSense বন্ধ করে। Pause সতর্কতা বন্ধ করে এবং resume চালু করে। Start collecting প্রশিক্ষণের ছবি সেভ করে এবং সতর্কতা চালু রাখে। বাধা সতর্কতা না পেলে missed বলুন। ফোন জোরে নাড়ুন, TalkBack বন্ধ থাকলে পর্দায় দুবার চাপুন, অথবা এই পর্দা খোলা থাকলে ভলিউম চাবি চেপে ধরুন।</string>
     <string name="cmd_start">শুরু|start|start guide|begin</string>
     <string name="cmd_stop">থামো|stop|stop app|exit|close|stop guide</string>
     <string name="cmd_pause">pause</string>
@@ -188,5 +188,35 @@
     <string name="cd_back">মূল পর্দায় ফিরুন</string>
     <string name="about_body">Speech. Wake-word listening uses Vosk, the small English model vosk-model-small-en-us-0.15, by Alpha Cephei. The library and the model are Apache License 2.0. Your voice stays on the phone. The ear is English, so say the English command words. The spoken warnings can still use the language you picked. Pictures. The camera uses a small YOLO model trained for this app. It can speak people, bicycles, motorcycles, cars, buses, trucks, cows, dogs, cats, auto-rickshaws, cycle rickshaws, handcarts, potholes, open drains, curbs, stairs, poles, barriers, street objects, trees, chairs, couches, tables, beds, toilets, plants, refrigerators, televisions, and doors. Speed bump and low branch are not included. Curb pictures are few, so curbs are easy to miss. Depth. Walls and unnamed close objects use Depth Anything V2 Small, Apache License 2.0. The number is relative depth, not meters. Calibrate distance on this phone. Glass doors and glass walls are often missed. If this phone already has ARCore with depth, that map is used instead. This app does not download ARCore. Picture sources. ROD: Amirkabir University of Technology, Zandi and colleagues, MIT, from Roboflow sets that are mostly CC BY 4.0. RDD2022 India potholes: Arya and colleagues, Geoscience Data Journal 2024, CC BY 4.0. Open Images, including doors, stairs, street lights, carts, and cattle: annotations CC BY 4.0, Flickr photos CC BY 2.0. COCO 2017 indoor pictures: annotations CC BY 4.0. Those photos are from Flickr and are not all cleared for commercial use. Roboflow pothole sets, CC BY 4.0. Tuk-tuk and rickshaw pictures via shravya11, CC BY 4.0. Datacluster Labs auto-rickshaw sample, CC BY 4.0 on the dataset card. AssistEye road obstacles: MIT for the collection. Some upstream pictures are CC0 or CC BY 4.0. Some curb pictures in that collection carry stock-photo watermarks and are not redistributed. This app is an extra to a white cane. It is not a replacement.</string>
     <string name="wake_phrase_hint">Hey Guide</string>
+
+    <string name="collect_on">প্রশিক্ষণের ছবি সংগ্রহ: চালু</string>
+    <string name="collect_off">প্রশিক্ষণের ছবি সংগ্রহ: বন্ধ</string>
+    <string name="cd_collect_turn_on">প্রশিক্ষণের ছবি বন্ধ আছে। চালু করতে দুবার চাপুন।</string>
+    <string name="cd_collect_turn_off">প্রশিক্ষণের ছবি চালু আছে। বন্ধ করতে দুবার চাপুন। সতর্কতা চলতে থাকবে।</string>
+    <string name="collect_interval">ছবির বিরতি: %1$s সেকেন্ড</string>
+    <string name="cd_collect_interval">সেভ করা ছবির মধ্যের সময়। বদলাতে দুবার চাপুন। এখন %1$s সেকেন্ড।</string>
+    <string name="collect_gps_on">ছবির সাথে GPS: চালু</string>
+    <string name="collect_gps_off">ছবির সাথে GPS: বন্ধ</string>
+    <string name="cd_collect_gps_turn_on">GPS ছবির সাথে সেভ হয় না। যোগ করতে দুবার চাপুন।</string>
+    <string name="cd_collect_gps_turn_off">GPS ছবির সাথে সেভ হয়। বন্ধ করতে দুবার চাপুন।</string>
+    <string name="collect_gps_denied">অবস্থানের অনুমতি মেলেনি। GPS বন্ধ থাকবে।</string>
+    <string name="collect_usage">%1$s ছবি, %2$s</string>
+    <string name="collect_export">প্রশিক্ষণের ছবি রপ্তানি</string>
+    <string name="cd_collect_export">এই সংগ্রহের জিপ বানিয়ে শেয়ার শিট খোলে। আপনি গন্তব্য না বাছা পর্যন্ত কিছু আপলোড হয় না।</string>
+    <string name="collect_export_empty">রপ্তানির জন্য কোনো প্রশিক্ষণের ছবি নেই।</string>
+    <string name="collect_export_failed">ছবির জিপ বানানো যায়নি।</string>
+    <string name="collect_export_working">জিপ তৈরি হচ্ছে।</string>
+    <string name="collect_paused_hot">ছবি সংগ্রহ থেমেছে। ফোন গরম।</string>
+    <string name="collect_resumed">আবার ছবি সংগ্রহ হচ্ছে।</string>
+    <string name="confirm_collect_on">প্রশিক্ষণের ছবি সংগ্রহ হচ্ছে। সতর্কতা চালু আছে।</string>
+    <string name="confirm_collect_off">ছবি সংগ্রহ বন্ধ। সতর্কতা চালু আছে।</string>
+    <string name="confirm_collect_already_on">প্রশিক্ষণের ছবি আগে থেকেই সংগ্রহ হচ্ছে।</string>
+    <string name="confirm_collect_already_off">প্রশিক্ষণের ছবি আগে থেকেই বন্ধ।</string>
+    <string name="confirm_missed">মিসড হিসেবে চিহ্নিত।</string>
+    <string name="confirm_missed_off">প্রশিক্ষণের ছবি বন্ধ, তাই কিছু সেভ হয়নি।</string>
+    <string name="cmd_collect_start">start collecting</string>
+    <string name="cmd_collect_stop">stop collecting</string>
+    <string name="cmd_missed">missed</string>
+    <string name="collect_note">পুরো ছবি এই ফোনেই থাকে। সতর্কতা চলতে থাকে। কিছু আপলোড হয় না। Export চাপলেই জিপ শেয়ার হয়।</string>
 </resources>
 

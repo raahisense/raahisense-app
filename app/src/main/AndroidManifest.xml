@@ -9,8 +9,11 @@
         android:name="android.hardware.camera.ar"
         android:required="false" />
 
-    <!-- The rear camera is used only while warnings are on. Photos are not saved. -->
+    <!-- The rear camera warns while you walk. Training photos are saved on this phone only when Collect training photos is on. -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -86,10 +89,20 @@
             android:exported="false"
             android:screenOrientation="portrait" />
 
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.files"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
         <service
             android:name=".GuideService"
             android:exported="false"
-            android:foregroundServiceType="camera|microphone"
+            android:foregroundServiceType="camera|microphone|location"
             android:stopWithTask="false" />
     </application>
 </manifest>

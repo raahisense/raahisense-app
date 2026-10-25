@@ -25,7 +25,9 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>RaahiSense uses the rear camera to warn you about obstacles while you walk. Photos are not saved and are not uploaded.</string>
+	<string>RaahiSense uses the rear camera to warn you about obstacles while you walk. Training photos are saved on this iPhone only when Collect training photos is on. They are not uploaded.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>RaahiSense can save this iPhone's location with training photos when you turn GPS on. GPS is off unless you turn it on. Location is not uploaded.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>RaahiSense listens on this iPhone for Hey Guide and one command. Your voice is not uploaded.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>

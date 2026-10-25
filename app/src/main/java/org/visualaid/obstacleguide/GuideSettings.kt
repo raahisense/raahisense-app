@@ -1,5 +1,6 @@
 package org.visualaid.obstacleguide
 
+import org.visualaid.obstacleguide.logic.CollectCapture
 import org.visualaid.obstacleguide.logic.DepthCalibration
 import org.visualaid.obstacleguide.logic.TorchMode
 
@@ -14,6 +15,9 @@ data class GuideSettings(
     val depthOpenRaw: Float = 0f,
     val depthWallRaw: Float = 0f,
     val torchMode: TorchMode = TorchMode.AUTO,
+    val collectEnabled: Boolean = false,
+    val collectIntervalMs: Long = CollectCapture.DEFAULT_INTERVAL_MS,
+    val collectGps: Boolean = false,
 ) {
     fun normalized(): GuideSettings {
         val tag = if (languageTag in LANGUAGE_TAGS) languageTag else "en"
@@ -35,7 +39,12 @@ data class GuideSettings(
             wakePhrase = phrase,
             depthOpenRaw = open,
             depthWallRaw = wall,
+            collectIntervalMs = CollectCapture.clampInterval(collectIntervalMs),
         )
+    }
+
+    fun nextCollectInterval(): GuideSettings {
+        return copy(collectIntervalMs = CollectCapture.nextIntervalMs(collectIntervalMs))
     }
 
     /** Saved open-path and one-step wall readings. Null until both are usable. */
@@ -83,6 +92,7 @@ data class GuideSettings(
         const val VOLUME_HIGH = 1.0f
 
         const val DEFAULT_WAKE = "Hey Guide"
+        const val DEFAULT_COLLECT_INTERVAL_MS = CollectCapture.DEFAULT_INTERVAL_MS
 
         /** Matches the web prototype: about three looks a second, or slower to save battery. */
         const val INTERVAL_NORMAL_MS = 300L

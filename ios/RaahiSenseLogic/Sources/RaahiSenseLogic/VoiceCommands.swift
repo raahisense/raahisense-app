@@ -2,10 +2,12 @@ import Foundation
 
 public enum VoiceCommand: String, CaseIterable {
     case start, stop, pause, resume, whatIsAhead, repeatLast, louder, quieter, faster, slower, changeLanguage, help
+    case startCollecting, stopCollecting, missed
 }
 
 public enum VoiceAction: String {
     case ignore, wakeOnly, unknown, start, stop, pause, resume, whatIsAhead, repeatLast, louder, quieter, faster, slower, changeLanguage, help
+    case startCollecting, stopCollecting, missed
 }
 
 public struct CommandLexicon {
@@ -30,6 +32,9 @@ public struct CommandLexicon {
         .slower: ["slower", "speak slower"],
         .changeLanguage: ["change language", "next language"],
         .help: ["help", "list commands", "what can i say"],
+        .startCollecting: ["start collecting"],
+        .stopCollecting: ["stop collecting"],
+        .missed: ["missed"],
     ])
 
     public func withExtra(_ extra: [VoiceCommand: [String]]) -> CommandLexicon {
@@ -155,6 +160,9 @@ private extension VoiceCommand {
         case .slower: return .slower
         case .changeLanguage: return .changeLanguage
         case .help: return .help
+        case .startCollecting: return .startCollecting
+        case .stopCollecting: return .stopCollecting
+        case .missed: return .missed
         }
     }
 }

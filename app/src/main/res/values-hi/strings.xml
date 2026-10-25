@@ -151,7 +151,7 @@
     <string name="confirm_language">भाषा बदल गई।</string>
     <string name="confirm_unknown">यह आदेश नहीं था। सूची के लिए help बोलें।</string>
     <string name="ahead_clear">अभी सामने कुछ नहीं दिखा।</string>
-    <string name="help_commands">%1$s के बाद एक अंग्रेज़ी आदेश बोलें: start, stop, stop app, exit, close, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, या help। Stop RaahiSense को बंद करता है। Pause चेतावनी बंद करता है और resume चालू करता है। फ़ोन ज़ोर से हिलाएँ, TalkBack बंद हो तो स्क्रीन पर दो बार टैप करें, या यह स्क्रीन खुली हो तो वॉल्यूम कुंजी दबाकर रखें।</string>
+    <string name="help_commands">%1$s के बाद एक अंग्रेज़ी आदेश बोलें: start, stop, stop app, exit, close, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, start collecting, stop collecting, missed, या help। Stop RaahiSense को बंद करता है। Pause चेतावनी बंद करता है और resume चालू करता है। Start collecting प्रशिक्षण फ़ोटो सहेजता है और चेतावनी चालू रखता है। missed तब बोलें जब कोई बाधा चेतावनी के बिना रह जाए। फ़ोन ज़ोर से हिलाएँ, TalkBack बंद हो तो स्क्रीन पर दो बार टैप करें, या यह स्क्रीन खुली हो तो वॉल्यूम कुंजी दबाकर रखें।</string>
     <string name="voice_off_action">आवाज़ बंद करें</string>
     <string name="voice_ear_note">सुनने वाला मॉडल अंग्रेज़ी है। Hey Guide बोलें, फिर अंग्रेज़ी आदेश। आवाज़ फ़ोन पर रहती है।</string>
     <string name="depth_unknown_very_close_left">बाईं ओर अज्ञात वस्तु, बहुत पास</string>
@@ -188,5 +188,35 @@
     <string name="about_intro">बाधा मार्गदर्शक सफेद छड़ी के साथ है, उसकी जगह नहीं।</string>
     <string name="action_back">वापस</string>
     <string name="cd_back">मुख्य स्क्रीन पर वापस जाएँ</string>
+
+    <string name="collect_on">प्रशिक्षण फ़ोटो इकट्ठा करें: चालू</string>
+    <string name="collect_off">प्रशिक्षण फ़ोटो इकट्ठा करें: बंद</string>
+    <string name="cd_collect_turn_on">प्रशिक्षण फ़ोटो बंद हैं। चालू करने के लिए दो बार टैप करें।</string>
+    <string name="cd_collect_turn_off">प्रशिक्षण फ़ोटो चालू हैं। बंद करने के लिए दो बार टैप करें। चेतावनी चलती रहेगी।</string>
+    <string name="collect_interval">फ़ोटो अंतराल: %1$s सेकंड</string>
+    <string name="cd_collect_interval">सहेजी फ़ोटो के बीच का समय। बदलने के लिए दो बार टैप करें। अभी %1$s सेकंड है।</string>
+    <string name="collect_gps_on">फ़ोटो के साथ GPS: चालू</string>
+    <string name="collect_gps_off">फ़ोटो के साथ GPS: बंद</string>
+    <string name="cd_collect_gps_turn_on">GPS फ़ोटो के साथ नहीं सहेजा जाता। जोड़ने के लिए दो बार टैप करें।</string>
+    <string name="cd_collect_gps_turn_off">GPS फ़ोटो के साथ सहेजा जाता है। बंद करने के लिए दो बार टैप करें।</string>
+    <string name="collect_gps_denied">स्थान की अनुमति नहीं मिली। GPS बंद रहेगा।</string>
+    <string name="collect_usage">%1$s फ़ोटो, %2$s</string>
+    <string name="collect_export">प्रशिक्षण फ़ोटो निर्यात करें</string>
+    <string name="cd_collect_export">इस संग्रह की ज़िप बनाएँ और साझा करने की शीट खोलें। जब तक आप जगह न चुनें, कुछ अपलोड नहीं होता।</string>
+    <string name="collect_export_empty">निर्यात करने के लिए कोई प्रशिक्षण फ़ोटो नहीं है।</string>
+    <string name="collect_export_failed">फ़ोटो की ज़िप नहीं बन सकी।</string>
+    <string name="collect_export_working">ज़िप तैयार हो रही है।</string>
+    <string name="collect_paused_hot">फ़ोटो संग्रह रुका। फ़ोन गर्म है।</string>
+    <string name="collect_resumed">फ़ोटो फिर से इकट्ठा हो रही हैं।</string>
+    <string name="confirm_collect_on">प्रशिक्षण फ़ोटो इकट्ठा हो रही हैं। चेतावनी चालू है।</string>
+    <string name="confirm_collect_off">फ़ोटो संग्रह बंद। चेतावनी चालू है।</string>
+    <string name="confirm_collect_already_on">प्रशिक्षण फ़ोटो पहले से इकट्ठा हो रही हैं।</string>
+    <string name="confirm_collect_already_off">प्रशिक्षण फ़ोटो पहले से बंद हैं।</string>
+    <string name="confirm_missed">छूटी हुई के रूप में चिह्नित।</string>
+    <string name="confirm_missed_off">प्रशिक्षण फ़ोटो बंद हैं, इसलिए कुछ सहेजा नहीं गया।</string>
+    <string name="cmd_collect_start">start collecting</string>
+    <string name="cmd_collect_stop">stop collecting</string>
+    <string name="cmd_missed">missed</string>
+    <string name="collect_note">पूरी फ़ोटो इसी फ़ोन पर रहती हैं। चेतावनी चलती रहती है। कुछ अपलोड नहीं होता। Export दबाने पर ही ज़िप साझा होती है।</string>
 </resources>
 

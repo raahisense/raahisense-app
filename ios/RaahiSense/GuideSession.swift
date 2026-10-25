@@ -52,6 +52,8 @@ final class GuideSession: ObservableObject {
     private let busy = BusyFlag()
     private var sceneInForeground = true
     private var earRunning = false
+    private var quietUntilMs: Int64 = 0
+    private var unmuteToken = 0
     private var prepared = false
     private let settingsLock = NSLock()
     private var settingsSnapshot = GuideSettings()
@@ -134,6 +136,7 @@ final class GuideSession: ObservableObject {
             speakKey("status_voice_off", flush: true)
             return
         }
+        startMotion()
         ensureEar {
             self.beginCaptureWindow()
         }
@@ -266,7 +269,41 @@ final class GuideSession: ObservableObject {
             }
         }
         speakKey("status_started", flush: true)
-        if settings.voiceEnabled { beginSpottingIfAllowed() }
+        if settings.voiceEnabled {
+            startMotion()
+            beginSpottingIfAllowed()
+        }
+    }
+
+    /// Stops detection, the camera, speech recognition, and keeps the screen able to sleep.
+    /// iOS will not let an app remove itself, so the screen stays open and Start works again.
+    func stopEverything() {
+        guiding = false
+        guidingFlag.set(false)
+        UIApplication.shared.isIdleTimerDisabled = false
+        camera.setTorch(on: false)
+        camera.release()
+        ear.stop()
+        earRunning = false
+        capturing = false
+        phaseCapturing = false
+        captureFlag.set(false)
+        captureToken += 1
+        stopMotion()
+        pipeline.async { [weak self] in
+            guard let self else { return }
+            self.models = nil
+            self.modelFailed = false
+            self.depthTracker.reset()
+            self.latestDepth = []
+            self.lowLight.reset()
+            self.scoreThreshold = WarningLogic.scoreThreshold
+        }
+        let goodbye = phrase("confirm_app_stopped")
+        statusText = goodbye
+        speak(goodbye, flush: true) {
+            try? AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
+        }
     }
 
     private func stopGuide() {
@@ -460,6 +497,11 @@ final class GuideSession: ObservableObject {
     }
 
     private func handleTranscript(_ text: String, isFinal: Bool) {
+        guard RecognitionGate.accepts(
+            speechActive: speech.speaking,
+            nowMs: Self.nowMs(),
+            quietUntilMs: quietUntilMs
+        ) else { return }
         let normalized = CommandLexicon.normalize(text)
         if normalized.isEmpty || normalized == lastHeard && !isFinal { return }
         lastHeard = normalized
@@ -502,10 +544,18 @@ final class GuideSession: ObservableObject {
                 bigButton()
             }
         case .stop:
+            stopEverything()
+        case .pause:
             if guiding {
                 stopGuide()
             } else {
                 speakKey("confirm_stopped_already", flush: true)
+            }
+        case .resume:
+            if guiding {
+                speakKey("confirm_started_already", flush: true)
+            } else {
+                bigButton()
             }
         case .whatIsAhead:
             speakAhead()
@@ -567,6 +617,8 @@ final class GuideSession: ObservableObject {
         let extra = CommandLexicon(phrases: [
             .start: phrases("cmd_start"),
             .stop: phrases("cmd_stop"),
+            .pause: phrases("cmd_pause"),
+            .resume: phrases("cmd_resume"),
             .whatIsAhead: phrases("cmd_ahead"),
             .repeatLast: phrases("cmd_repeat"),
             .louder: phrases("cmd_louder"),
@@ -696,6 +748,7 @@ final class GuideSession: ObservableObject {
             done?()
             return
         }
+        beginSpeechMute()
         busy.set(true)
         let current = readSettings()
         speech.speak(
@@ -705,8 +758,30 @@ final class GuideSession: ObservableObject {
             volume: current.speechVolume,
             language: current.languageTag
         ) { [weak self] in
-            self?.busy.set(false)
-            done?()
+            DispatchQueue.main.async {
+                guard let self else { return }
+                self.busy.set(false)
+                self.endSpeechMute()
+                done?()
+            }
+        }
+    }
+
+    private func beginSpeechMute() {
+        unmuteToken += 1
+        quietUntilMs = Int64.max
+        ear.setMuted(true)
+    }
+
+    private func endSpeechMute() {
+        unmuteToken += 1
+        let token = unmuteToken
+        let tail = RecognitionGate.tailMs
+        quietUntilMs = RecognitionGate.quietUntil(speechEndedAtMs: Self.nowMs())
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(Int(tail))) { [weak self] in
+            guard let self, self.unmuteToken == token else { return }
+            self.quietUntilMs = Self.nowMs()
+            self.ear.setMuted(false)
         }
     }
 

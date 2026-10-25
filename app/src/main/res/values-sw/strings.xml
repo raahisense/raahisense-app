@@ -8,10 +8,12 @@
     <string name="safety_note">Fanya mazoezi ndani na msaidizi kwanza. Programu hii haioni ngazi, mashimo, wala nguzo. Endelea kutumia fimbo.</string>
     <string name="action_start">ANZA</string>
     <string name="action_stop">SIMAMISHA</string>
+    <string name="action_quit">Simamisha RaahiSense</string>
     <string name="action_allow_camera">Ruhusu kamera</string>
     <string name="action_open_settings">Fungua mipangilio</string>
     <string name="cd_start">Anza maonyo ya vikwazo</string>
     <string name="cd_stop">Simamisha maonyo ya vikwazo</string>
+    <string name="cd_quit">Simamisha RaahiSense</string>
     <string name="cd_allow_camera">Ruhusu kamera ili maonyo ya vikwazo yaanze</string>
     <string name="cd_open_settings">Fungua mipangilio ya simu ili kuruhusu kamera</string>
     <string name="status_ready">Tayari. Gusa kitufe kikubwa kuanza.</string>
@@ -121,6 +123,7 @@
     <string name="wake_ack">Sema?</string>
     <string name="confirm_started_already">Onyo la vizuizi tayari limewashwa.</string>
     <string name="confirm_stopped_already">Onyo la vizuizi tayari limezimwa.</string>
+    <string name="confirm_app_stopped">RaahiSense imesimama</string>
     <string name="confirm_repeat">Narudia.</string>
     <string name="confirm_nothing_to_repeat">Hakuna onyo la kurudia bado.</string>
     <string name="confirm_louder">Sauti imepandishwa.</string>
@@ -134,9 +137,11 @@
     <string name="confirm_language">Lugha imebadilishwa.</string>
     <string name="confirm_unknown">Hiyo si amri. Sema help kusikia orodha.</string>
     <string name="ahead_clear">Hakuna kinachoonekana mbele yako sasa.</string>
-    <string name="help_commands">Baada ya %1$s, sema amri moja ya Kiingereza: start, stop, pause, what is in front of me, repeat, louder, quieter, faster, slower, change language, au help. Tikisa simu kwa nguvu, gusa skrini mara mbili TalkBack ikiwa imezimwa, au shikilia kitufe cha sauti skrini hii ikiwa wazi.</string>
+    <string name="help_commands">Baada ya %1$s, sema amri moja ya Kiingereza: start, stop, stop app, exit, close, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, au help. Stop hufunga RaahiSense. Pause huzima maonyo na resume huyawasha. Tikisa simu kwa nguvu, gusa skrini mara mbili TalkBack ikiwa imezimwa, au shikilia kitufe cha sauti skrini hii ikiwa wazi.</string>
     <string name="cmd_start">anza|start|start guide|begin</string>
-    <string name="cmd_stop">simama|stop|pause|stop guide</string>
+    <string name="cmd_stop">simama|stop|stop app|exit|close|stop guide</string>
+    <string name="cmd_pause">pause</string>
+    <string name="cmd_resume">resume</string>
     <string name="cmd_ahead">nini mbele yangu|what is in front of me|what is ahead|what is in front</string>
     <string name="cmd_repeat">rudia|repeat|say again|repeat that</string>
     <string name="cmd_louder">ongeza sauti|louder|speak louder|volume up</string>

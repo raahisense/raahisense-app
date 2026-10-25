@@ -20,6 +20,8 @@ final class EarEngine {
     private var taskGeneration = 0
     private var failures = 0
     private let queue = DispatchQueue(label: "app.raahisense.ear")
+    private let stateLock = NSLock()
+    private var muted = false
 
     var onDeviceSupported: Bool {
         recognizer?.supportsOnDeviceRecognition == true
@@ -38,6 +40,31 @@ final class EarEngine {
         guard wanted else { return }
         queue.async { [weak self] in
             self?.beginTask()
+        }
+    }
+
+    /// Ignore transcripts and drop buffered audio. Used while speech is playing.
+    func setMuted(_ muted: Bool) {
+        queue.async { [weak self] in
+            guard let self else { return }
+            if muted {
+                self.stateLock.lock()
+                self.muted = true
+                self.stateLock.unlock()
+                guard self.wanted else { return }
+                self.taskGeneration += 1
+                self.task?.cancel()
+                self.task = nil
+                self.request?.endAudio()
+                self.request = nil
+            } else {
+                if self.wanted {
+                    self.beginTask()
+                }
+                self.stateLock.lock()
+                self.muted = false
+                self.stateLock.unlock()
+            }
         }
     }
 
@@ -124,6 +151,7 @@ final class EarEngine {
             guard let self, generation == self.taskGeneration else { return }
             if let result {
                 self.failures = 0
+                if self.isMuted() { return }
                 let text = result.bestTranscription.formattedString
                 if !text.isEmpty {
                     self.onTranscript?(text, result.isFinal)
@@ -145,7 +173,16 @@ final class EarEngine {
         }
     }
 
+    private func isMuted() -> Bool {
+        stateLock.lock()
+        defer { stateLock.unlock() }
+        return muted
+    }
+
     private func stopOnQueue() {
+        stateLock.lock()
+        muted = false
+        stateLock.unlock()
         taskGeneration += 1
         task?.cancel()
         task = nil

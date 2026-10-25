@@ -43,6 +43,8 @@ class VoskEar(
     private val alive = AtomicBoolean(false)
     private val captureRequest = AtomicBoolean(false)
     private val reload = AtomicBoolean(false)
+    private val ignoreRecognition = AtomicBoolean(false)
+    private val dropRecognizer = AtomicBoolean(false)
     private var thread: Thread? = null
 
     @Volatile
@@ -74,6 +76,12 @@ class VoskEar(
 
     fun reloadGrammar() {
         reload.set(true)
+    }
+
+    /** Drop microphone audio while the app is speaking, then reset so the tail cannot match. */
+    fun setIgnoreRecognition(ignore: Boolean) {
+        val previous = ignoreRecognition.getAndSet(ignore)
+        if (previous != ignore) dropRecognizer.set(true)
     }
 
     @SuppressLint("MissingPermission")
@@ -124,6 +132,20 @@ class VoskEar(
                 }
                 val read = record.read(buffer, 0, buffer.size)
                 if (read <= 0) continue
+                if (ignoreRecognition.get()) {
+                    recognizer.reset()
+                    if (phase == Phase.COMMAND && SystemClock.elapsedRealtime() > deadline) {
+                        phase = Phase.WAKE
+                        recognizer.setGrammar(wakeGrammar())
+                        tune(recognizer, commandPhase = false)
+                        main.post { listener.onCaptureEnded() }
+                    }
+                    continue
+                }
+                if (dropRecognizer.getAndSet(false)) {
+                    recognizer.reset()
+                    continue
+                }
                 val endpoint = recognizer.acceptWaveForm(buffer, read)
                 if (phase == Phase.COMMAND && SystemClock.elapsedRealtime() > deadline) {
                     val heard = textOf(recognizer.finalResult)

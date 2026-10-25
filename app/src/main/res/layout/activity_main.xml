@@ -60,6 +60,23 @@
             android:textStyle="bold"
             app:backgroundTint="@null" />
 
+        <Button
+            android:id="@+id/stopApp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/btn_running"
+            android:contentDescription="@string/cd_quit"
+            android:filterTouchesWhenObscured="true"
+            android:minHeight="80dp"
+            android:padding="12dp"
+            android:text="@string/action_quit"
+            android:textAllCaps="false"
+            android:textColor="@color/black"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            app:backgroundTint="@null" />
+
         <TextView
             style="@style/GuideText"
             android:paddingBottom="8dp"

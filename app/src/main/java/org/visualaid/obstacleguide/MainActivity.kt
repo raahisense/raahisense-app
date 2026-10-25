@@ -136,6 +136,10 @@ class MainActivity : AppCompatActivity() {
         override fun onNeedMicPermission() {
             if (!micGranted() && !askingMic) requestMic()
         }
+
+        override fun onQuit() {
+            if (!isFinishing) finishAndRemoveTask()
+        }
     }
 
     override fun attachBaseContext(newBase: Context) {
@@ -260,6 +264,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun bindControls() {
         binding.toggle.setOnClickListener { afterTap { onToggle() } }
+        binding.stopApp.setOnClickListener { afterTap { quitApp() } }
         binding.batterySaver.setOnClickListener {
             afterTap {
                 settings = settings.copy(batterySaver = !settings.batterySaver)
@@ -418,6 +423,11 @@ class MainActivity : AppCompatActivity() {
         if (!GuideService.running && guide == null) return
         startService(Intent(this, GuideService::class.java).setAction(GuideService.ACTION_STOP))
         render()
+    }
+
+    private fun quitApp() {
+        releaseAnnouncer()
+        startService(Intent(this, GuideService::class.java).setAction(GuideService.ACTION_QUIT))
     }
 
     private fun persist() {

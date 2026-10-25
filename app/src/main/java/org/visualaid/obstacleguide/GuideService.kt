@@ -1,6 +1,7 @@
 package org.visualaid.obstacleguide
 
 import android.Manifest
+import android.app.ActivityManager
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -56,6 +57,7 @@ import org.visualaid.obstacleguide.logic.LowLightController
 import org.visualaid.obstacleguide.logic.SceneLight
 import org.visualaid.obstacleguide.logic.TorchMode
 import org.visualaid.obstacleguide.logic.ObstacleWarning
+import org.visualaid.obstacleguide.logic.RecognitionGate
 import org.visualaid.obstacleguide.logic.VoiceAction
 import org.visualaid.obstacleguide.logic.VoiceCommand
 import org.visualaid.obstacleguide.logic.ShakeWatch
@@ -82,6 +84,7 @@ class GuideService : LifecycleService() {
         fun onVoiceSettingsChanged(languageChanged: Boolean)
         fun onNeedCameraPermission()
         fun onNeedMicPermission()
+        fun onQuit()
     }
 
     inner class LocalBinder : Binder() {
@@ -120,6 +123,11 @@ class GuideService : LifecycleService() {
     private var modelLoading = false
     private var cameraReady = false
     private var stopping = false
+    private var quitting = false
+    private val quitFinished = AtomicBoolean(false)
+    private var quietUntilMs = 0L
+    private var unmuteRunnable: Runnable? = null
+    private var inForeground = false
     private var stopRunnable: Runnable? = null
     private var lastFrameAt = 0L
     private var frameErrors = 0
@@ -175,8 +183,29 @@ class GuideService : LifecycleService() {
                 postStatus(message)
             },
         )
+        speaker.onSpeakingChanged = { active -> onSpeechActive(active) }
         speaker.start()
         ensureChannel()
+    }
+
+    private fun onSpeechActive(active: Boolean) {
+        if (active) {
+            quietUntilMs = Long.MAX_VALUE
+            unmuteRunnable?.let { handler.removeCallbacks(it) }
+            unmuteRunnable = null
+            ear?.setIgnoreRecognition(true)
+        } else {
+            val ended = SystemClock.elapsedRealtime()
+            quietUntilMs = RecognitionGate.quietUntil(ended)
+            val runnable = Runnable {
+                unmuteRunnable = null
+                if (!speaker.speaking.get() && SystemClock.elapsedRealtime() >= quietUntilMs) {
+                    ear?.setIgnoreRecognition(false)
+                }
+            }
+            unmuteRunnable = runnable
+            handler.postDelayed(runnable, RecognitionGate.TAIL_MS)
+        }
     }
 
     override fun onBind(intent: Intent): IBinder {
@@ -192,6 +221,10 @@ class GuideService : LifecycleService() {
             return stickyResult()
         }
         when (intent.action) {
+            ACTION_QUIT -> {
+                quitApp()
+                return START_NOT_STICKY
+            }
             ACTION_STOP -> stopGuide()
             ACTION_VOICE_OFF -> disableVoice()
             ACTION_SPOT -> startSpotting()
@@ -222,6 +255,7 @@ class GuideService : LifecycleService() {
     }
 
     private fun startGuiding() {
+        if (quitting) return
         cancelDelayedStop()
         stopping = false
         settings = SettingsStore.load(this)
@@ -240,6 +274,7 @@ class GuideService : LifecycleService() {
     }
 
     private fun startSpotting() {
+        if (quitting) return
         cancelDelayedStop()
         stopping = false
         settings = SettingsStore.load(this)
@@ -266,6 +301,7 @@ class GuideService : LifecycleService() {
             refreshForeground()
         } else {
             releaseWakeLock()
+            inForeground = false
             stopForeground(STOP_FOREGROUND_REMOVE)
             stopSelf()
         }
@@ -282,6 +318,9 @@ class GuideService : LifecycleService() {
         }
         val created = VoskEar(applicationContext, earListener)
         ear = created
+        if (!RecognitionGate.accepts(speaker.speaking.get(), SystemClock.elapsedRealtime(), quietUntilMs)) {
+            created.setIgnoreRecognition(true)
+        }
         created.start()
         registerShake()
     }
@@ -334,11 +373,13 @@ class GuideService : LifecycleService() {
     }
 
     private fun performVoice(action: VoiceAction) {
+        if (quitting) return
+        if (!RecognitionGate.accepts(speaker.speaking.get(), SystemClock.elapsedRealtime(), quietUntilMs)) return
         val speech = speechContext()
         when (action) {
             VoiceAction.IGNORE, VoiceAction.WAKE_ONLY -> Unit
             VoiceAction.UNKNOWN -> speakTracked(speech.getString(R.string.confirm_unknown), flush = true)
-            VoiceAction.START -> {
+            VoiceAction.START, VoiceAction.RESUME -> {
                 if (running) {
                     speakTracked(speech.getString(R.string.confirm_started_already), flush = true)
                 } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
@@ -350,7 +391,8 @@ class GuideService : LifecycleService() {
                     startGuiding()
                 }
             }
-            VoiceAction.STOP -> {
+            VoiceAction.STOP -> quitApp()
+            VoiceAction.PAUSE -> {
                 if (running) stopGuide() else speakTracked(speech.getString(R.string.confirm_stopped_already), flush = true)
             }
             VoiceAction.WHAT_IS_AHEAD -> speakAhead()
@@ -437,6 +479,8 @@ class GuideService : LifecycleService() {
             mapOf(
                 VoiceCommand.START to phrases(R.string.cmd_start),
                 VoiceCommand.STOP to phrases(R.string.cmd_stop),
+                VoiceCommand.PAUSE to phrases(R.string.cmd_pause),
+                VoiceCommand.RESUME to phrases(R.string.cmd_resume),
                 VoiceCommand.WHAT_IS_AHEAD to phrases(R.string.cmd_ahead),
                 VoiceCommand.REPEAT to phrases(R.string.cmd_repeat),
                 VoiceCommand.LOUDER to phrases(R.string.cmd_louder),
@@ -522,7 +566,7 @@ class GuideService : LifecycleService() {
             else -> return
         }
         handler.post {
-            if (!running || stopping) return@post
+            if (!running || stopping || quitting) return@post
             postStatus(text)
             speakTracked(text, flush = false)
         }
@@ -580,6 +624,7 @@ class GuideService : LifecycleService() {
             } else {
                 startForeground(NOTIFICATION_ID, notification)
             }
+            inForeground = true
             true
         } catch (error: Exception) {
             Log.e(TAG, "Could not start foreground service", error)
@@ -922,6 +967,10 @@ class GuideService : LifecycleService() {
             handler.post { vibrateUrgent() }
         }
         handler.post {
+            if (quitting || stopping || !running) {
+                speechBusy.set(false)
+                return@post
+            }
             postStatus(phrase)
             speaker.speak(phrase, flush = true) { speechBusy.set(false) }
         }
@@ -1002,6 +1051,7 @@ class GuideService : LifecycleService() {
     }
 
     private fun speakTracked(text: String, flush: Boolean) {
+        if (quitting) return
         speechBusy.set(true)
         speaker.speak(text, flush = flush) { speechBusy.set(false) }
     }
@@ -1013,7 +1063,73 @@ class GuideService : LifecycleService() {
         }
         postStatus(message)
         speakTracked(message, flush = true)
+        if (quitting) return
         stopGuide(speakGoodbye = false)
+    }
+
+    private fun quitApp() {
+        if (quitting) return
+        quitting = true
+        stopping = true
+        running = false
+        commandCapturing = false
+        cancelDelayedStop()
+        ear?.setIgnoreRecognition(true)
+        stopEar()
+        unregisterLight()
+        releaseCamera()
+        releaseDetector()
+        cancelVibration()
+        handler.post { listener?.onRunningChanged(false) }
+        val spoken = speechContext().getString(R.string.confirm_app_stopped)
+        val shown = uiContext().getString(R.string.confirm_app_stopped)
+        postStatus(shown)
+        if (inForeground) {
+            try {
+                getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID, buildNotification(shown))
+            } catch (error: Exception) {
+                Log.w(TAG, "goodbye notification", error)
+            }
+        }
+        speechBusy.set(true)
+        speaker.speak(spoken, flush = true) {
+            speechBusy.set(false)
+            finishQuit()
+        }
+        handler.postDelayed({ finishQuit() }, 8_000L)
+    }
+
+    private fun finishQuit() {
+        if (!quitFinished.compareAndSet(false, true)) return
+        handler.postDelayed({
+            releaseWakeLock()
+            inForeground = false
+            try {
+                stopForeground(STOP_FOREGROUND_REMOVE)
+            } catch (_: Exception) {
+            }
+            try {
+                getSystemService(NotificationManager::class.java).cancel(NOTIFICATION_ID)
+            } catch (_: Exception) {
+            }
+            try {
+                listener?.onQuit()
+            } catch (_: Exception) {
+            }
+            finishActivities()
+            stopSelf()
+        }, 350L)
+    }
+
+    private fun finishActivities() {
+        val manager = getSystemService(ActivityManager::class.java) ?: return
+        for (task in manager.appTasks) {
+            try {
+                task.finishAndRemoveTask()
+            } catch (error: Exception) {
+                Log.w(TAG, "finish task", error)
+            }
+        }
     }
 
     private fun stopGuide(speakGoodbye: Boolean = true) {
@@ -1039,6 +1155,7 @@ class GuideService : LifecycleService() {
         stopping = true
         releaseWakeLock()
         stopEar()
+        inForeground = false
         try {
             stopForeground(STOP_FOREGROUND_REMOVE)
         } catch (_: Exception) {
@@ -1162,6 +1279,7 @@ class GuideService : LifecycleService() {
         lastStatus = text
         handler.post {
             listener?.onStatus(text)
+            if (quitting || !inForeground) return@post
             if (!stopping || text.isNotBlank()) {
                 val manager = getSystemService(NotificationManager::class.java)
                 manager.notify(NOTIFICATION_ID, buildNotification(text))
@@ -1191,10 +1309,10 @@ class GuideService : LifecycleService() {
             Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
         )
-        val stop = PendingIntent.getService(
+        val quit = PendingIntent.getService(
             this,
             1,
-            Intent(this, GuideService::class.java).setAction(ACTION_STOP),
+            Intent(this, GuideService::class.java).setAction(ACTION_QUIT),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
         )
         val voiceOff = PendingIntent.getService(
@@ -1213,9 +1331,8 @@ class GuideService : LifecycleService() {
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             .setContentIntent(open)
-        if (running) {
-            builder.addAction(0, ui.getString(R.string.notif_stop), stop)
-        } else if (settings.voiceEnabled) {
+        builder.addAction(0, ui.getString(R.string.notif_stop), quit)
+        if (!running && settings.voiceEnabled) {
             builder.addAction(0, ui.getString(R.string.voice_off_action), voiceOff)
         }
         return builder.build()
@@ -1254,6 +1371,7 @@ class GuideService : LifecycleService() {
 
     companion object {
         const val ACTION_STOP = "org.visualaid.obstacleguide.STOP"
+        const val ACTION_QUIT = "org.visualaid.obstacleguide.QUIT"
         const val ACTION_SPOT = "org.visualaid.obstacleguide.SPOT"
         const val ACTION_VOICE_OFF = "org.visualaid.obstacleguide.VOICE_OFF"
         private const val CHANNEL_ID = "obstacle_guide"

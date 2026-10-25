@@ -37,7 +37,7 @@ The screen is black and yellow, with one big button.
 3. The big button then says **START**. Tap it.
 4. You should hear "Started. Listening for obstacles."
 5. Lock the screen if you want. A notification stays up: **Obstacle Guide is on**. That means it is still working.
-6. To stop, open the app and tap the big **STOP** button, or open the notification and tap Stop.
+6. To close RaahiSense, say **stop** (or **stop app**, **exit**, or **close**), tap **Stop RaahiSense**, or open the notification and tap Stop. The phone says "RaahiSense stopped", then stops the camera, the warnings, speech, and the listening service, and removes the notification. On Android the app closes. On iPhone the work stops and the screen can sleep; iOS does not let an app remove itself. The big **STOP** button only turns warnings off and leaves the app open. **Pause** does that by voice, and **resume** turns warnings on again.
 
 Warnings sound like "Very close chair ahead" or "Near car on the left." The same warning is not repeated for about 4 seconds. A very close object straight ahead can interrupt other speech, and the phone vibrates in three pulses if vibration is on.
 
@@ -60,8 +60,9 @@ Voice commands are on the first time you open the app. The phone asks to use the
 
 Commands, in English:
 
-- start
-- stop, or pause
+- start, or resume
+- stop, stop app, exit, or close (closes the app)
+- pause (turns warnings off and leaves the app open)
 - what is in front of me
 - repeat
 - louder, or quieter
@@ -70,6 +71,8 @@ Commands, in English:
 - help
 
 You can also say the wake phrase and the command in one breath, such as "Hey Guide, start."
+
+While RaahiSense is speaking, the microphone is ignored, including a short moment after the phrase ends. A warning such as "stop sign" does not close the app. Say the command after the phrase finishes.
 
 Three backups need no aiming. They work only while voice commands are on:
 

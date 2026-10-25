@@ -974,7 +974,7 @@ final class GuideSession: ObservableObject {
             busy: collectBusy
         ) else { return }
         collectBusy = true
-        let snapshot = currentSnapshot(event, settings: current)
+        let snapshot = currentSnapshot(event: event, settings: current)
         camera.takePhoto { [weak self] data, width, height in
             guard let self else { return }
             self.collectQueue.async {

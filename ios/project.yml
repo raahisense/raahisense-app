@@ -28,6 +28,7 @@ targets:
         product: TensorFlowLiteSwift
       - sdk: CoreML.framework
       - sdk: Accelerate.framework
+      - sdk: AppIntents.framework
     preBuildScripts:
       - name: Copy shared models and phrases
         basedOnDependencyAnalysis: false

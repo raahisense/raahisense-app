@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
     private var volumeHold = false
     private var calibrateStep = 0
     private var pendingOpenRaw = 0f
+    private var quitRequested = false
     private val tapHandler = Handler(Looper.getMainLooper())
     private lateinit var gestures: GestureDetector
 
@@ -173,17 +174,25 @@ class MainActivity : AppCompatActivity() {
         bindControls()
         showStatus(initialStatus())
         render()
-        if (settings.voiceEnabled && !micGranted() && !SettingsStore.askedMic(this)) {
+        val fromAssistant = assistantCommand(intent) != null
+        handleAssistantIntent(intent)
+        if (!fromAssistant && settings.voiceEnabled && !micGranted() && !SettingsStore.askedMic(this)) {
             requestMic()
         }
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleAssistantIntent(intent)
+    }
+
     override fun onStart() {
         super.onStart()
-        if (settings.voiceEnabled && micGranted()) {
+        if (!quitRequested && settings.voiceEnabled && micGranted()) {
             ensureSpottingService()
         }
-        if ((GuideService.running || settings.voiceEnabled) && !bound) {
+        if ((GuideService.running || settings.voiceEnabled || quitRequested) && !bound) {
             bindService(Intent(this, GuideService::class.java), connection, Context.BIND_AUTO_CREATE)
         }
         updateBatteryHint()
@@ -426,8 +435,40 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun quitApp() {
+        quitRequested = true
         releaseAnnouncer()
         startService(Intent(this, GuideService::class.java).setAction(GuideService.ACTION_QUIT))
+    }
+
+    private fun assistantCommand(source: Intent?): AssistantCommand? {
+        if (source?.action != Intent.ACTION_VIEW) return null
+        val data = source.data ?: return null
+        return AssistantLinks.command(data.scheme, data.host, data.userInfo, data.path)
+    }
+
+    private fun handleAssistantIntent(source: Intent?) {
+        val command = assistantCommand(source) ?: return
+        setIntent(Intent(this, javaClass).apply {
+            action = Intent.ACTION_MAIN
+            addCategory(Intent.CATEGORY_LAUNCHER)
+        })
+        when (command) {
+            AssistantCommand.START -> startFromAssistant()
+            AssistantCommand.STOP -> quitApp()
+        }
+    }
+
+    private fun startFromAssistant() {
+        if (quitRequested) return
+        when {
+            !cameraGranted() && permanentlyDenied() -> {
+                speakUi(getString(R.string.status_camera_blocked))
+                openAppSettings()
+            }
+            !cameraGranted() -> requestCamera()
+            GuideService.running -> speakUi(getString(R.string.confirm_started_already))
+            else -> startGuide()
+        }
     }
 
     private fun persist() {

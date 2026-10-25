@@ -7,10 +7,12 @@
     <string name="safety_note">Practice indoors with a helper first. This app misses steps, holes, poles, and many other obstacles. Keep using your cane.</string>
     <string name="action_start">START</string>
     <string name="action_stop">STOP</string>
+    <string name="action_quit">Stop RaahiSense</string>
     <string name="action_allow_camera">Allow camera</string>
     <string name="action_open_settings">Open settings</string>
     <string name="cd_start">Start obstacle warnings</string>
     <string name="cd_stop">Stop obstacle warnings</string>
+    <string name="cd_quit">Stop RaahiSense</string>
     <string name="cd_allow_camera">Allow the camera so obstacle warnings can start</string>
     <string name="cd_open_settings">Open phone settings to allow the camera</string>
     <string name="status_ready">Ready. Tap the big button to start.</string>
@@ -132,6 +134,7 @@
     <string name="wake_ack">Yes?</string>
     <string name="confirm_started_already">Obstacle warnings are already on.</string>
     <string name="confirm_stopped_already">Obstacle warnings are already off.</string>
+    <string name="confirm_app_stopped">RaahiSense stopped</string>
     <string name="confirm_repeat">Repeating.</string>
     <string name="confirm_nothing_to_repeat">There is no warning to repeat yet.</string>
     <string name="confirm_louder">Louder.</string>
@@ -145,9 +148,11 @@
     <string name="confirm_language">Language changed.</string>
     <string name="confirm_unknown">That was not a command. Say help for the list.</string>
     <string name="ahead_clear">Nothing is in front of you right now.</string>
-    <string name="help_commands">After %1$s, say one command: start, stop, pause, what is in front of me, repeat, louder, quieter, faster, slower, change language, or help. You can also shake the phone hard, double-tap the screen when TalkBack is off, or hold a volume key while this screen is open.</string>
+    <string name="help_commands">After %1$s, say one command: start, stop, stop app, exit, close, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, or help. Stop closes RaahiSense. Pause turns warnings off, and resume turns them on. You can also shake the phone hard, double-tap the screen when TalkBack is off, or hold a volume key while this screen is open.</string>
     <string name="cmd_start">start|start guide|begin</string>
-    <string name="cmd_stop">stop|pause|stop guide</string>
+    <string name="cmd_stop">stop|stop app|exit|close|stop guide</string>
+    <string name="cmd_pause">pause</string>
+    <string name="cmd_resume">resume</string>
     <string name="cmd_ahead">what is in front of me|what is ahead|what is in front</string>
     <string name="cmd_repeat">repeat|say again|repeat that</string>
     <string name="cmd_louder">louder|speak louder|volume up</string>

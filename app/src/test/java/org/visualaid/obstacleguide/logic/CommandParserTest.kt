@@ -13,7 +13,11 @@ class CommandParserTest {
         assertEquals(VoiceCommand.START, CommandParser.parse("start"))
         assertEquals(VoiceCommand.START, CommandParser.parse("Please start now"))
         assertEquals(VoiceCommand.STOP, CommandParser.parse("stop"))
-        assertEquals(VoiceCommand.STOP, CommandParser.parse("pause"))
+        assertEquals(VoiceCommand.STOP, CommandParser.parse("stop app"))
+        assertEquals(VoiceCommand.STOP, CommandParser.parse("exit"))
+        assertEquals(VoiceCommand.STOP, CommandParser.parse("close"))
+        assertEquals(VoiceCommand.PAUSE, CommandParser.parse("pause"))
+        assertEquals(VoiceCommand.RESUME, CommandParser.parse("resume"))
         assertEquals(VoiceCommand.WHAT_IS_AHEAD, CommandParser.parse("what's in front of me"))
         assertEquals(VoiceCommand.WHAT_IS_AHEAD, CommandParser.parse("what is ahead"))
         assertEquals(VoiceCommand.REPEAT, CommandParser.parse("say again"))
@@ -33,6 +37,18 @@ class CommandParserTest {
         assertNull(CommandParser.parse("[unk]"))
         assertNull(CommandParser.parse("restart"))
         assertNull(CommandParser.parse("stopping by the shop"))
+        assertNull(CommandParser.parse("RaahiSense stopped"))
+        assertNull(CommandParser.parse("closed"))
+    }
+
+    @Test
+    fun warningSentence_containsStopButSpeechGateDropsIt() {
+        assertEquals(VoiceCommand.STOP, CommandParser.parse("very close stop sign ahead"))
+        assertFalse(RecognitionGate.accepts(speechActive = true, nowMs = 1_000, quietUntilMs = 0))
+        assertFalse(RecognitionGate.accepts(speechActive = false, nowMs = 1_000, quietUntilMs = 1_400))
+        assertTrue(RecognitionGate.accepts(speechActive = false, nowMs = 1_400, quietUntilMs = 1_400))
+        assertEquals(1_400L, RecognitionGate.quietUntil(1_000))
+        assertEquals(RecognitionGate.TAIL_MS, 400L)
     }
 
     @Test
@@ -57,7 +73,8 @@ class CommandParserTest {
         )
         assertEquals(VoiceCommand.START, CommandParser.parse("शुरू करो", lexicon))
         assertEquals(VoiceCommand.START, CommandParser.parse("START", lexicon))
-        assertEquals(VoiceCommand.STOP, CommandParser.parse("pause", lexicon))
+        assertEquals(VoiceCommand.PAUSE, CommandParser.parse("pause", lexicon))
+        assertEquals(VoiceCommand.STOP, CommandParser.parse("stop app", lexicon))
     }
 
     @Test
@@ -99,8 +116,16 @@ class CommandParserTest {
             VoiceInterpreter.interpret("hey guide start", wakePhrase = "ok guide", requireWake = true),
         )
         assertEquals(
-            VoiceAction.STOP,
+            VoiceAction.PAUSE,
             VoiceInterpreter.interpret("ok guide pause", wakePhrase = "ok guide", requireWake = true),
+        )
+        assertEquals(
+            VoiceAction.STOP,
+            VoiceInterpreter.interpret("hey guide exit", requireWake = true),
+        )
+        assertEquals(
+            VoiceAction.RESUME,
+            VoiceInterpreter.interpret("resume", requireWake = false),
         )
     }
 

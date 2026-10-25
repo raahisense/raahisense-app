@@ -8,10 +8,12 @@
     <string name="safety_note">আগে সাহায্যকারীর সাথে ঘরের ভিতরে অভ্যাস করুন। সিঁড়ি, গর্ত ও খুঁটি এটি দেখে না। ছড়ি সঙ্গে রাখুন।</string>
     <string name="action_start">শুরু</string>
     <string name="action_stop">থামুন</string>
+    <string name="action_quit">RaahiSense থামান</string>
     <string name="action_allow_camera">ক্যামেরার অনুমতি দিন</string>
     <string name="action_open_settings">সেটিং খুলুন</string>
     <string name="cd_start">বাধার সতর্কতা শুরু করুন</string>
     <string name="cd_stop">বাধার সতর্কতা থামান</string>
+    <string name="cd_quit">RaahiSense থামান</string>
     <string name="cd_allow_camera">বাধার সতর্কতার জন্য ক্যামেরার অনুমতি দিন</string>
     <string name="cd_open_settings">ক্যামেরা চালু করতে ফোনের সেটিং খুলুন</string>
     <string name="status_ready">তৈরি। শুরু করতে বড় বোতাম টিপুন।</string>
@@ -121,6 +123,7 @@
     <string name="wake_ack">বলুন?</string>
     <string name="confirm_started_already">বাধা সতর্কতা আগে থেকেই চালু।</string>
     <string name="confirm_stopped_already">বাধা সতর্কতা আগে থেকেই বন্ধ।</string>
+    <string name="confirm_app_stopped">RaahiSense থেমেছে</string>
     <string name="confirm_repeat">আবার বলছি।</string>
     <string name="confirm_nothing_to_repeat">আবার বলার মতো সতর্কতা নেই।</string>
     <string name="confirm_louder">আওয়াজ বাড়ানো হয়েছে।</string>
@@ -134,9 +137,11 @@
     <string name="confirm_language">ভাষা বদলানো হয়েছে।</string>
     <string name="confirm_unknown">এটা নির্দেশ ছিল না। তালিকার জন্য help বলুন।</string>
     <string name="ahead_clear">এখন সামনে কিছু দেখা যাচ্ছে না।</string>
-    <string name="help_commands">%1$s এর পরে একটি ইংরেজি নির্দেশ বলুন: start, stop, pause, what is in front of me, repeat, louder, quieter, faster, slower, change language, অথবা help। ফোন জোরে নাড়ুন, TalkBack বন্ধ থাকলে পর্দায় দুবার চাপুন, অথবা এই পর্দা খোলা থাকলে ভলিউম চাবি চেপে ধরুন।</string>
+    <string name="help_commands">%1$s এর পরে একটি ইংরেজি নির্দেশ বলুন: start, stop, stop app, exit, close, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, অথবা help। Stop RaahiSense বন্ধ করে। Pause সতর্কতা বন্ধ করে এবং resume চালু করে। ফোন জোরে নাড়ুন, TalkBack বন্ধ থাকলে পর্দায় দুবার চাপুন, অথবা এই পর্দা খোলা থাকলে ভলিউম চাবি চেপে ধরুন।</string>
     <string name="cmd_start">শুরু|start|start guide|begin</string>
-    <string name="cmd_stop">থামো|stop|pause|stop guide</string>
+    <string name="cmd_stop">থামো|stop|stop app|exit|close|stop guide</string>
+    <string name="cmd_pause">pause</string>
+    <string name="cmd_resume">resume</string>
     <string name="cmd_ahead">সামনে কী|what is in front of me|what is ahead|what is in front</string>
     <string name="cmd_repeat">আবার বলো|repeat|say again|repeat that</string>
     <string name="cmd_louder">জোরে|louder|speak louder|volume up</string>

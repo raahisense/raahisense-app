@@ -10,6 +10,8 @@ import java.util.Locale
 enum class VoiceCommand {
     START,
     STOP,
+    PAUSE,
+    RESUME,
     WHAT_IS_AHEAD,
     REPEAT,
     LOUDER,
@@ -26,6 +28,8 @@ enum class VoiceAction {
     UNKNOWN,
     START,
     STOP,
+    PAUSE,
+    RESUME,
     WHAT_IS_AHEAD,
     REPEAT,
     LOUDER,
@@ -55,7 +59,9 @@ data class CommandLexicon(
         val ENGLISH = CommandLexicon(
             mapOf(
                 VoiceCommand.START to listOf("start", "start guide", "begin"),
-                VoiceCommand.STOP to listOf("stop", "pause", "stop guide"),
+                VoiceCommand.STOP to listOf("stop", "stop app", "exit", "close", "stop guide"),
+                VoiceCommand.PAUSE to listOf("pause"),
+                VoiceCommand.RESUME to listOf("resume"),
                 VoiceCommand.WHAT_IS_AHEAD to listOf(
                     "what is in front of me",
                     "what is ahead",
@@ -192,9 +198,27 @@ object VoiceInterpreter {
     }
 }
 
+/**
+ * The microphone hears the speaker. A warning such as "stop sign" must not
+ * be treated as a command, so recognition is dropped while speech is playing
+ * and for a short tail after it ends.
+ */
+object RecognitionGate {
+    const val TAIL_MS = 400L
+
+    fun accepts(speechActive: Boolean, nowMs: Long, quietUntilMs: Long): Boolean {
+        if (speechActive) return false
+        return nowMs >= quietUntilMs
+    }
+
+    fun quietUntil(speechEndedAtMs: Long): Long = speechEndedAtMs + TAIL_MS
+}
+
 private fun VoiceCommand.toAction(): VoiceAction = when (this) {
     VoiceCommand.START -> VoiceAction.START
     VoiceCommand.STOP -> VoiceAction.STOP
+    VoiceCommand.PAUSE -> VoiceAction.PAUSE
+    VoiceCommand.RESUME -> VoiceAction.RESUME
     VoiceCommand.WHAT_IS_AHEAD -> VoiceAction.WHAT_IS_AHEAD
     VoiceCommand.REPEAT -> VoiceAction.REPEAT
     VoiceCommand.LOUDER -> VoiceAction.LOUDER

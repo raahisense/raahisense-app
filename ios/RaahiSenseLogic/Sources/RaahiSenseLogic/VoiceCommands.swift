@@ -1,11 +1,11 @@
 import Foundation
 
 public enum VoiceCommand: String, CaseIterable {
-    case start, stop, whatIsAhead, repeatLast, louder, quieter, faster, slower, changeLanguage, help
+    case start, stop, pause, resume, whatIsAhead, repeatLast, louder, quieter, faster, slower, changeLanguage, help
 }
 
 public enum VoiceAction: String {
-    case ignore, wakeOnly, unknown, start, stop, whatIsAhead, repeatLast, louder, quieter, faster, slower, changeLanguage, help
+    case ignore, wakeOnly, unknown, start, stop, pause, resume, whatIsAhead, repeatLast, louder, quieter, faster, slower, changeLanguage, help
 }
 
 public struct CommandLexicon {
@@ -19,7 +19,9 @@ public struct CommandLexicon {
 
     public static let english = CommandLexicon(phrases: [
         .start: ["start", "start guide", "begin"],
-        .stop: ["stop", "pause", "stop guide"],
+        .stop: ["stop", "stop app", "exit", "close", "stop guide"],
+        .pause: ["pause"],
+        .resume: ["resume"],
         .whatIsAhead: ["what is in front of me", "what is ahead", "what is in front"],
         .repeatLast: ["repeat", "say again", "repeat that"],
         .louder: ["louder", "speak louder", "volume up"],
@@ -122,11 +124,29 @@ public enum VoiceInterpreter {
     }
 }
 
+/// The microphone hears the speaker. A warning such as "stop sign" must not
+/// be treated as a command, so recognition is dropped while speech is playing
+/// and for a short tail after it ends.
+public enum RecognitionGate {
+    public static let tailMs: Int64 = 400
+
+    public static func accepts(speechActive: Bool, nowMs: Int64, quietUntilMs: Int64) -> Bool {
+        if speechActive { return false }
+        return nowMs >= quietUntilMs
+    }
+
+    public static func quietUntil(speechEndedAtMs: Int64) -> Int64 {
+        speechEndedAtMs + tailMs
+    }
+}
+
 private extension VoiceCommand {
     var action: VoiceAction {
         switch self {
         case .start: return .start
         case .stop: return .stop
+        case .pause: return .pause
+        case .resume: return .resume
         case .whatIsAhead: return .whatIsAhead
         case .repeatLast: return .repeatLast
         case .louder: return .louder

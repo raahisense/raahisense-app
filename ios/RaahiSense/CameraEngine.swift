@@ -40,6 +40,13 @@ final class CameraEngine: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         }
     }
 
+    /// Stop the session and drop the camera so the hardware is released.
+    func release() {
+        queue.async { [weak self] in
+            self?.releaseOnQueue()
+        }
+    }
+
     func setTorch(on: Bool) {
         queue.async { [weak self] in
             self?.setTorchOnQueue(on)
@@ -99,6 +106,25 @@ final class CameraEngine: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
                 connection.videoOrientation = .portrait
             }
         }
+    }
+
+    private func releaseOnQueue() {
+        if session.isRunning {
+            session.stopRunning()
+        }
+        running = false
+        setTorchOnQueue(false)
+        appliedTorch = nil
+        appliedBias = nil
+        session.beginConfiguration()
+        for input in session.inputs {
+            session.removeInput(input)
+        }
+        for output in session.outputs {
+            session.removeOutput(output)
+        }
+        session.commitConfiguration()
+        device = nil
     }
 
     private func setTorchOnQueue(_ on: Bool) {

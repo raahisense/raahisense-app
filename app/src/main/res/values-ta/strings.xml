@@ -8,10 +8,12 @@
     <string name="safety_note">முதலில் உதவியாளருடன் வீட்டுக்குள் பயிற்சி செய்யுங்கள். படிகள், குழிகள், கம்பங்கள் இதில் தெரியாது. பிரம்பை வைத்திருங்கள்.</string>
     <string name="action_start">தொடங்கு</string>
     <string name="action_stop">நிறுத்து</string>
+    <string name="action_quit">RaahiSense நிறுத்து</string>
     <string name="action_allow_camera">கேமரா அனுமதி</string>
     <string name="action_open_settings">அமைப்புகளைத் திற</string>
     <string name="cd_start">தடை எச்சரிக்கையைத் தொடங்கு</string>
     <string name="cd_stop">தடை எச்சரிக்கையை நிறுத்து</string>
+    <string name="cd_quit">RaahiSense நிறுத்து</string>
     <string name="cd_allow_camera">தடை எச்சரிக்கைக்கு கேமரா அனுமதியை அளிக்கவும்</string>
     <string name="cd_open_settings">கேமராவை அனுமதிக்க தொலைபேசி அமைப்பைத் திறக்கவும்</string>
     <string name="status_ready">தயார். தொடங்க பெரிய பொத்தானைத் தொடவும்.</string>
@@ -121,6 +123,7 @@
     <string name="wake_ack">சொல்லுங்கள்?</string>
     <string name="confirm_started_already">தடை எச்சரிக்கை ஏற்கெனவே இயங்குகிறது.</string>
     <string name="confirm_stopped_already">தடை எச்சரிக்கை ஏற்கெனவே நின்றுள்ளது.</string>
+    <string name="confirm_app_stopped">RaahiSense நின்றது</string>
     <string name="confirm_repeat">மீண்டும் சொல்கிறேன்.</string>
     <string name="confirm_nothing_to_repeat">மீண்டும் சொல்ல எச்சரிக்கை இல்லை.</string>
     <string name="confirm_louder">ஒலி கூட்டப்பட்டது.</string>
@@ -134,9 +137,11 @@
     <string name="confirm_language">மொழி மாற்றப்பட்டது.</string>
     <string name="confirm_unknown">அது கட்டளை அல்ல. பட்டியலுக்கு help சொல்லுங்கள்.</string>
     <string name="ahead_clear">இப்போது முன்னால் ஒன்றும் இல்லை.</string>
-    <string name="help_commands">%1$s பிறகு ஒரு ஆங்கில கட்டளை சொல்லுங்கள்: start, stop, pause, what is in front of me, repeat, louder, quieter, faster, slower, change language, அல்லது help. தொலைபேசியை வேகமாக குலுக்கவும், TalkBack அணைந்திருந்தால் திரையில் இரண்டு முறை தட்டவும், அல்லது இந்தத் திரை திறந்திருக்கும்போது ஒலி பொத்தானை அழுத்திப் பிடிக்கவும்.</string>
+    <string name="help_commands">%1$s பிறகு ஒரு ஆங்கில கட்டளை சொல்லுங்கள்: start, stop, stop app, exit, close, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, அல்லது help. Stop RaahiSense-ஐ மூடும். Pause எச்சரிக்கையை நிறுத்தும், resume தொடங்கும். தொலைபேசியை வேகமாக குலுக்கவும், TalkBack அணைந்திருந்தால் திரையில் இரண்டு முறை தட்டவும், அல்லது இந்தத் திரை திறந்திருக்கும்போது ஒலி பொத்தானை அழுத்திப் பிடிக்கவும்.</string>
     <string name="cmd_start">தொடங்கு|start|start guide|begin</string>
-    <string name="cmd_stop">நிறுத்து|stop|pause|stop guide</string>
+    <string name="cmd_stop">நிறுத்து|stop|stop app|exit|close|stop guide</string>
+    <string name="cmd_pause">pause</string>
+    <string name="cmd_resume">resume</string>
     <string name="cmd_ahead">முன்னால் என்ன|what is in front of me|what is ahead|what is in front</string>
     <string name="cmd_repeat">மீண்டும் சொல்|repeat|say again|repeat that</string>
     <string name="cmd_louder">சத்தமாக|louder|speak louder|volume up</string>

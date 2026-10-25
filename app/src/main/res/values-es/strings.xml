@@ -8,10 +8,12 @@
     <string name="safety_note">Practique adentro con un ayudante primero. Esta aplicación no ve escalones, huecos ni postes. Siga usando el bastón.</string>
     <string name="action_start">INICIAR</string>
     <string name="action_stop">DETENER</string>
+    <string name="action_quit">Detener RaahiSense</string>
     <string name="action_allow_camera">Permitir cámara</string>
     <string name="action_open_settings">Abrir ajustes</string>
     <string name="cd_start">Iniciar avisos de obstáculos</string>
     <string name="cd_stop">Detener avisos de obstáculos</string>
+    <string name="cd_quit">Detener RaahiSense</string>
     <string name="cd_allow_camera">Permitir la cámara para iniciar los avisos de obstáculos</string>
     <string name="cd_open_settings">Abrir los ajustes del teléfono para permitir la cámara</string>
     <string name="status_ready">Listo. Toque el botón grande para iniciar.</string>
@@ -121,6 +123,7 @@
     <string name="wake_ack">¿Sí?</string>
     <string name="confirm_started_already">Los avisos de obstáculos ya están activados.</string>
     <string name="confirm_stopped_already">Los avisos de obstáculos ya están detenidos.</string>
+    <string name="confirm_app_stopped">RaahiSense se detuvo</string>
     <string name="confirm_repeat">Repitiendo.</string>
     <string name="confirm_nothing_to_repeat">Todavía no hay un aviso para repetir.</string>
     <string name="confirm_louder">Más alto.</string>
@@ -134,9 +137,11 @@
     <string name="confirm_language">Idioma cambiado.</string>
     <string name="confirm_unknown">Eso no fue una orden. Diga help para oír la lista.</string>
     <string name="ahead_clear">Ahora no hay nada delante de usted.</string>
-    <string name="help_commands">Después de %1$s, diga una orden en inglés: start, stop, pause, what is in front of me, repeat, louder, quieter, faster, slower, change language, o help. También puede sacudir el teléfono con fuerza, tocar dos veces la pantalla si TalkBack está apagado, o mantener pulsada una tecla de volumen con esta pantalla abierta.</string>
+    <string name="help_commands">Después de %1$s, diga una orden en inglés: start, stop, stop app, exit, close, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, o help. Stop cierra RaahiSense. Pause apaga los avisos y resume los enciende. También puede sacudir el teléfono con fuerza, tocar dos veces la pantalla si TalkBack está apagado, o mantener pulsada una tecla de volumen con esta pantalla abierta.</string>
     <string name="cmd_start">empezar|iniciar|start|start guide|begin</string>
-    <string name="cmd_stop">parar|pausa|stop|pause|stop guide</string>
+    <string name="cmd_stop">parar|detener|stop|stop app|exit|close|stop guide</string>
+    <string name="cmd_pause">pausa|pause</string>
+    <string name="cmd_resume">reanudar|resume</string>
     <string name="cmd_ahead">qué hay delante de mí|what is in front of me|what is ahead|what is in front</string>
     <string name="cmd_repeat">repetir|repeat|say again|repeat that</string>
     <string name="cmd_louder">más alto|louder|speak louder|volume up</string>

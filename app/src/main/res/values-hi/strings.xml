@@ -8,10 +8,12 @@
     <string name="safety_note">पहले घर के अंदर किसी सहायक के साथ अभ्यास करें। यह ऐप सीढ़ियाँ, गड्ढे और खंभे नहीं देखता। छड़ी साथ रखें।</string>
     <string name="action_start">शुरू</string>
     <string name="action_stop">रोकें</string>
+    <string name="action_quit">RaahiSense रोकें</string>
     <string name="action_allow_camera">कैमरा अनुमति दें</string>
     <string name="action_open_settings">सेटिंग खोलें</string>
     <string name="cd_start">बाधा चेतावनी शुरू करें</string>
     <string name="cd_stop">बाधा चेतावनी रोकें</string>
+    <string name="cd_quit">RaahiSense रोकें</string>
     <string name="cd_allow_camera">कैमरा अनुमति दें ताकि बाधा चेतावनी शुरू हो</string>
     <string name="cd_open_settings">कैमरा चालू करने के लिए फ़ोन सेटिंग खोलें</string>
     <string name="status_ready">तैयार। शुरू करने के लिए बड़ा बटन दबाएँ।</string>
@@ -103,7 +105,9 @@
     <string name="obj_door">दरवाज़ा</string>
     <string name="wake_phrase_hint">Hey Guide</string>
     <string name="cmd_start">शुरू|शुरू करो|start|start guide|begin</string>
-    <string name="cmd_stop">रुको|बंद करो|stop|pause|stop guide</string>
+    <string name="cmd_stop">रुको|बंद करो|stop|stop app|exit|close|stop guide</string>
+    <string name="cmd_pause">pause</string>
+    <string name="cmd_resume">resume</string>
     <string name="cmd_ahead">सामने क्या है|मेरे सामने क्या है|what is in front of me|what is ahead|what is in front</string>
     <string name="cmd_repeat">दोहराओ|फिर से बोलो|repeat|say again|repeat that</string>
     <string name="cmd_louder">जोर से|आवाज़ बढ़ाओ|louder|speak louder|volume up</string>
@@ -133,6 +137,7 @@
     <string name="wake_ack">हाँ?</string>
     <string name="confirm_started_already">बाधा चेतावनी पहले से चालू है।</string>
     <string name="confirm_stopped_already">बाधा चेतावनी पहले से बंद है।</string>
+    <string name="confirm_app_stopped">RaahiSense रुक गया</string>
     <string name="confirm_repeat">फिर से कह रहा हूँ।</string>
     <string name="confirm_nothing_to_repeat">अभी दोहराने के लिए कोई चेतावनी नहीं है।</string>
     <string name="confirm_louder">आवाज़ बढ़ाई।</string>
@@ -146,7 +151,7 @@
     <string name="confirm_language">भाषा बदल गई।</string>
     <string name="confirm_unknown">यह आदेश नहीं था। सूची के लिए help बोलें।</string>
     <string name="ahead_clear">अभी सामने कुछ नहीं दिखा।</string>
-    <string name="help_commands">%1$s के बाद एक अंग्रेज़ी आदेश बोलें: start, stop, pause, what is in front of me, repeat, louder, quieter, faster, slower, change language, या help। फ़ोन ज़ोर से हिलाएँ, TalkBack बंद हो तो स्क्रीन पर दो बार टैप करें, या यह स्क्रीन खुली हो तो वॉल्यूम कुंजी दबाकर रखें।</string>
+    <string name="help_commands">%1$s के बाद एक अंग्रेज़ी आदेश बोलें: start, stop, stop app, exit, close, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, या help। Stop RaahiSense को बंद करता है। Pause चेतावनी बंद करता है और resume चालू करता है। फ़ोन ज़ोर से हिलाएँ, TalkBack बंद हो तो स्क्रीन पर दो बार टैप करें, या यह स्क्रीन खुली हो तो वॉल्यूम कुंजी दबाकर रखें।</string>
     <string name="voice_off_action">आवाज़ बंद करें</string>
     <string name="voice_ear_note">सुनने वाला मॉडल अंग्रेज़ी है। Hey Guide बोलें, फिर अंग्रेज़ी आदेश। आवाज़ फ़ोन पर रहती है।</string>
     <string name="depth_unknown_very_close_left">बाईं ओर अज्ञात वस्तु, बहुत पास</string>

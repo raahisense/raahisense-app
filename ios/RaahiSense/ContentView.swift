@@ -40,6 +40,7 @@ struct ContentView: View {
                 .foregroundColor(GuideColor.yellow)
                 .fixedSize(horizontal: false, vertical: true)
             bigButton
+            stopButton
             listenButton
             Text(session.statusText)
                 .font(.system(size: 22, weight: .semibold))
@@ -75,6 +76,19 @@ struct ContentView: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(bigAccessLabel)
+    }
+
+    private var stopButton: some View {
+        Button(action: session.stopEverything) {
+            Text(phrase("action_quit"))
+                .font(.system(size: 28, weight: .bold))
+                .foregroundColor(.black)
+                .frame(maxWidth: .infinity, minHeight: 80)
+                .background(GuideColor.yellow)
+                .cornerRadius(16)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(phrase("cd_quit"))
     }
 
     private var listenButton: some View {

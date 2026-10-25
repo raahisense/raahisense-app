@@ -38,6 +38,8 @@ class GuideSpeaker(
     private var onIdle: (() -> Unit)? = null
     private val pending = ArrayDeque<Pending>()
     val speaking = AtomicBoolean(false)
+    var onSpeakingChanged: ((Boolean) -> Unit)? = null
+    private var speechEpoch = 0
 
     /** True when warnings can be spoken in [languageTag] itself. */
     @Volatile
@@ -58,7 +60,7 @@ class GuideSpeaker(
             languageReady = false
             val idle = onIdle
             onIdle = null
-            speaking.set(false)
+            markSpeaking(false)
             idle?.invoke()
             main.post { onFailed() }
             return
@@ -87,7 +89,7 @@ class GuideSpeaker(
             first = false
         }
         if (queued.isEmpty()) {
-            speaking.set(false)
+            markSpeaking(false)
         }
     }
 
@@ -117,11 +119,11 @@ class GuideSpeaker(
             return
         }
         if (onIdle != null) this.onIdle = onIdle
-        speaking.set(true)
+        markSpeaking(true)
         val engine = tts
         if (!ready || engine == null) {
             if (failed) {
-                speaking.set(false)
+                markSpeaking(false)
                 val idle = this.onIdle
                 this.onIdle = null
                 idle?.invoke()
@@ -145,7 +147,7 @@ class GuideSpeaker(
             tts?.stop()
         } catch (_: Exception) {
         }
-        speaking.set(false)
+        markSpeaking(false)
         val idle = onIdle
         onIdle = null
         idle?.invoke()
@@ -155,7 +157,7 @@ class GuideSpeaker(
         pending.clear()
         activeId = null
         onIdle = null
-        speaking.set(false)
+        markSpeaking(false)
         try {
             tts?.stop()
             tts?.shutdown()
@@ -163,6 +165,17 @@ class GuideSpeaker(
         }
         tts = null
         ready = false
+    }
+
+    private fun markSpeaking(active: Boolean) {
+        val was = speaking.getAndSet(active)
+        if (was == active) return
+        if (active) speechEpoch += 1
+        val epoch = speechEpoch
+        val notify = Runnable {
+            if (speechEpoch == epoch) onSpeakingChanged?.invoke(active)
+        }
+        if (Looper.myLooper() == Looper.getMainLooper()) notify.run() else main.post(notify)
     }
 
     private fun applyVoice(engine: TextToSpeech) {
@@ -204,7 +217,7 @@ class GuideSpeaker(
     private fun complete(utteranceId: String?) {
         if (utteranceId == null || utteranceId != activeId) return
         activeId = null
-        speaking.set(false)
+        markSpeaking(false)
         val idle = onIdle
         onIdle = null
         idle?.invoke()

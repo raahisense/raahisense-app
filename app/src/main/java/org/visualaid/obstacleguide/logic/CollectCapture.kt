@@ -15,8 +15,8 @@ import java.util.zip.ZipOutputStream
  * Decides when a personal training photo is saved.
  *
  * Warnings are not part of this decision. The guide keeps speaking while
- * collection is on. Photos wait when the phone is hot, and a warning or a
- * spoken "missed" saves a short burst immediately.
+ * collection is on. Photos wait when the phone is hot. A warning, a spoken
+ * "missed", or a spoken "wrong" saves a short burst immediately.
  *
  * GPS stays off unless the caller passes a reading. Nothing here uploads.
  *
@@ -28,6 +28,25 @@ enum class CollectEvent(val wire: String) {
     PERIODIC("periodic"),
     WARNING("warning"),
     MISSED("missed"),
+    WRONG("wrong"),
+}
+
+/**
+ * The warning the user just heard. A "wrong" photo keeps this so the
+ * false or misidentified detection can be found later.
+ */
+data class SpokenWarning(
+    val label: String,
+    val confidence: Float?,
+    val left: Float?,
+    val top: Float?,
+    val right: Float?,
+    val bottom: Float?,
+    val spokenAtIso: String,
+) {
+    fun hasBox(): Boolean {
+        return left != null && top != null && right != null && bottom != null
+    }
 }
 
 data class GpsReading(
@@ -214,6 +233,33 @@ object CollectCapture {
         )
     }
 
+    fun spokenWarning(
+        warning: ObstacleWarning,
+        boxes: List<DetectionBox>,
+        spokenAtIso: String,
+    ): SpokenWarning {
+        val matched = boxes.filter { box ->
+            val made = WarningLogic.fromBox(box) ?: return@filter false
+            made.label == warning.label &&
+                made.position == warning.position &&
+                made.closeness == warning.closeness
+        }.maxByOrNull { it.score }
+            ?: boxes.filter { it.label.equals(warning.label, ignoreCase = true) && it.score.isFinite() }
+                .maxByOrNull { it.score }
+        val finite = matched?.takeIf {
+            it.left.isFinite() && it.top.isFinite() && it.right.isFinite() && it.bottom.isFinite()
+        }
+        return SpokenWarning(
+            label = warning.label,
+            confidence = matched?.score?.takeIf { it.isFinite() },
+            left = finite?.left,
+            top = finite?.top,
+            right = finite?.right,
+            bottom = finite?.bottom,
+            spokenAtIso = spokenAtIso,
+        )
+    }
+
     fun sidecarJson(
         timestampIso: String,
         event: CollectEvent,
@@ -226,6 +272,8 @@ object CollectCapture {
         width: Int?,
         height: Int?,
         fullResolution: Boolean,
+        spokenWarning: SpokenWarning? = null,
+        includeSpokenWarning: Boolean = false,
     ): String {
         val savedGps = if (gpsEnabled) gps else null
         return buildString {
@@ -274,6 +322,11 @@ object CollectCapture {
                 append("    \"time\": ${jsonString(savedGps.timeIso)}\n")
                 append("  },\n")
             }
+            if (includeSpokenWarning) {
+                append("  \"spokenWarning\": ")
+                append(spokenWarningJson(spokenWarning))
+                append(",\n")
+            }
             append("  \"note\": ${jsonString(SHARE_NOTE)}\n")
             append("}\n")
         }
@@ -281,6 +334,18 @@ object CollectCapture {
 
     private fun calendar(epochMs: Long, zone: TimeZone): Calendar {
         return Calendar.getInstance(zone, Locale.US).apply { timeInMillis = epochMs }
+    }
+
+    private fun spokenWarningJson(warning: SpokenWarning?): String {
+        if (warning == null) return "null"
+        val box = if (!warning.hasBox()) {
+            "null"
+        } else {
+            "{ \"left\": ${jsonFloat(warning.left)}, \"top\": ${jsonFloat(warning.top)}, " +
+                "\"right\": ${jsonFloat(warning.right)}, \"bottom\": ${jsonFloat(warning.bottom)} }"
+        }
+        return "{ \"label\": ${jsonString(warning.label)}, \"confidence\": ${jsonFloat(warning.confidence)}, " +
+            "\"box\": $box, \"spokenAt\": ${jsonString(warning.spokenAtIso)} }"
     }
 
     private fun jsonString(value: String): String {
@@ -322,7 +387,7 @@ object CollectCapture {
 
 /**
  * Queue of frames to save. Periodic frames wait for the interval.
- * Warning and missed frames are a short burst and do not wait.
+ * Warning, missed, and wrong frames are a short burst and do not wait.
  * A hot phone keeps the queue but does not save until it cools.
  */
 class CollectScheduler(
@@ -349,6 +414,8 @@ class CollectScheduler(
     fun onWarning() = enqueue(CollectEvent.WARNING, front = false)
 
     fun onMissed() = enqueue(CollectEvent.MISSED, front = true)
+
+    fun onWrong() = enqueue(CollectEvent.WRONG, front = true)
 
     fun requeue(event: CollectEvent) {
         synchronized(lock) {

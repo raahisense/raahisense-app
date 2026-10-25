@@ -2,12 +2,12 @@ import Foundation
 
 public enum VoiceCommand: String, CaseIterable {
     case start, stop, pause, resume, whatIsAhead, repeatLast, louder, quieter, faster, slower, changeLanguage, help
-    case startCollecting, stopCollecting, missed
+    case startCollecting, stopCollecting, missed, wrong
 }
 
 public enum VoiceAction: String {
     case ignore, wakeOnly, unknown, start, stop, pause, resume, whatIsAhead, repeatLast, louder, quieter, faster, slower, changeLanguage, help
-    case startCollecting, stopCollecting, missed
+    case startCollecting, stopCollecting, missed, wrong
 }
 
 public struct CommandLexicon {
@@ -35,6 +35,7 @@ public struct CommandLexicon {
         .startCollecting: ["start collecting"],
         .stopCollecting: ["stop collecting"],
         .missed: ["missed"],
+        .wrong: ["wrong", "false alarm", "wrong warning"],
     ])
 
     public func withExtra(_ extra: [VoiceCommand: [String]]) -> CommandLexicon {
@@ -103,7 +104,8 @@ public enum VoiceInterpreter {
         _ transcript: String,
         lexicon: CommandLexicon = .english,
         wakePhrase: String = CommandLexicon.defaultWake,
-        requireWake: Bool
+        requireWake: Bool,
+        allowBareCorrection: Bool = false
     ) -> VoiceAction {
         let text = CommandLexicon.normalize(transcript)
         if text.isEmpty || text == "unk" {
@@ -112,7 +114,14 @@ public enum VoiceInterpreter {
         let wake = CommandLexicon.normalize(wakePhrase)
         let woke = !wake.isEmpty && " \(text) ".contains(" \(wake) ")
         let remainder = woke ? removeFirst(text, wake) : text
-        if requireWake && !woke { return .ignore }
+        if requireWake && !woke {
+            if allowBareCorrection {
+                if let bare = CommandParser.parse(text, lexicon: lexicon), bare == .wrong || bare == .missed {
+                    return bare.action
+                }
+            }
+            return .ignore
+        }
         if remainder.isEmpty { return .wakeOnly }
         guard let command = CommandParser.parse(remainder, lexicon: lexicon) else {
             return requireWake ? .wakeOnly : .unknown
@@ -132,8 +141,13 @@ public enum VoiceInterpreter {
 /// The microphone hears the speaker. A warning such as "stop sign" must not
 /// be treated as a command, so recognition is dropped while speech is playing
 /// and for a short tail after it ends.
+///
+/// Right after a warning, `acceptsCorrection` opens a short window. The user
+/// says "wrong" or "missed" as soon as the warning finishes. Ordinary commands
+/// still wait out the tail.
 public enum RecognitionGate {
     public static let tailMs: Int64 = 400
+    public static let correctionWindowMs: Int64 = 2_500
 
     public static func accepts(speechActive: Bool, nowMs: Int64, quietUntilMs: Int64) -> Bool {
         if speechActive { return false }
@@ -142,6 +156,16 @@ public enum RecognitionGate {
 
     public static func quietUntil(speechEndedAtMs: Int64) -> Int64 {
         speechEndedAtMs + tailMs
+    }
+
+    public static func correctionUntil(warningEndedAtMs: Int64) -> Int64 {
+        warningEndedAtMs + correctionWindowMs
+    }
+
+    /// True only while speech is idle and the post-warning window is still open.
+    public static func acceptsCorrection(speechActive: Bool, nowMs: Int64, correctionUntilMs: Int64) -> Bool {
+        if speechActive { return false }
+        return nowMs <= correctionUntilMs
     }
 }
 
@@ -163,6 +187,7 @@ private extension VoiceCommand {
         case .startCollecting: return .startCollecting
         case .stopCollecting: return .stopCollecting
         case .missed: return .missed
+        case .wrong: return .wrong
         }
     }
 }

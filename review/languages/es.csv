@@ -1,0 +1,212 @@
+number,phrase,english
+1,"persona muy cerca, a la izquierda",Very close person on the left
+2,"persona muy cerca, adelante",Very close person ahead
+3,"persona muy cerca, a la derecha",Very close person on the right
+4,"persona cerca, a la izquierda",Near person on the left
+5,"persona cerca, adelante",Near person ahead
+6,"persona cerca, a la derecha",Near person on the right
+7,"persona lejos, a la izquierda",Far person on the left
+8,"persona lejos, adelante",Far person ahead
+9,"persona lejos, a la derecha",Far person on the right
+10,persona,person
+11,bicicleta,bicycle
+12,carro,car
+13,motocicleta,motorcycle
+14,bus,bus
+15,camión,truck
+16,semáforo,traffic light
+17,hidrante,fire hydrant
+18,señal de alto,stop sign
+19,parquímetro,parking meter
+20,banca,bench
+21,gato,cat
+22,perro,dog
+23,caballo,horse
+24,oveja,sheep
+25,vaca,cow
+26,mochila,backpack
+27,paraguas,umbrella
+28,maleta,suitcase
+29,botella,bottle
+30,silla,chair
+31,sofá,couch
+32,planta,plant
+33,cama,bed
+34,mesa,table
+35,inodoro,toilet
+36,televisor,television
+37,horno,oven
+38,lavabo,sink
+39,nevera,refrigerator
+40,autorickshaw,auto rickshaw
+41,rickshaw de pedales,cycle rickshaw
+42,carretilla,handcart
+43,bache,pothole
+44,alcantarilla abierta,open drain
+45,bordillo,curb
+46,escaleras,stairs
+47,poste,pole
+48,barrera,barrier
+49,objeto de la calle,street object
+50,árbol,tree
+51,puerta,door
+52,"Objeto desconocido a la izquierda, muy cerca","Unknown object on the left, very close"
+53,"Objeto desconocido delante, muy cerca","Unknown object ahead, very close"
+54,"Objeto desconocido a la derecha, muy cerca","Unknown object on the right, very close"
+55,"Objeto desconocido a la izquierda, cerca","Unknown object on the left, near"
+56,"Objeto desconocido delante, cerca","Unknown object ahead, near"
+57,"Objeto desconocido a la derecha, cerca","Unknown object on the right, near"
+58,"Pared delante, muy cerca","Wall ahead, very close"
+59,"Pared delante, cerca","Wall ahead, near"
+60,Algo se acerca por tu izquierda,Something approaching on your left
+61,Algo se acerca por delante,Something approaching ahead
+62,Algo se acerca por tu derecha,Something approaching on your right
+63,empezar|comienza,start|start guide|begin
+64,pausa,pause
+65,sigue|continuar,resume
+66,qué hay delante,what is in front of me|what is ahead|what is in front
+67,repetir,repeat|say again|repeat that
+68,más alto,louder|speak louder|volume up
+69,más bajo,quieter|speak quieter|softer|volume down
+70,más rápido,faster|speak faster
+71,más despacio,slower|speak slower
+72,cambiar idioma,change language|next language
+73,ayuda,help|list commands|what can i say
+74,"Después de Hey Guide, diga una orden cotidiana. El español funciona cuando el teléfono tiene el reconocedor sin internet. El inglés siempre funciona. Estas órdenes se quedan en inglés en todos los idiomas: stop, stop app, exit, close, start collecting, stop collecting, missed, wrong, false alarm y wrong warning. Órdenes cotidianas: empezar, pausa, sigue, qué hay delante, repetir, más alto, más bajo, más rápido, más despacio, cambiar idioma o ayuda. Stop cierra RaahiSense. Pause apaga los avisos y resume los enciende. Start collecting guarda fotos de entrenamiento y los avisos siguen. Diga missed si un obstáculo no fue avisado. Diga wrong, false alarm o wrong warning si un aviso fue falso o el objeto era otro. También puede sacudir el teléfono con fuerza, tocar dos veces la pantalla si TalkBack está apagado, o mantener pulsada una tecla de volumen con esta pantalla abierta.","After Hey Guide, say one everyday command. Hindi and Spanish everyday commands work when that language is selected and the phone has its offline recognizer. English always works. These stay English in every language: stop, stop app, exit, close, start collecting, stop collecting, missed, wrong, false alarm, and wrong warning. Everyday commands are start, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, and help. Stop closes RaahiSense. Pause turns warnings off, and resume turns them on. Start collecting saves training photos while warnings stay on. Say missed when an obstacle was not warned. Say wrong, false alarm, or wrong warning when a warning was false or the wrong object. Kannada, Telugu, Tamil, Bengali, and Swahili listen for the English command words. You can also shake the phone hard, double-tap the screen when TalkBack is off, or hold a volume key while this screen is open."
+75,"La escucha se queda en el teléfono. No se sube nada. Las órdenes cotidianas funcionan en español y en inglés. Stop, start collecting, stop collecting, missed y wrong se dicen en inglés.","Listening stays on the phone. Nothing is uploaded. Hindi and Spanish everyday commands work in that language, and English always works. Stop, start collecting, stop collecting, missed, and wrong stay English. Kannada, Telugu, Tamil, Bengali, and Swahili commands are English."
+76,RaahiSense,RaahiSense
+77,"Es una ayuda para el bastón blanco, no un reemplazo. Funciona sin internet.",An extra to your white cane. Not a replacement. Works fully offline.
+78,Sostenga el teléfono vertical. La cámara trasera mira hacia donde camina.,Hold the phone upright. The rear camera faces the way you walk.
+79,"Practique adentro con un ayudante primero. Esta aplicación puede no avisar escalones, huecos, postes y muchos otros obstáculos. Siga usando el bastón.","Practice indoors with a helper first. This app misses steps, holes, poles, and many other obstacles. Keep using your cane."
+80,INICIAR,START
+81,DETENER,STOP
+82,Detener RaahiSense,Stop RaahiSense
+83,Permitir cámara,Allow camera
+84,Abrir ajustes,Open settings
+85,Iniciar avisos de obstáculos,Start obstacle warnings
+86,Detener avisos de obstáculos,Stop obstacle warnings
+87,Detener RaahiSense,Stop RaahiSense
+88,Permitir la cámara para iniciar los avisos de obstáculos,Allow the camera so obstacle warnings can start
+89,Abrir los ajustes del teléfono para permitir la cámara,Open phone settings to allow the camera
+90,Listo. Toque el botón grande para iniciar.,Ready. Tap the big button to start.
+91,Iniciado. Escuchando obstáculos.,Started. Listening for obstacles.
+92,Detenido.,Stopped.
+93,Escuchando obstáculos.,Listening for obstacles.
+94,La cámara está apagada. Toque el botón grande y permita la cámara. No se guardan fotos.,The camera is off. Tap the big button and allow the camera. Photos are not saved.
+95,No se permitió la cámara. Sin la cámara no hay avisos.,Camera permission was not allowed. Obstacle Guide cannot warn you without the camera.
+96,"El permiso de la cámara está bloqueado. Abra ajustes, permisos, y active la cámara.","Camera permission is blocked. Open settings, then Permissions, and turn the camera on."
+97,La cámara no está disponible.,The camera is not available.
+98,No se pudo cargar el modelo de detección. Cierre la aplicación y ábrala de nuevo.,The detection model could not be loaded. Close the app and open it again.
+99,Este teléfono no tiene una voz para leer texto. Active TalkBack o instale una voz en los ajustes de texto a voz.,No text-to-speech voice is installed on this phone. Turn on TalkBack or install a voice in text-to-speech settings.
+100,No se pudieron abrir los ajustes de batería en este teléfono.,Battery settings could not be opened on this phone.
+101,El teléfono pedirá usar la cámara. Permítalo. Esta aplicación no guarda fotos y no usa internet.,Your phone will ask to use the camera. Please allow it. Obstacle Guide does not save photos and does not use the internet.
+102,Ajustes,Settings
+103,Idioma,Language
+104,Velocidad de la voz,Speech rate
+105,Lenta,Slow
+106,Normal,Normal
+107,Rápida,Fast
+108,Ahorro de batería: activado,Battery saver: on
+109,Ahorro de batería: desactivado,Battery saver: off
+110,Vibración: activada,Vibration: on
+111,Vibración: desactivada,Vibration: off
+112,El ahorro de batería está desactivado. Toque dos veces para activarlo.,Battery saver is off. Double tap to turn it on.
+113,El ahorro de batería está activado. Toque dos veces para desactivarlo.,Battery saver is on. Double tap to turn it off.
+114,La vibración está desactivada. Toque dos veces para activarla.,Vibration is off. Double tap to turn it on.
+115,La vibración está activada. Toque dos veces para desactivarla.,Vibration is on. Double tap to turn it off.
+116,Seguir activo con la pantalla apagada,Keep running with the screen off
+117,Abrir los ajustes para que la aplicación siga activa con la pantalla apagada,Open phone settings so Obstacle Guide can keep running when the screen is off
+118,Este teléfono permite que Guía de obstáculos siga activa con la pantalla apagada.,This phone allows Obstacle Guide to keep running with the screen off.
+119,Este teléfono puede detener la aplicación cuando la pantalla se apaga. Toque el botón de abajo y permita el uso de batería sin restricciones.,This phone may stop the app when the screen is off. Tap the button below and allow unrestricted battery use.
+120,Estas frases son un borrador. Deben revisarlas personas nativas antes de usarlas.,
+121,Este teléfono no tiene la voz en español sin conexión. Los avisos se dirán en inglés. Descargue la voz en español en los ajustes de texto a voz.,The English voice is not installed. Install a text-to-speech voice in phone settings.
+122,Guía de obstáculos,Obstacle Guide
+123,Guía de obstáculos está activa,Obstacle Guide is on
+124,Escuchando obstáculos,Listening for obstacles
+125,Detener,Stop
+126,Órdenes de voz: activadas,Voice commands: on
+127,Órdenes de voz: desactivadas,Voice commands: off
+128,Las órdenes de voz están desactivadas. Toque dos veces para activarlas.,Voice commands are off. Double tap to turn them on.
+129,Las órdenes de voz están activadas. Toque dos veces para desactivarlas.,Voice commands are on. Double tap to turn them off.
+130,Frase de activación,Wake phrase
+131,Frase de activación. Dígalo antes de una orden. La frase inicial es Hey Guide.,Wake phrase. The words you say before a command. The default is Hey Guide.
+132,La frase de activación ahora es Hey Guide.,Wake phrase set to Hey Guide.
+133,Esas palabras no están en el modelo sin internet de este idioma ni en el modelo de inglés. La frase no cambió.,Those words are not in the offline model for this language or in the English model. The wake phrase was not changed.
+134,El teléfono pedirá usar el micrófono. Permítalo. Obstacle Guide escucha en el teléfono la frase de activación y después una orden. La voz no se envía a internet. Puede apagarlo en los ajustes.,"Your phone will ask to use the microphone. Please allow it. Obstacle Guide listens on the phone for the wake phrase, then for one command. It does not send your voice to the internet. You can turn this off in settings."
+135,El micrófono está apagado. Active las órdenes de voz y permita el micrófono.,The microphone is off. Turn voice commands on and allow the microphone.
+136,No se permitió el micrófono. Las órdenes de voz lo necesitan.,Microphone permission was not allowed. Voice commands need the microphone.
+137,"El permiso del micrófono está bloqueado. Abra ajustes, luego Permisos, y active el micrófono.","Microphone permission is blocked. Open settings, then Permissions, and turn the microphone on."
+138,No se pudo abrir el modelo de voz sin internet. Cierre Obstacle Guide y ábralo de nuevo.,The offline speech model could not be opened. Close Obstacle Guide and open it again.
+139,Otra aplicación está usando el micrófono. Ciérrela y vuelva a activar las órdenes de voz.,"The microphone is being used by another app. Close that app, then turn voice commands on again."
+140,Las órdenes de voz están desactivadas.,Voice commands are off.
+141,Esperando Hey Guide.,Waiting for Hey Guide.
+142,Escuchando una orden.,Listening for one command.
+143,¿Sí?,Yes?
+144,Los avisos de obstáculos ya están activados.,Obstacle warnings are already on.
+145,Los avisos de obstáculos ya están detenidos.,Obstacle warnings are already off.
+146,RaahiSense se detuvo,RaahiSense stopped
+147,Repitiendo.,Repeating.
+148,Todavía no hay un aviso para repetir.,There is no warning to repeat yet.
+149,Más alto.,Louder.
+150,Más bajo.,Quieter.
+151,La voz ya está en el volumen más alto.,Speech is already at the loudest.
+152,La voz ya está en el volumen más bajo.,Speech is already at the quietest.
+153,Más rápido.,Faster.
+154,Más lento.,Slower.
+155,La voz ya está en la velocidad más rápida.,Speech is already at the fastest.
+156,La voz ya está en la velocidad más lenta.,Speech is already at the slowest.
+157,Idioma cambiado.,Language changed.
+158,Eso no fue una orden. Diga help para oír la lista.,That was not a command. Say help for the list.
+159,Ahora no hay nada delante de usted.,Nothing is in front of you right now.
+160,Apagar la voz,Turn voice off
+161,Calibrar la distancia,Calibrate distance
+162,Ajustar qué tan cerca está una pared en este teléfono,Set how close a wall is on this phone
+163,Inicia la guía y después calibra la distancia.,"Start the guide, then calibrate distance."
+164,Apunta por un camino despejado y toca Calibrar la distancia otra vez.,"Point along an open path, then tap Calibrate distance again."
+165,Apunta a una pared a un paso y toca Calibrar la distancia otra vez.,"Point at a wall one step away, then tap Calibrate distance again."
+166,La distancia está calibrada.,Distance is calibrated.
+167,Esa lectura no sirvió. Sostén el teléfono quieto y empieza de nuevo en un camino despejado.,That reading was not usable. Hold the phone steady and start again from an open path.
+168,La pared se vio como el camino despejado. Acércate a una pared y toca otra vez.,The wall looked like the open path. Move closer to a wall and tap again.
+169,Luz,Light
+170,Automática,Auto
+171,Siempre encendida,Always on
+172,Apagada,Off
+173,Encender la linterna cuando sigue oscuro,Turn the flashlight on when it stays dark
+174,Dejar la linterna encendida,Keep the flashlight on
+175,Dejar la linterna apagada,Keep the flashlight off
+176,"Está oscuro, enciendo la luz.","It's dark, turning on the light."
+177,"Demasiado oscuro para ver con claridad, tenga cuidado.","Too dark to see clearly, please use caution."
+178,Acerca de y licencias,About and licenses
+179,Abrir las licencias de la voz y de las fotos,Open the list of speech and picture licenses
+180,Acerca de,About
+181,Obstacle Guide es un complemento del bastón blanco. No lo sustituye.,Obstacle Guide is an extra to a white cane. It is not a replacement.
+182,Volver,Back
+183,Volver a la pantalla principal,Go back to the main screen
+184,Hey Guide,Hey Guide
+185,Recoger fotos de entrenamiento: activado,Collect training photos: on
+186,Recoger fotos de entrenamiento: desactivado,Collect training photos: off
+187,Recoger fotos de entrenamiento está desactivado. Toque dos veces para activarlo.,Collect training photos is off. Double tap to turn it on.
+188,Recoger fotos de entrenamiento está activado. Toque dos veces para desactivarlo. Los avisos siguen.,Collect training photos is on. Double tap to turn it off. Warnings keep running.
+189,Intervalo de fotos: 2 segundos,Photo interval: 2 seconds
+190,Tiempo entre fotos guardadas. Toque dos veces para cambiarlo. Ahora es de 2 segundos.,Time between saved photos. Double tap to change it. It is 2 seconds now.
+191,Guardar GPS con las fotos: activado,Save GPS with photos: on
+192,Guardar GPS con las fotos: desactivado,Save GPS with photos: off
+193,El GPS no se guarda con las fotos. Toque dos veces para incluirlo.,GPS is not saved with photos. Double tap to include it.
+194,El GPS se guarda con las fotos. Toque dos veces para desactivarlo.,GPS is saved with photos. Double tap to turn GPS off.
+195,No se permitió la ubicación. El GPS sigue desactivado.,Location was not allowed. GPS stays off.
+196,"2 fotos, 1 MB","2 photos, 1 MB"
+197,Exportar fotos de entrenamiento,Export training photos
+198,Comprime esta colección y abre la hoja de compartir. No se sube nada hasta que elija un destino.,Zip this collection and open the share sheet. Nothing is uploaded until you choose where to send it.
+199,No hay fotos de entrenamiento para exportar.,There are no training photos to export.
+200,No se pudo comprimir las fotos.,The photos could not be zipped.
+201,Preparando el archivo comprimido.,Preparing the zip.
+202,La recolección de fotos se pausó. El teléfono está caliente.,Photo collection paused. The phone is hot.
+203,Volviendo a recoger fotos.,Collecting photos again.
+204,Recogiendo fotos de entrenamiento. Los avisos siguen.,Collecting training photos. Warnings stay on.
+205,Se dejó de recoger fotos. Los avisos siguen.,Stopped collecting photos. Warnings stay on.
+206,Ya se están recogiendo fotos de entrenamiento.,Already collecting training photos.
+207,Las fotos de entrenamiento ya están desactivadas.,Training photos are already off.
+208,Marcado como no avisado.,Marked as missed.
+209,"Recoger fotos de entrenamiento está desactivado, así que no se guardó nada.","Collect training photos is off, so nothing was saved."
+210,Anotado.,Noted.
+211,Las fotos completas se quedan en este teléfono. Los avisos siguen. No se sube nada. Exportar comparte un archivo comprimido solo cuando lo toca.,Full photos stay on this phone. Warnings keep running. Nothing is uploaded. Export shares a zip only when you tap Export.

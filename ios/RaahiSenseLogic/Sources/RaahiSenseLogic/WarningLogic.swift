@@ -197,7 +197,7 @@ public struct GuideSettings: Equatable, Codable {
     public static let intervalSaverMs: Int64 = 1_500
     public static let depthIntervalNormalMs: Int64 = 500
     public static let depthIntervalSaverMs: Int64 = 2_000
-    public static let languageTags = ["en", "hi", "ta", "bn", "sw", "es"]
+    public static let languageTags = ["en", "hi", "es", "kn", "te", "ta", "bn", "sw"]
 
     public init(
         languageTag: String = "en",

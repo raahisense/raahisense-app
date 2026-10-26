@@ -1,0 +1,212 @@
+number,phrase,english
+1,இடதுபுறம் மிக அருகில் நபர்,Very close person on the left
+2,முன்னால் மிக அருகில் நபர்,Very close person ahead
+3,வலதுபுறம் மிக அருகில் நபர்,Very close person on the right
+4,இடதுபுறம் அருகில் நபர்,Near person on the left
+5,முன்னால் அருகில் நபர்,Near person ahead
+6,வலதுபுறம் அருகில் நபர்,Near person on the right
+7,இடதுபுறம் தொலைவில் நபர்,Far person on the left
+8,முன்னால் தொலைவில் நபர்,Far person ahead
+9,வலதுபுறம் தொலைவில் நபர்,Far person on the right
+10,நபர்,person
+11,சைக்கிள்,bicycle
+12,கார்,car
+13,மோட்டார் சைக்கிள்,motorcycle
+14,பேருந்து,bus
+15,லாரி,truck
+16,சிக்னல் விளக்கு,traffic light
+17,தீ நீர் குழாய்,fire hydrant
+18,நிறுத்தப் பலகை,stop sign
+19,பார்க்கிங் மீட்டர்,parking meter
+20,பெஞ்ச்,bench
+21,பூனை,cat
+22,நாய்,dog
+23,குதிரை,horse
+24,செம்மறியாடு,sheep
+25,மாடு,cow
+26,முதுகுப்பை,backpack
+27,குடை,umbrella
+28,பயணப்பெட்டி,suitcase
+29,பாட்டில்,bottle
+30,நாற்காலி,chair
+31,சோபா,couch
+32,செடி,plant
+33,கட்டில்,bed
+34,மேசை,table
+35,கழிப்பறை,toilet
+36,டிவி,television
+37,அடுப்பு,oven
+38,சிங்க்,sink
+39,குளிர்பெட்டி,refrigerator
+40,ஆட்டோ,auto rickshaw
+41,சைக்கிள் ரிக்ஷா,cycle rickshaw
+42,கைவண்டி,handcart
+43,குழி,pothole
+44,திறந்த சாக்கடை,open drain
+45,நடைபாதை விளிம்பு,curb
+46,படிகள்,stairs
+47,கம்பம்,pole
+48,தடை,barrier
+49,தெரு பொருள்,street object
+50,மரம்,tree
+51,கதவு,door
+52,"இடதுபுறம் தெரியாத பொருள், மிக அருகில்","Unknown object on the left, very close"
+53,"முன்னால் தெரியாத பொருள், மிக அருகில்","Unknown object ahead, very close"
+54,"வலதுபுறம் தெரியாத பொருள், மிக அருகில்","Unknown object on the right, very close"
+55,"இடதுபுறம் தெரியாத பொருள், அருகில்","Unknown object on the left, near"
+56,"முன்னால் தெரியாத பொருள், அருகில்","Unknown object ahead, near"
+57,"வலதுபுறம் தெரியாத பொருள், அருகில்","Unknown object on the right, near"
+58,"முன்னால் சுவர், மிக அருகில்","Wall ahead, very close"
+59,"முன்னால் சுவர், அருகில்","Wall ahead, near"
+60,இடதுபுறத்தில் ஏதோ ஒன்று நெருங்குகிறது,Something approaching on your left
+61,முன்னால் ஏதோ ஒன்று நெருங்குகிறது,Something approaching ahead
+62,வலதுபுறத்தில் ஏதோ ஒன்று நெருங்குகிறது,Something approaching on your right
+63,தொடங்கு|தொடங்குங்கள்,start|start guide|begin
+64,இடைநிறுத்து,pause
+65,மீண்டும் தொடங்கு,resume
+66,முன்னால் என்ன இருக்கு,what is in front of me|what is ahead|what is in front
+67,மீண்டும் சொல்,repeat|say again|repeat that
+68,சத்தமாக பேசு,louder|speak louder|volume up
+69,மெதுவாக பேசு,quieter|speak quieter|softer|volume down
+70,வேகமாக பேசு,faster|speak faster
+71,மெதுவாகப் பேசு,slower|speak slower
+72,மொழி மாற்று,change language|next language
+73,உதவி,help|list commands|what can i say
+74,"Hey Guide பிறகு ஒரு கட்டளை சொல்லுங்கள். தமிழுக்கு பயன்படுத்தக்கூடிய ஆஃப்லைன் கட்டளை மாதிரி இல்லை, எனவே கட்டளைகளை ஆங்கிலத்தில் சொல்லுங்கள். ஆங்கிலம் எப்போதும் வேலை செய்யும். stop, stop app, exit, close, start collecting, stop collecting, missed, wrong, false alarm, wrong warning ஆகியவை எல்லா மொழிகளிலும் ஆங்கிலமே. Stop RaahiSense-ஐ மூடும். Pause எச்சரிக்கையை நிறுத்தும், resume தொடங்கும். Start collecting பயிற்சி புகைப்படங்களை சேமிக்கும், எச்சரிக்கை தொடரும். எச்சரிக்கை வராத தடையை missed என்று சொல்லுங்கள். தவறான எச்சரிக்கைக்கு wrong, false alarm, அல்லது wrong warning என்று சொல்லுங்கள். தொலைபேசியை வேகமாக குலுக்கவும், TalkBack அணைந்திருந்தால் திரையில் இரண்டு முறை தட்டவும், அல்லது இந்தத் திரை திறந்திருக்கும்போது ஒலி பொத்தானை அழுத்திப் பிடிக்கவும்.","After Hey Guide, say one everyday command. Hindi and Spanish everyday commands work when that language is selected and the phone has its offline recognizer. English always works. These stay English in every language: stop, stop app, exit, close, start collecting, stop collecting, missed, wrong, false alarm, and wrong warning. Everyday commands are start, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, and help. Stop closes RaahiSense. Pause turns warnings off, and resume turns them on. Start collecting saves training photos while warnings stay on. Say missed when an obstacle was not warned. Say wrong, false alarm, or wrong warning when a warning was false or the wrong object. Kannada, Telugu, Tamil, Bengali, and Swahili listen for the English command words. You can also shake the phone hard, double-tap the screen when TalkBack is off, or hold a volume key while this screen is open."
+75,"கேட்கும் மாதிரி ஆங்கிலம். Hey Guide சொல்லி, பிறகு ஆங்கில கட்டளை. stop, start collecting, stop collecting, missed, wrong எப்போதும் ஆங்கிலம். குரல் தொலைபேசியிலேயே இருக்கும்.","Listening stays on the phone. Nothing is uploaded. Hindi and Spanish everyday commands work in that language, and English always works. Stop, start collecting, stop collecting, missed, and wrong stay English. Kannada, Telugu, Tamil, Bengali, and Swahili commands are English."
+76,RaahiSense,RaahiSense
+77,இது வெள்ளைப் பிரம்புக்கு உதவி. அதற்குப் பதில் அல்ல. இணையம் இல்லாமல் வேலை செய்யும்.,An extra to your white cane. Not a replacement. Works fully offline.
+78,தொலைபேசியை நேராகப் பிடிக்கவும். பின் கேமரா நீங்கள் நடக்கும் திசையில் இருக்கட்டும்.,Hold the phone upright. The rear camera faces the way you walk.
+79,"முதலில் உதவியாளருடன் வீட்டுக்குள் பயிற்சி செய்யுங்கள். படிகள், குழிகள், கம்பங்கள் மற்றும் பல தடைகளை இந்தச் செயலி தவறவிடலாம். பிரம்பை வைத்திருங்கள்.","Practice indoors with a helper first. This app misses steps, holes, poles, and many other obstacles. Keep using your cane."
+80,தொடங்கு,START
+81,நிறுத்து,STOP
+82,RaahiSense நிறுத்து,Stop RaahiSense
+83,கேமரா அனுமதி,Allow camera
+84,அமைப்புகளைத் திற,Open settings
+85,தடை எச்சரிக்கையைத் தொடங்கு,Start obstacle warnings
+86,தடை எச்சரிக்கையை நிறுத்து,Stop obstacle warnings
+87,RaahiSense நிறுத்து,Stop RaahiSense
+88,தடை எச்சரிக்கைக்கு கேமரா அனுமதியை அளிக்கவும்,Allow the camera so obstacle warnings can start
+89,கேமராவை அனுமதிக்க தொலைபேசி அமைப்பைத் திறக்கவும்,Open phone settings to allow the camera
+90,தயார். தொடங்க பெரிய பொத்தானைத் தொடவும்.,Ready. Tap the big button to start.
+91,தொடங்கியது. தடைகளைக் கவனிக்கிறது.,Started. Listening for obstacles.
+92,நிறுத்தியது.,Stopped.
+93,தடைகளைக் கவனிக்கிறது.,Listening for obstacles.
+94,கேமரா அணைந்துள்ளது. பெரிய பொத்தானைத் தொட்டு கேமராவை அனுமதிக்கவும். புகைப்படங்கள் சேமிக்கப்படாது.,The camera is off. Tap the big button and allow the camera. Photos are not saved.
+95,கேமரா அனுமதி கிடைக்கவில்லை. கேமரா இல்லாமல் எச்சரிக்கை இல்லை.,Camera permission was not allowed. Obstacle Guide cannot warn you without the camera.
+96,"கேமரா அனுமதி தடுக்கப்பட்டுள்ளது. அமைப்புகள், அனுமதிகள், கேமராவை இயக்கவும்.","Camera permission is blocked. Open settings, then Permissions, and turn the camera on."
+97,கேமரா கிடைக்கவில்லை.,The camera is not available.
+98,கண்டறிதல் மாதிரி திறக்கவில்லை. பயன்பாட்டை மூடி மீண்டும் திறக்கவும்.,The detection model could not be loaded. Close the app and open it again.
+99,இந்த தொலைபேசியில் பேசும் குரல் இல்லை. டாக் பேக் அல்லது உரை-குரல் அமைப்பில் குரலைச் சேர்க்கவும்.,No text-to-speech voice is installed on this phone. Turn on TalkBack or install a voice in text-to-speech settings.
+100,இந்த தொலைபேசியில் மின்கல அமைப்பு திறக்கவில்லை.,Battery settings could not be opened on this phone.
+101,தொலைபேசி கேமரா அனுமதி கேட்கும். அனுமதிக்கவும். இப்பயன்பாடு புகைப்படங்களைச் சேமிக்காது. இணையம் தேவையில்லை.,Your phone will ask to use the camera. Please allow it. Obstacle Guide does not save photos and does not use the internet.
+102,அமைப்புகள்,Settings
+103,மொழி,Language
+104,பேசும் வேகம்,Speech rate
+105,மெதுவாக,Slow
+106,இயல்பு,Normal
+107,வேகமாக,Fast
+108,மின்கல சேமிப்பு: இயக்கம்,Battery saver: on
+109,மின்கல சேமிப்பு: அணைவு,Battery saver: off
+110,அதிர்வு: இயக்கம்,Vibration: on
+111,அதிர்வு: அணைவு,Vibration: off
+112,மின்கல சேமிப்பு அணைந்துள்ளது. இயக்க இருமுறை தொடவும்.,Battery saver is off. Double tap to turn it on.
+113,மின்கல சேமிப்பு இயங்கியுள்ளது. அணைக்க இருமுறை தொடவும்.,Battery saver is on. Double tap to turn it off.
+114,அதிர்வு அணைந்துள்ளது. இயக்க இருமுறை தொடவும்.,Vibration is off. Double tap to turn it on.
+115,அதிர்வு இயங்கியுள்ளது. அணைக்க இருமுறை தொடவும்.,Vibration is on. Double tap to turn it off.
+116,திரை அணைந்தும் இயங்க அனுமதி,Keep running with the screen off
+117,திரை அணைந்திருந்தாலும் பயன்பாடு இயங்க தொலைபேசி அமைப்பைத் திறக்கவும்,Open phone settings so Obstacle Guide can keep running when the screen is off
+118,திரை அணைந்திருந்தாலும் இந்த தொலைபேசி தடை வழிகாட்டியை இயங்க அனுமதிக்கிறது.,This phone allows Obstacle Guide to keep running with the screen off.
+119,திரை அணைந்தால் தொலைபேசி பயன்பாட்டை நிறுத்தலாம். கீழுள்ள பொத்தானைத் தொட்டு மின்கல கட்டுப்பாட்டை நீக்கவும்.,This phone may stop the app when the screen is off. Tap the button below and allow unrestricted battery use.
+120,இவை வரைவு வாக்கியங்கள். தாய்மொழி பேசுபவர் சரிபார்த்த பிறகே பயன்படுத்தவும்.,
+121,இந்த தொலைபேசியில் தமிழ் ஆஃப்லைன் குரல் இல்லை. எச்சரிக்கை ஆங்கிலத்தில் பேசப்படும். உரை-குரல் அமைப்பில் தமிழ் குரலைப் பதிவிறக்கவும்.,The English voice is not installed. Install a text-to-speech voice in phone settings.
+122,தடை வழிகாட்டி,Obstacle Guide
+123,தடை வழிகாட்டி இயங்குகிறது,Obstacle Guide is on
+124,தடைகளைக் கவனிக்கிறது,Listening for obstacles
+125,நிறுத்து,Stop
+126,குரல் கட்டளை: இயக்கம்,Voice commands: on
+127,குரல் கட்டளை: நிறுத்தம்,Voice commands: off
+128,குரல் கட்டளை நிறுத்தத்தில் உள்ளது. இயக்க இரண்டு முறை தட்டவும்.,Voice commands are off. Double tap to turn them on.
+129,குரல் கட்டளை இயக்கத்தில் உள்ளது. நிறுத்த இரண்டு முறை தட்டவும்.,Voice commands are on. Double tap to turn them off.
+130,எழுப்பும் சொல்,Wake phrase
+131,எழுப்பும் சொல். கட்டளைக்கு முன் இதைச் சொல்லுங்கள். இயல்பு Hey Guide.,Wake phrase. The words you say before a command. The default is Hey Guide.
+132,எழுப்பும் சொல் இப்போது Hey Guide.,Wake phrase set to Hey Guide.
+133,இந்தச் சொற்கள் ஆஃப்லைன் ஆங்கில மாதிரியில் இல்லை. எழுப்பும் சொல் மாறவில்லை.,Those words are not in the offline model for this language or in the English model. The wake phrase was not changed.
+134,"தொலைபேசி மைக்ரோஃபோன் அனுமதி கேட்கும். அனுமதிக்கவும். Obstacle Guide தொலைபேசியில் எழுப்பும் சொல்லைக் கேட்கும், பிறகு ஒரு கட்டளை. குரல் இணையத்துக்குப் போகாது. அமைப்பில் இதை அணைக்கலாம்.","Your phone will ask to use the microphone. Please allow it. Obstacle Guide listens on the phone for the wake phrase, then for one command. It does not send your voice to the internet. You can turn this off in settings."
+135,மைக்ரோஃபோன் அணைந்துள்ளது. குரல் கட்டளையை இயக்கி மைக்ரோஃபோனை அனுமதிக்கவும்.,The microphone is off. Turn voice commands on and allow the microphone.
+136,மைக்ரோஃபோன் அனுமதி கிடைக்கவில்லை. குரல் கட்டளைக்கு மைக்ரோஃபோன் வேண்டும்.,Microphone permission was not allowed. Voice commands need the microphone.
+137,"மைக்ரோஃபோன் அனுமதி தடுக்கப்பட்டது. அமைப்பு, பிறகு அனுமதிகள், மைக்ரோஃபோனை இயக்கவும்.","Microphone permission is blocked. Open settings, then Permissions, and turn the microphone on."
+138,ஆஃப்லைன் பேச்சு மாதிரி திறக்கவில்லை. Obstacle Guide மூடி மீண்டும் திறக்கவும்.,The offline speech model could not be opened. Close Obstacle Guide and open it again.
+139,"மைக்ரோஃபோனை வேறு செயலி பயன்படுத்துகிறது. அதை மூடி, குரல் கட்டளையை மீண்டும் இயக்கவும்.","The microphone is being used by another app. Close that app, then turn voice commands on again."
+140,குரல் கட்டளை அணைந்துள்ளது.,Voice commands are off.
+141,Hey Guide காத்திருக்கிறது.,Waiting for Hey Guide.
+142,ஒரு கட்டளை கேட்கப்படுகிறது.,Listening for one command.
+143,சொல்லுங்கள்?,Yes?
+144,தடை எச்சரிக்கை ஏற்கெனவே இயங்குகிறது.,Obstacle warnings are already on.
+145,தடை எச்சரிக்கை ஏற்கெனவே நின்றுள்ளது.,Obstacle warnings are already off.
+146,RaahiSense நின்றது,RaahiSense stopped
+147,மீண்டும் சொல்கிறேன்.,Repeating.
+148,மீண்டும் சொல்ல எச்சரிக்கை இல்லை.,There is no warning to repeat yet.
+149,ஒலி கூட்டப்பட்டது.,Louder.
+150,ஒலி குறைக்கப்பட்டது.,Quieter.
+151,ஒலி ஏற்கெனவே அதிகபட்சம்.,Speech is already at the loudest.
+152,ஒலி ஏற்கெனவே குறைந்தபட்சம்.,Speech is already at the quietest.
+153,பேச்சு வேகமானது.,Faster.
+154,பேச்சு மெதுவானது.,Slower.
+155,பேச்சு ஏற்கெனவே மிக வேகம்.,Speech is already at the fastest.
+156,பேச்சு ஏற்கெனவே மிக மெதுவு.,Speech is already at the slowest.
+157,மொழி மாற்றப்பட்டது.,Language changed.
+158,அது கட்டளை அல்ல. பட்டியலுக்கு help சொல்லுங்கள்.,That was not a command. Say help for the list.
+159,இப்போது முன்னால் ஒன்றும் இல்லை.,Nothing is in front of you right now.
+160,குரலை அணை,Turn voice off
+161,தூரத்தை அளவிடு,Calibrate distance
+162,இந்த தொலைபேசியில் சுவர் எவ்வளவு அருகில் என்று அளவிடு,Set how close a wall is on this phone
+163,"முதலில் வழிகாட்டியைத் தொடங்குங்கள், பிறகு தூரத்தை அளவிடுங்கள்.","Start the guide, then calibrate distance."
+164,"திறந்த பாதையை நோக்கி பிடிக்கவும், பிறகு தூரத்தை அளவிடு மீண்டும் தட்டவும்.","Point along an open path, then tap Calibrate distance again."
+165,"ஒரு அடி தூரத்தில் சுவரை நோக்கி பிடிக்கவும், பிறகு தூரத்தை அளவிடு மீண்டும் தட்டவும்.","Point at a wall one step away, then tap Calibrate distance again."
+166,தூரம் அளவிடப்பட்டது.,Distance is calibrated.
+167,இந்த அளவு பயன்படவில்லை. தொலைபேசியை அசையாமல் பிடித்து திறந்த பாதையில் இருந்து மீண்டும் தொடங்குங்கள்.,That reading was not usable. Hold the phone steady and start again from an open path.
+168,சுவர் திறந்த பாதை போலத் தெரிந்தது. சுவருக்கு அருகில் சென்று மீண்டும் தட்டவும்.,The wall looked like the open path. Move closer to a wall and tap again.
+169,விளக்கு,Light
+170,தானாக,Auto
+171,எப்போதும் எரி,Always on
+172,அணை,Off
+173,இருட்டு நீடித்தால் விளக்கைப் போடு,Turn the flashlight on when it stays dark
+174,விளக்கை எப்போதும் எரிய விடு,Keep the flashlight on
+175,விளக்கை அணைத்து வை,Keep the flashlight off
+176,"இருட்டு, விளக்கைப் போடுகிறேன்.","It's dark, turning on the light."
+177,"மிகவும் இருட்டு, தெளிவாகத் தெரியவில்லை. தயவுசெய்து எச்சரிக்கையாக இருங்கள்.","Too dark to see clearly, please use caution."
+178,அறிமுகமும் உரிமங்களும்,About and licenses
+179,பேச்சு மற்றும் பட உரிமங்களைத் திறக்கவும்,Open the list of speech and picture licenses
+180,அறிமுகம்,About
+181,தடை வழிகாட்டி வெள்ளை கோலுக்குத் துணை. அதற்குப் பதிலாக அல்ல.,Obstacle Guide is an extra to a white cane. It is not a replacement.
+182,பின்செல்,Back
+183,முதன்மை திரைக்குத் திரும்பு,Go back to the main screen
+184,Hey Guide,Hey Guide
+185,பயிற்சி புகைப்படங்களை சேகரி: இயக்கம்,Collect training photos: on
+186,பயிற்சி புகைப்படங்களை சேகரி: நிறுத்தம்,Collect training photos: off
+187,பயிற்சி புகைப்படங்கள் நிறுத்தத்தில் உள்ளன. இயக்க இரண்டு முறை தட்டவும்.,Collect training photos is off. Double tap to turn it on.
+188,பயிற்சி புகைப்படங்கள் இயக்கத்தில் உள்ளன. நிறுத்த இரண்டு முறை தட்டவும். எச்சரிக்கை தொடரும்.,Collect training photos is on. Double tap to turn it off. Warnings keep running.
+189,புகைப்பட இடைவெளி: 2 வினாடி,Photo interval: 2 seconds
+190,சேமித்த புகைப்படங்களுக்கு இடையிலான நேரம். மாற்ற இரண்டு முறை தட்டவும். இப்போது 2 வினாடி.,Time between saved photos. Double tap to change it. It is 2 seconds now.
+191,புகைப்படங்களுடன் GPS: இயக்கம்,Save GPS with photos: on
+192,புகைப்படங்களுடன் GPS: நிறுத்தம்,Save GPS with photos: off
+193,GPS புகைப்படங்களுடன் சேமிக்கப்படவில்லை. சேர்க்க இரண்டு முறை தட்டவும்.,GPS is not saved with photos. Double tap to include it.
+194,GPS புகைப்படங்களுடன் சேமிக்கப்படுகிறது. நிறுத்த இரண்டு முறை தட்டவும்.,GPS is saved with photos. Double tap to turn GPS off.
+195,இட அனுமதி கிடைக்கவில்லை. GPS நிறுத்தத்தில் இருக்கும்.,Location was not allowed. GPS stays off.
+196,"2 புகைப்படங்கள், 1 MB","2 photos, 1 MB"
+197,பயிற்சி புகைப்படங்களை ஏற்றுமதி செய்,Export training photos
+198,இந்தத் தொகுப்பின் zip-ஐ உருவாக்கி பகிர்வுத் திரையைத் திறக்கும். நீங்கள் இடத்தைத் தேர்ந்தெடுக்கும் வரை எதுவும் பதிவேற்றப்படாது.,Zip this collection and open the share sheet. Nothing is uploaded until you choose where to send it.
+199,ஏற்றுமதி செய்ய பயிற்சி புகைப்படங்கள் இல்லை.,There are no training photos to export.
+200,புகைப்படங்களின் zip உருவாகவில்லை.,The photos could not be zipped.
+201,zip தயாராகிறது.,Preparing the zip.
+202,புகைப்பட சேகரிப்பு நின்றது. தொலைபேசி சூடாக உள்ளது.,Photo collection paused. The phone is hot.
+203,புகைப்படங்கள் மீண்டும் சேகரிக்கப்படுகின்றன.,Collecting photos again.
+204,பயிற்சி புகைப்படங்கள் சேகரிக்கப்படுகின்றன. எச்சரிக்கை தொடரும்.,Collecting training photos. Warnings stay on.
+205,புகைப்பட சேகரிப்பு நின்றது. எச்சரிக்கை தொடரும்.,Stopped collecting photos. Warnings stay on.
+206,பயிற்சி புகைப்படங்கள் ஏற்கெனவே சேகரிக்கப்படுகின்றன.,Already collecting training photos.
+207,பயிற்சி புகைப்படங்கள் ஏற்கெனவே நிறுத்தத்தில் உள்ளன.,Training photos are already off.
+208,தவறவிட்டதாக குறிக்கப்பட்டது.,Marked as missed.
+209,"பயிற்சி புகைப்படங்கள் நிறுத்தத்தில் உள்ளன, அதனால் எதுவும் சேமிக்கப்படவில்லை.","Collect training photos is off, so nothing was saved."
+210,குறித்துக்கொண்டேன்.,Noted.
+211,முழு புகைப்படங்கள் இந்தத் தொலைபேசியிலேயே இருக்கும். எச்சரிக்கை தொடரும். எதுவும் பதிவேற்றப்படாது. Export தட்டும்போது மட்டும் zip பகிரப்படும்.,Full photos stay on this phone. Warnings keep running. Nothing is uploaded. Export shares a zip only when you tap Export.

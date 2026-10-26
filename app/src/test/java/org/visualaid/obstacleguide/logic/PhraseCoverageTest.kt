@@ -43,6 +43,8 @@ class PhraseCoverageTest {
             "values-bn",
             "values-sw",
             "values-es",
+            "values-kn",
+            "values-te",
         )
         for (locale in locales) {
             val file = File(root, "$locale/strings.xml")
@@ -69,6 +71,22 @@ class PhraseCoverageTest {
                 assertTrue("$locale draft banner", entries.getValue("draft_banner").isNotBlank())
                 assertTrue("$locale voice message", entries.getValue("voice_missing_screen").length > 20)
             }
+            val englishOnly = listOf(
+                "cmd_stop",
+                "cmd_collect_start",
+                "cmd_collect_stop",
+                "cmd_missed",
+                "cmd_wrong",
+            )
+            val english = stringEntries(File(root, "values/strings.xml").readText())
+            for (name in englishOnly) {
+                assertEquals("$locale $name stays English", english.getValue(name), entries.getValue(name))
+            }
+            val help = entries.getValue("help_commands")
+            assertTrue("$locale help names stop", help.contains("stop"))
+            assertTrue("$locale help names missed", help.contains("missed"))
+            assertTrue("$locale help names wrong", help.contains("wrong"))
+            assertTrue("$locale help names collecting", help.contains("start collecting"))
         }
     }
 
@@ -79,7 +97,7 @@ class PhraseCoverageTest {
             val value = entries[name]
             assertTrue(name, value != null && value.length > 40 && !value.contains("%"))
         }
-        val picker = listOf("lang_hi", "lang_ta", "lang_bn", "lang_sw", "lang_es")
+        val picker = listOf("lang_hi", "lang_es", "lang_kn", "lang_te", "lang_ta", "lang_bn", "lang_sw")
         for (name in picker) {
             assertTrue(entries.getValue(name).contains("needs native-speaker review"))
         }

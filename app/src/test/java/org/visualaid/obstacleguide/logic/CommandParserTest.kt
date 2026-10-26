@@ -185,4 +185,61 @@ class CommandParserTest {
         assertTrue(CommandGrammar.inVocabulary("pause", vocab))
         assertFalse(CommandGrammar.inVocabulary("शुरू करो", vocab))
     }
+
+    @Test
+    fun everydayCommands_canBeHindiOrSpanish_andStopStaysEnglish() {
+        val hindi = CommandLexicon.ENGLISH.withExtra(
+            mapOf(
+                VoiceCommand.START to listOf("शुरू", "शुरू करो"),
+                VoiceCommand.PAUSE to listOf("विराम"),
+                VoiceCommand.HELP to listOf("मदद"),
+            ),
+        )
+        assertEquals(VoiceCommand.START, CommandParser.parse("शुरू करो", hindi))
+        assertEquals(VoiceCommand.PAUSE, CommandParser.parse("विराम", hindi))
+        assertEquals(VoiceCommand.HELP, CommandParser.parse("मदद", hindi))
+        assertEquals(VoiceCommand.STOP, CommandParser.parse("stop", hindi))
+        assertNull(CommandParser.parse("रुको", hindi))
+        assertEquals(VoiceCommand.WRONG, CommandParser.parse("wrong", hindi))
+        assertEquals(VoiceCommand.WRONG, CommandParser.parse("false alarm", hindi))
+        assertEquals(
+            VoiceAction.START,
+            VoiceInterpreter.interpret(
+                "हे गाइड शुरू",
+                hindi,
+                wakePhrase = "hey guide",
+                requireWake = true,
+                extraWakePhrases = SpokenEar.nativeWakes("hi"),
+            ),
+        )
+        assertEquals(
+            VoiceAction.IGNORE,
+            VoiceInterpreter.interpret("शुरू", hindi, requireWake = true, extraWakePhrases = listOf("हे गाइड")),
+        )
+        val spanish = CommandLexicon.ENGLISH.withExtra(
+            mapOf(VoiceCommand.START to listOf("empezar"), VoiceCommand.HELP to listOf("ayuda")),
+        )
+        assertEquals(VoiceCommand.START, CommandParser.parse("empezar", spanish))
+        assertNull(CommandParser.parse("parar", spanish))
+        assertEquals(
+            VoiceAction.HELP,
+            VoiceInterpreter.interpret(
+                "oye guía ayuda",
+                spanish,
+                requireWake = true,
+                extraWakePhrases = SpokenEar.nativeWakes("es"),
+            ),
+        )
+        assertEquals(VoiceAction.STOP, EarChoice.prefer(VoiceAction.START, VoiceAction.STOP))
+        assertEquals(VoiceAction.WRONG, EarChoice.prefer(VoiceAction.HELP, VoiceAction.WRONG))
+        assertEquals(VoiceAction.START, EarChoice.prefer(VoiceAction.START, VoiceAction.UNKNOWN))
+        assertEquals(VoiceAction.PAUSE, EarChoice.prefer(null, VoiceAction.PAUSE))
+        assertTrue(SpokenEar.hasCommandModel("hi"))
+        assertTrue(SpokenEar.hasCommandModel("es"))
+        assertFalse(SpokenEar.hasCommandModel("kn"))
+        assertFalse(SpokenEar.hasCommandModel("te"))
+        assertFalse(SpokenEar.hasCommandModel("ta"))
+        assertEquals(listOf("हे गाइड"), SpokenEar.nativeWakes("hi"))
+        assertEquals(listOf("oye guía"), SpokenEar.nativeWakes("es"))
+    }
 }

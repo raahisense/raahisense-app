@@ -763,10 +763,12 @@ class MainActivity : AppCompatActivity() {
     private fun checkLanguage(tag: String) {
         val id = when (tag) {
             "hi" -> R.id.langHi
+            "es" -> R.id.langEs
+            "kn" -> R.id.langKn
+            "te" -> R.id.langTe
             "ta" -> R.id.langTa
             "bn" -> R.id.langBn
             "sw" -> R.id.langSw
-            "es" -> R.id.langEs
             else -> R.id.langEn
         }
         if (binding.languages.checkedRadioButtonId != id) {
@@ -799,10 +801,12 @@ class MainActivity : AppCompatActivity() {
     private fun languageTagFor(checkedId: Int): String? = when (checkedId) {
         R.id.langEn -> "en"
         R.id.langHi -> "hi"
+        R.id.langEs -> "es"
+        R.id.langKn -> "kn"
+        R.id.langTe -> "te"
         R.id.langTa -> "ta"
         R.id.langBn -> "bn"
         R.id.langSw -> "sw"
-        R.id.langEs -> "es"
         else -> null
     }
 
@@ -850,7 +854,7 @@ class MainActivity : AppCompatActivity() {
     private fun commitWakePhrase() {
         val proposed = binding.wakePhrase.text?.toString().orEmpty()
         if (proposed.trim() == settings.wakePhrase) return
-        if (!VoskVocab.allows(this, proposed)) {
+        if (!VoskVocab.allows(this, proposed, settings.languageTag)) {
             binding.wakePhrase.setText(settings.wakePhrase)
             speakUi(getString(R.string.wake_phrase_rejected))
             return

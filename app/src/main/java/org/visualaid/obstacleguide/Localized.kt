@@ -7,10 +7,12 @@ import java.util.Locale
 object Localized {
     fun localeFor(languageTag: String): Locale = when (languageTag) {
         "hi" -> Locale("hi", "IN")
+        "es" -> Locale("es")
+        "kn" -> Locale("kn", "IN")
+        "te" -> Locale("te", "IN")
         "ta" -> Locale("ta", "IN")
         "bn" -> Locale("bn", "IN")
         "sw" -> Locale("sw")
-        "es" -> Locale("es")
         else -> Locale.ENGLISH
     }
 

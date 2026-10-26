@@ -3,25 +3,61 @@ package org.visualaid.obstacleguide.voice
 import android.content.Context
 import org.visualaid.obstacleguide.logic.CommandLexicon
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 import java.util.zip.ZipInputStream
 
 /**
- * The wake-word model is stored in the app and unpacked on the phone.
- * It is the small English Vosk model, Apache License 2.0, from Alpha Cephei.
+ * One offline Vosk model. Hindi and Spanish are the small Apache-2.0 models.
+ * Telugu's small model is not bundled: its published error rate is about 88 percent.
+ * Tamil and Kannada have no Vosk model.
+ */
+data class EarModel(
+    val tag: String,
+    val assetZip: String,
+    val wordsAsset: String,
+    val directoryName: String,
+) {
+    companion object {
+        val ENGLISH = EarModel(
+            tag = "en",
+            assetZip = "vosk-model-small-en-us-0.15.zip",
+            wordsAsset = "vosk-small-en-words.txt",
+            directoryName = "vosk-model-small-en-us-0.15",
+        )
+        val HINDI = EarModel(
+            tag = "hi",
+            assetZip = "vosk-model-small-hi-0.22.zip",
+            wordsAsset = "vosk-small-hi-words.txt",
+            directoryName = "vosk-model-small-hi-0.22",
+        )
+        val SPANISH = EarModel(
+            tag = "es",
+            assetZip = "vosk-model-small-es-0.42.zip",
+            wordsAsset = "vosk-small-es-words.txt",
+            directoryName = "vosk-model-small-es-0.42",
+        )
+
+        fun forLanguage(tag: String): EarModel? = when (tag) {
+            "hi" -> HINDI
+            "es" -> SPANISH
+            else -> null
+        }
+    }
+}
+
+/**
+ * Wake-word models are stored in the app and unpacked on the phone.
+ * Unpacking one language leaves the other models in place.
  */
 object VoskModels {
-    const val ASSET_ZIP = "vosk-model-small-en-us-0.15.zip"
-    const val WORDS_ASSET = "vosk-small-en-words.txt"
-    private const val MODEL_DIR_NAME = "vosk-model-small-en-us-0.15"
-
-    fun modelDirectory(context: Context): File {
+    fun modelDirectory(context: Context, spec: EarModel = EarModel.ENGLISH): File {
         val root = File(context.applicationContext.filesDir, "vosk")
-        val model = File(root, MODEL_DIR_NAME)
+        val model = File(root, spec.directoryName)
         val ready = File(model, "am/final.mdl")
         if (ready.isFile) return model
-        if (root.exists()) root.deleteRecursively()
+        if (model.exists()) model.deleteRecursively()
         root.mkdirs()
-        context.applicationContext.assets.open(ASSET_ZIP).use { raw ->
+        context.applicationContext.assets.open(spec.assetZip).use { raw ->
             ZipInputStream(raw).use { zip ->
                 var entry = zip.nextEntry
                 while (entry != null) {
@@ -41,31 +77,36 @@ object VoskModels {
             }
         }
         if (!ready.isFile) {
-            error("Vosk model did not unpack")
+            error("Vosk model did not unpack: ${spec.directoryName}")
         }
         return model
     }
 }
 
 object VoskVocab {
-    @Volatile
-    private var words: Set<String>? = null
+    private val cache = ConcurrentHashMap<String, Set<String>>()
 
-    fun words(context: Context): Set<String> {
-        words?.let { return it }
-        val loaded = context.applicationContext.assets.open(VoskModels.WORDS_ASSET)
+    fun words(context: Context, asset: String = EarModel.ENGLISH.wordsAsset): Set<String> {
+        cache[asset]?.let { return it }
+        val loaded = context.applicationContext.assets.open(asset)
             .bufferedReader()
             .useLines { lines ->
                 lines.map { it.trim() }.filter { it.isNotEmpty() }.toSet()
             }
-        words = loaded
+        cache[asset] = loaded
         return loaded
     }
 
-    fun allows(context: Context, phrase: String): Boolean {
+    /** True when every word is in the English list, or in the selected language model. */
+    fun allows(context: Context, phrase: String, languageTag: String = "en"): Boolean {
+        if (phraseIn(words(context, EarModel.ENGLISH.wordsAsset), phrase)) return true
+        val extra = EarModel.forLanguage(languageTag) ?: return false
+        return phraseIn(words(context, extra.wordsAsset), phrase)
+    }
+
+    private fun phraseIn(vocab: Set<String>, phrase: String): Boolean {
         val normalized = CommandLexicon.normalize(phrase)
         if (normalized.isEmpty()) return false
-        val vocab = words(context)
         return normalized.split(' ').all { it in vocab }
     }
 }

@@ -77,7 +77,6 @@ import org.visualaid.obstacleguide.speech.GuideSpeaker
 import org.visualaid.obstacleguide.speech.PhraseBook
 import org.visualaid.obstacleguide.speech.VoiceStatus
 import org.visualaid.obstacleguide.voice.VoskEar
-import org.visualaid.obstacleguide.voice.VoskVocab
 import java.io.File
 import java.util.concurrent.Executors
 import kotlin.math.roundToInt
@@ -443,7 +442,7 @@ class GuideService : LifecycleService() {
 
         override fun wakePhrase(): String = settings.wakePhrase
 
-        override fun vocab(): Set<String> = VoskVocab.words(this@GuideService)
+        override fun languageTag(): String = settings.languageTag
     }
 
     private fun performVoice(action: VoiceAction) {
@@ -605,7 +604,7 @@ class GuideService : LifecycleService() {
     }
 
     private fun commandLexicon(): CommandLexicon {
-        val speech = speechContext()
+        val speech = Localized.wrap(this, settings.languageTag)
         fun phrases(name: Int) = CommandLexicon.pipes(speech.getString(name))
         return CommandLexicon.ENGLISH.withExtra(
             mapOf(
@@ -796,6 +795,7 @@ class GuideService : LifecycleService() {
     fun applySettings(newSettings: GuideSettings, announceMissing: Boolean = true) {
         val previousCollect = settings.collectEnabled
         val previousGps = settings.collectGps
+        val previousLanguage = settings.languageTag
         settings = newSettings.normalized()
         when (speaker.setLanguage(settings.languageTag, settings.speechRate, settings.speechVolume)) {
             VoiceStatus.AVAILABLE -> {
@@ -834,6 +834,9 @@ class GuideService : LifecycleService() {
             } else if (settings.torchMode != TorchMode.AUTO) {
                 updateLight(SceneLight(Float.NaN), flashUnit)
             }
+        }
+        if (previousLanguage != settings.languageTag) {
+            ear?.reloadGrammar()
         }
     }
 
@@ -1577,6 +1580,8 @@ class GuideService : LifecycleService() {
         "bn" -> R.string.voice_missing_bn
         "sw" -> R.string.voice_missing_sw
         "es" -> R.string.voice_missing_es
+        "kn" -> R.string.voice_missing_kn
+        "te" -> R.string.voice_missing_te
         else -> R.string.status_tts_error
     }
 

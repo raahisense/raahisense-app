@@ -100,7 +100,7 @@ data class GuideSettings(
         const val DEPTH_INTERVAL_NORMAL_MS = 500L
         const val DEPTH_INTERVAL_SAVER_MS = 2_000L
 
-        val LANGUAGE_TAGS = listOf("en", "hi", "ta", "bn", "sw", "es")
+        val LANGUAGE_TAGS = listOf("en", "hi", "es", "kn", "te", "ta", "bn", "sw")
 
         fun frameIntervalMs(batterySaver: Boolean): Long {
             return if (batterySaver) INTERVAL_SAVER_MS else INTERVAL_NORMAL_MS

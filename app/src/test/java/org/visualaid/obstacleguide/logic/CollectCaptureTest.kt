@@ -111,6 +111,7 @@ class CollectCaptureTest {
         assertTrue(json.contains("blur faces"))
         assertTrue(json.contains("\"fullResolution\": true"))
         assertTrue(json.contains("\"jpegQuality\": 90"))
+        assertFalse(json.contains("spokenWarning"))
         val withGps = CollectCapture.sidecarJson(
             timestampIso = "2026-10-25T12:00:00.000+00:00",
             event = CollectEvent.PERIODIC,
@@ -150,6 +151,87 @@ class CollectCaptureTest {
             VoiceInterpreter.interpret("missed", requireWake = false),
         )
         assertEquals(VoiceAction.STOP, VoiceInterpreter.interpret("stop", requireWake = false))
+        assertEquals(VoiceCommand.WRONG, CommandParser.parse("wrong warning"))
+        assertEquals(
+            VoiceAction.WRONG,
+            VoiceInterpreter.interpret("wrong", requireWake = true, allowBareCorrection = true),
+        )
+    }
+
+    @Test
+    fun wrong_burstsImmediatelyAndKeepsTheSpokenWarning() {
+        val scheduler = CollectScheduler()
+        scheduler.setEnabled(true)
+        scheduler.onCaptured(10_000)
+        scheduler.onWarning()
+        scheduler.onWrong()
+        assertEquals(
+            CollectEvent.WRONG,
+            scheduler.poll(nowMs = 10_100, intervalMs = 1_500, hot = false, busy = false),
+        )
+        assertNull(scheduler.poll(nowMs = 10_200, intervalMs = 1_500, hot = true, busy = false))
+        assertEquals(
+            CollectEvent.WRONG,
+            scheduler.poll(nowMs = 10_300, intervalMs = 1_500, hot = false, busy = false),
+        )
+        val spokenBox = DetectionBox("person", 0.91f, 0.05f, 0.20f, 0.40f, 0.95f)
+        val other = DetectionBox("person", 0.80f, 0.40f, 0.40f, 0.55f, 0.60f)
+        val warning = WarningLogic.fromBox(spokenBox)
+        assertEquals(HorizontalPosition.LEFT, warning?.position)
+        assertEquals(Closeness.VERY_CLOSE, warning?.closeness)
+        val spoken = CollectCapture.spokenWarning(
+            warning!!,
+            listOf(other, spokenBox),
+            "2026-10-25T12:00:01.000+00:00",
+        )
+        assertEquals("person", spoken.label)
+        assertEquals(0.91f, spoken.confidence)
+        assertEquals(0.05f, spoken.left)
+        assertEquals(0.95f, spoken.bottom)
+        val wall = ObstacleWarning("wall", HorizontalPosition.AHEAD, Closeness.VERY_CLOSE, 1f, true)
+        val depthOnly = CollectCapture.spokenWarning(wall, listOf(spokenBox), "2026-10-25T12:00:02.000+00:00")
+        assertEquals("wall", depthOnly.label)
+        assertNull(depthOnly.confidence)
+        assertFalse(depthOnly.hasBox())
+        val lighting = CollectCapture.lightingOf(SceneLight(Float.NaN))
+        val json = CollectCapture.sidecarJson(
+            timestampIso = "2026-10-25T12:00:03.000+00:00",
+            event = CollectEvent.WRONG,
+            detections = listOf(spokenBox),
+            depth = DepthSummary(null, null, null, 0),
+            lighting = lighting,
+            gpsEnabled = false,
+            gps = GpsReading(12.9716, 77.5946, 8f, "2026-10-25T12:00:03.000+00:00"),
+            width = 4000,
+            height = 3000,
+            fullResolution = true,
+            spokenWarning = spoken,
+            includeSpokenWarning = true,
+        )
+        assertTrue(json.contains("\"event\": \"wrong\""))
+        assertTrue(json.contains("\"spokenWarning\""))
+        assertTrue(json.contains("\"label\": \"person\""))
+        assertTrue(json.contains("\"confidence\": 0.9100"))
+        assertTrue(json.contains("\"left\": 0.0500"))
+        assertTrue(json.contains("\"spokenAt\": \"2026-10-25T12:00:01.000+00:00\""))
+        assertTrue(json.contains("\"gps\": null"))
+        assertFalse(json.contains("77.5946"))
+        val missing = CollectCapture.sidecarJson(
+            timestampIso = "2026-10-25T12:00:03.000+00:00",
+            event = CollectEvent.WRONG,
+            detections = emptyList(),
+            depth = DepthSummary(null, null, null, 0),
+            lighting = lighting,
+            gpsEnabled = false,
+            gps = null,
+            width = null,
+            height = null,
+            fullResolution = true,
+            spokenWarning = null,
+            includeSpokenWarning = true,
+        )
+        assertTrue(missing.contains("\"spokenWarning\": null"))
+        assertTrue(missing.contains("\"event\": \"wrong\""))
     }
 
     @Test

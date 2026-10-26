@@ -137,7 +137,7 @@
     <string name="confirm_language">Lugha imebadilishwa.</string>
     <string name="confirm_unknown">Hiyo si amri. Sema help kusikia orodha.</string>
     <string name="ahead_clear">Hakuna kinachoonekana mbele yako sasa.</string>
-    <string name="help_commands">Baada ya %1$s, sema amri moja ya Kiingereza: start, stop, stop app, exit, close, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, start collecting, stop collecting, missed, au help. Stop hufunga RaahiSense. Pause huzima maonyo na resume huyawasha. Start collecting huhifadhi picha za mafunzo na maonyo yanaendelea. Sema missed ikiwa kikwazo hakijaonywa. Tikisa simu kwa nguvu, gusa skrini mara mbili TalkBack ikiwa imezimwa, au shikilia kitufe cha sauti skrini hii ikiwa wazi.</string>
+    <string name="help_commands">Baada ya %1$s, sema amri moja ya Kiingereza: start, stop, stop app, exit, close, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, start collecting, stop collecting, missed, wrong, au help. Stop hufunga RaahiSense. Pause huzima maonyo na resume huyawasha. Start collecting huhifadhi picha za mafunzo na maonyo yanaendelea. Sema missed ikiwa kikwazo hakijaonywa. Sema wrong, false alarm, au wrong warning ikiwa onyo lilikuwa la uongo au kitu kibaya. Tikisa simu kwa nguvu, gusa skrini mara mbili TalkBack ikiwa imezimwa, au shikilia kitufe cha sauti skrini hii ikiwa wazi.</string>
     <string name="cmd_start">anza|start|start guide|begin</string>
     <string name="cmd_stop">simama|stop|stop app|exit|close|stop guide</string>
     <string name="cmd_pause">pause</string>
@@ -214,9 +214,11 @@
     <string name="confirm_collect_already_off">Picha za mafunzo tayari zimezimwa.</string>
     <string name="confirm_missed">Imewekwa alama kuwa haikuonywa.</string>
     <string name="confirm_missed_off">Picha za mafunzo zimezimwa, kwa hiyo hakuna kilichohifadhiwa.</string>
+    <string name="confirm_noted">Nimekumbuka.</string>
     <string name="cmd_collect_start">start collecting</string>
     <string name="cmd_collect_stop">stop collecting</string>
     <string name="cmd_missed">missed</string>
+    <string name="cmd_wrong">wrong|false alarm|wrong warning</string>
     <string name="collect_note">Picha kamili zinabaki kwenye simu hii. Maonyo yanaendelea. Hakuna kinachopakiwa. Export hushiriki faili iliyofungwa unapoigonga tu.</string>
 </resources>
 

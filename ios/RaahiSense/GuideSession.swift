@@ -57,6 +57,10 @@ final class GuideSession: ObservableObject {
     private var earRunning = false
     private var quietUntilMs: Int64 = 0
     private var unmuteToken = 0
+    private var correctionUntilMs: Int64 = 0
+    private var correctionToken = 0
+    private let warningLock = NSLock()
+    private var lastSpokenWarning: SpokenWarning?
     private var prepared = false
     private let settingsLock = NSLock()
     private var settingsSnapshot = GuideSettings()
@@ -423,6 +427,7 @@ final class GuideSession: ObservableObject {
                 pumpCollect()
             }
             let urgent = choice.urgent && current.vibrationEnabled
+            let warningBoxes = boxes
             busy.set(true)
             DispatchQueue.main.async { [weak self] in
                 guard let self, self.guidingFlag.get(), !self.captureFlag.get() else {
@@ -431,7 +436,14 @@ final class GuideSession: ObservableObject {
                 }
                 if urgent { self.haptics.pulseUrgent() }
                 self.statusText = text
-                self.speak(text, flush: true)
+                self.storeSpokenWarning(
+                    CollectCapture.spokenWarning(
+                        warning: choice,
+                        boxes: warningBoxes,
+                        spokenAtIso: CollectCapture.isoTimestamp(epochMs: Self.epochMs())
+                    )
+                )
+                self.speak(text, flush: true, opensCorrection: true)
             }
         } catch {
             frameErrors += 1
@@ -549,11 +561,19 @@ final class GuideSession: ObservableObject {
     }
 
     private func handleTranscript(_ text: String, isFinal: Bool) {
-        guard RecognitionGate.accepts(
-            speechActive: speech.speaking,
-            nowMs: Self.nowMs(),
+        let now = Self.nowMs()
+        let speaking = speech.speaking
+        let correctionOpen = RecognitionGate.acceptsCorrection(
+            speechActive: speaking,
+            nowMs: now,
+            correctionUntilMs: correctionUntilMs
+        )
+        let gateOpen = RecognitionGate.accepts(
+            speechActive: speaking,
+            nowMs: now,
             quietUntilMs: quietUntilMs
-        ) else { return }
+        )
+        if !gateOpen && !correctionOpen { return }
         let normalized = CommandLexicon.normalize(text)
         if normalized.isEmpty || normalized == lastHeard && !isFinal { return }
         lastHeard = normalized
@@ -561,8 +581,11 @@ final class GuideSession: ObservableObject {
             text,
             lexicon: currentLexicon(),
             wakePhrase: settings.wakePhrase,
-            requireWake: !phaseCapturing
+            requireWake: !phaseCapturing,
+            allowBareCorrection: correctionOpen && !phaseCapturing
         )
+        let correctionAction = action == .wrong || action == .missed
+        if !gateOpen && !(correctionOpen && correctionAction) { return }
         switch action {
         case .ignore:
             break
@@ -654,6 +677,8 @@ final class GuideSession: ObservableObject {
             setCollectingFromVoice(on: false)
         case .missed:
             noteMissed()
+        case .wrong:
+            noteWrong()
         }
     }
 
@@ -688,6 +713,7 @@ final class GuideSession: ObservableObject {
             .startCollecting: phrases("cmd_collect_start"),
             .stopCollecting: phrases("cmd_collect_stop"),
             .missed: phrases("cmd_missed"),
+            .wrong: phrases("cmd_wrong"),
         ])
         return CommandLexicon.english.withExtra(extra.phrases)
     }
@@ -804,7 +830,7 @@ final class GuideSession: ObservableObject {
         speak(text, flush: flush)
     }
 
-    private func speak(_ text: String, flush: Bool, done: (() -> Void)? = nil) {
+    private func speak(_ text: String, flush: Bool, opensCorrection: Bool = false, done: (() -> Void)? = nil) {
         guard !text.isEmpty else {
             done?()
             return
@@ -822,7 +848,7 @@ final class GuideSession: ObservableObject {
             DispatchQueue.main.async {
                 guard let self else { return }
                 self.busy.set(false)
-                self.endSpeechMute()
+                self.endSpeechMute(opensCorrection: opensCorrection)
                 done?()
             }
         }
@@ -834,16 +860,68 @@ final class GuideSession: ObservableObject {
         ear.setMuted(true)
     }
 
-    private func endSpeechMute() {
+    /// After a warning, unmute at once so "wrong" or "missed" can be heard.
+    /// Other commands still wait out the tail. Other speech keeps the tail muted.
+    private func endSpeechMute(opensCorrection: Bool) {
         unmuteToken += 1
         let token = unmuteToken
+        let ended = Self.nowMs()
+        if opensCorrection {
+            correctionUntilMs = RecognitionGate.correctionUntil(warningEndedAtMs: ended)
+            quietUntilMs = RecognitionGate.quietUntil(speechEndedAtMs: ended)
+            correctionToken += 1
+            let correction = correctionToken
+            if earRunning {
+                ear.updatePhrases(listeningPhrases(correction: true))
+                ear.setMuted(false)
+            }
+            let window = RecognitionGate.correctionWindowMs
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(Int(window))) { [weak self] in
+                guard let self, self.correctionToken == correction, self.unmuteToken == token else { return }
+                self.correctionUntilMs = 0
+                self.restoreListeningPhrases()
+            }
+            return
+        }
+        correctionToken += 1
+        correctionUntilMs = 0
+        restoreListeningPhrases()
+        quietUntilMs = RecognitionGate.quietUntil(speechEndedAtMs: ended)
         let tail = RecognitionGate.tailMs
-        quietUntilMs = RecognitionGate.quietUntil(speechEndedAtMs: Self.nowMs())
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(Int(tail))) { [weak self] in
             guard let self, self.unmuteToken == token else { return }
             self.quietUntilMs = Self.nowMs()
             self.ear.setMuted(false)
         }
+    }
+
+    private func listeningPhrases(correction: Bool) -> [String] {
+        var list = phaseCapturing ? commandPhrases() : spottingPhrases()
+        if correction && !phaseCapturing {
+            for command in [VoiceCommand.wrong, VoiceCommand.missed] {
+                for phrase in currentLexicon().phrases[command] ?? [] {
+                    list.append(phrase)
+                }
+            }
+        }
+        return list
+    }
+
+    private func restoreListeningPhrases() {
+        guard earRunning else { return }
+        ear.updatePhrases(listeningPhrases(correction: false))
+    }
+
+    private func storeSpokenWarning(_ warning: SpokenWarning) {
+        warningLock.lock()
+        lastSpokenWarning = warning
+        warningLock.unlock()
+    }
+
+    private func readSpokenWarning() -> SpokenWarning? {
+        warningLock.lock()
+        defer { warningLock.unlock() }
+        return lastSpokenWarning
     }
 
     func toggleCollect() {
@@ -921,7 +999,20 @@ final class GuideSession: ObservableObject {
             self?.collectScheduler.onMissed()
             self?.pumpCollect()
         }
-        speakKey("confirm_missed", flush: true)
+        speakKey("confirm_noted", flush: true)
+    }
+
+    private func noteWrong() {
+        guard settings.collectEnabled else {
+            speakKey("confirm_missed_off", flush: true)
+            return
+        }
+        if !guiding { bigButton() }
+        pipeline.async { [weak self] in
+            self?.collectScheduler.onWrong()
+            self?.pumpCollect()
+        }
+        speakKey("confirm_noted", flush: true)
     }
 
     private func syncCollectRuntime() {
@@ -1010,7 +1101,8 @@ final class GuideSession: ObservableObject {
             depth: CollectCapture.summarizeDepth(latestField),
             lighting: CollectCapture.lightingOf(latestScene),
             gpsEnabled: settings.collectGps,
-            gps: gps
+            gps: gps,
+            spokenWarning: event == .wrong ? readSpokenWarning() : nil
         )
     }
 
@@ -1038,7 +1130,9 @@ final class GuideSession: ObservableObject {
                 gps: snapshot.gps,
                 width: width > 0 ? width : nil,
                 height: height > 0 ? height : nil,
-                fullResolution: true
+                fullResolution: true,
+                spokenWarning: snapshot.spokenWarning,
+                includeSpokenWarning: snapshot.event == .wrong
             )
             try body.write(to: json, atomically: true, encoding: .utf8)
         } catch {
@@ -1128,6 +1222,7 @@ struct CollectSnapshot {
     var lighting: LightingEstimate
     var gpsEnabled: Bool
     var gps: GpsReading?
+    var spokenWarning: SpokenWarning?
 }
 
 private final class BusyFlag {

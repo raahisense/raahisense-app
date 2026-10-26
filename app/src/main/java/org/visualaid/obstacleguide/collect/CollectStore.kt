@@ -25,6 +25,7 @@ import org.visualaid.obstacleguide.logic.DepthSummary
 import org.visualaid.obstacleguide.logic.GpsReading
 import org.visualaid.obstacleguide.logic.LightingEstimate
 import org.visualaid.obstacleguide.logic.DetectionBox
+import org.visualaid.obstacleguide.logic.SpokenWarning
 import java.io.File
 import java.io.FileOutputStream
 import java.util.TimeZone
@@ -41,6 +42,7 @@ data class CollectSnapshot(
     val gpsEnabled: Boolean,
     val gps: GpsReading?,
     val fullResolution: Boolean,
+    val spokenWarning: SpokenWarning? = null,
 )
 
 /**
@@ -132,6 +134,8 @@ object CollectStore {
                 width = width,
                 height = height,
                 fullResolution = snapshot.fullResolution,
+                spokenWarning = snapshot.spokenWarning,
+                includeSpokenWarning = snapshot.event == CollectEvent.WRONG,
             ),
         )
         if (!jpg.isFile || jpg.length() == 0L) json.delete()

@@ -137,7 +137,7 @@
     <string name="confirm_language">மொழி மாற்றப்பட்டது.</string>
     <string name="confirm_unknown">அது கட்டளை அல்ல. பட்டியலுக்கு help சொல்லுங்கள்.</string>
     <string name="ahead_clear">இப்போது முன்னால் ஒன்றும் இல்லை.</string>
-    <string name="help_commands">%1$s பிறகு ஒரு ஆங்கில கட்டளை சொல்லுங்கள்: start, stop, stop app, exit, close, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, start collecting, stop collecting, missed, அல்லது help. Stop RaahiSense-ஐ மூடும். Pause எச்சரிக்கையை நிறுத்தும், resume தொடங்கும். Start collecting பயிற்சி புகைப்படங்களை சேமிக்கும், எச்சரிக்கை தொடரும். எச்சரிக்கை வராத தடையை missed என்று சொல்லுங்கள். தொலைபேசியை வேகமாக குலுக்கவும், TalkBack அணைந்திருந்தால் திரையில் இரண்டு முறை தட்டவும், அல்லது இந்தத் திரை திறந்திருக்கும்போது ஒலி பொத்தானை அழுத்திப் பிடிக்கவும்.</string>
+    <string name="help_commands">%1$s பிறகு ஒரு ஆங்கில கட்டளை சொல்லுங்கள்: start, stop, stop app, exit, close, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, start collecting, stop collecting, missed, wrong, அல்லது help. Stop RaahiSense-ஐ மூடும். Pause எச்சரிக்கையை நிறுத்தும், resume தொடங்கும். Start collecting பயிற்சி புகைப்படங்களை சேமிக்கும், எச்சரிக்கை தொடரும். எச்சரிக்கை வராத தடையை missed என்று சொல்லுங்கள். தவறான எச்சரிக்கைக்கு wrong, false alarm, அல்லது wrong warning என்று சொல்லுங்கள். தொலைபேசியை வேகமாக குலுக்கவும், TalkBack அணைந்திருந்தால் திரையில் இரண்டு முறை தட்டவும், அல்லது இந்தத் திரை திறந்திருக்கும்போது ஒலி பொத்தானை அழுத்திப் பிடிக்கவும்.</string>
     <string name="cmd_start">தொடங்கு|start|start guide|begin</string>
     <string name="cmd_stop">நிறுத்து|stop|stop app|exit|close|stop guide</string>
     <string name="cmd_pause">pause</string>
@@ -214,9 +214,11 @@
     <string name="confirm_collect_already_off">பயிற்சி புகைப்படங்கள் ஏற்கெனவே நிறுத்தத்தில் உள்ளன.</string>
     <string name="confirm_missed">தவறவிட்டதாக குறிக்கப்பட்டது.</string>
     <string name="confirm_missed_off">பயிற்சி புகைப்படங்கள் நிறுத்தத்தில் உள்ளன, அதனால் எதுவும் சேமிக்கப்படவில்லை.</string>
+    <string name="confirm_noted">குறித்துக்கொண்டேன்.</string>
     <string name="cmd_collect_start">start collecting</string>
     <string name="cmd_collect_stop">stop collecting</string>
     <string name="cmd_missed">missed</string>
+    <string name="cmd_wrong">wrong|false alarm|wrong warning</string>
     <string name="collect_note">முழு புகைப்படங்கள் இந்தத் தொலைபேசியிலேயே இருக்கும். எச்சரிக்கை தொடரும். எதுவும் பதிவேற்றப்படாது. Export தட்டும்போது மட்டும் zip பகிரப்படும்.</string>
 </resources>
 

@@ -76,11 +76,12 @@ Commands, in English:
 - change language
 - start collecting, or stop collecting (saves training photos, warnings stay on)
 - missed (an obstacle was not warned)
+- wrong, false alarm, or wrong warning (a warning was false or the wrong object)
 - help
 
 You can also say the wake phrase and the command in one breath, such as "Hey Guide, start."
 
-While RaahiSense is speaking, the microphone is ignored, including a short moment after the phrase ends. A warning such as "stop sign" does not close the app. Say the command after the phrase finishes.
+While RaahiSense is speaking, the microphone is ignored, including a short moment after the phrase ends. Right after a warning, you can say **wrong** or **missed** during that moment, and the phone says "Noted." Other commands still wait until the phrase and that short moment have finished. A warning such as "stop sign" does not close the app. Say those commands after the phrase finishes.
 
 Three backups need no aiming. They work only while voice commands are on:
 
@@ -127,7 +128,7 @@ At equal speech and noise (0 dB) it started to miss. In louder noise, say the ph
 
 **Voice commands.** On or off. On means the phone listens for "Hey Guide" even when the screen is locked, as long as the notification is showing. Off closes the microphone. The wake phrase box is next to this button.
 
-**Collect training photos.** Off unless you turn it on. This is for the developer walking around to gather training pictures. Warnings keep running. About every 1.5 seconds the phone saves a full-resolution photo, and it also saves a short burst when a warning is spoken or when you say **missed**. Each photo has a JSON file next to it with the time, the detections, a depth summary, the kind of event (periodic, warning, or missed), and a lighting estimate. GPS is off unless you turn on **Save GPS with photos**. On Android the files are in the app's own external folder `RaahiSense/collect/`, one folder per date. The screen shows how many photos are saved and how much space they use. **Export training photos** zips the newest day and opens the share sheet, so you can send it to Google Drive yourself. The app does not upload anything. JPEG quality is about 90 percent. If the phone gets hot, saving pauses and warnings continue. Faces are not blurred in this personal collection. Blur them before sharing the zip with anyone else.
+**Collect training photos.** Off unless you turn it on. This is for the developer walking around to gather training pictures. Warnings keep running. About every 1.5 seconds the phone saves a full-resolution photo, and it also saves a short burst when a warning is spoken, when you say **missed**, or when you say **wrong**. Each photo has a JSON file next to it with the time, the detections, a depth summary, the kind of event (periodic, warning, missed, or wrong), and a lighting estimate. A wrong photo also records the last spoken warning: its label, box, confidence, and the time it was spoken. GPS is off unless you turn on **Save GPS with photos**. On Android the files are in the app's own external folder `RaahiSense/collect/`, one folder per date. The screen shows how many photos are saved and how much space they use. **Export training photos** zips the newest day and opens the share sheet, so you can send it to Google Drive yourself. The app does not upload anything. JPEG quality is about 90 percent. If the phone gets hot, saving pauses and warnings continue. Faces are not blurred in this personal collection. Blur them before sharing the zip with anyone else.
 
 The interval button steps through 1 second, 1.5 seconds, and 3 seconds. Say **start collecting** or **stop collecting** after Hey Guide, or tap the button. **Stop collecting** does not close the app and does not turn warnings off.
 

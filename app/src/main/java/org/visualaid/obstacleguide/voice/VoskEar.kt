@@ -12,6 +12,7 @@ import org.json.JSONObject
 import org.visualaid.obstacleguide.logic.CommandGrammar
 import org.visualaid.obstacleguide.logic.CommandLexicon
 import org.visualaid.obstacleguide.logic.VoiceAction
+import org.visualaid.obstacleguide.logic.VoiceCommand
 import org.visualaid.obstacleguide.logic.VoiceInterpreter
 import org.vosk.LibVosk
 import org.vosk.LogLevel
@@ -45,6 +46,7 @@ class VoskEar(
     private val reload = AtomicBoolean(false)
     private val ignoreRecognition = AtomicBoolean(false)
     private val dropRecognizer = AtomicBoolean(false)
+    private val correction = AtomicBoolean(false)
     private var thread: Thread? = null
 
     @Volatile
@@ -76,6 +78,14 @@ class VoskEar(
 
     fun reloadGrammar() {
         reload.set(true)
+    }
+
+    /**
+     * After a warning, listen for "wrong" and "missed" without the wake phrase.
+     * The grammar is rebuilt on the ear thread.
+     */
+    fun setCorrectionListening(on: Boolean) {
+        if (correction.getAndSet(on) != on) reload.set(true)
     }
 
     /** Drop microphone audio while the app is speaking, then reset so the tail cannot match. */
@@ -164,6 +174,7 @@ class VoskEar(
                         listener.lexicon(),
                         listener.wakePhrase(),
                         requireWake = true,
+                        allowBareCorrection = correction.get(),
                     )) {
                         VoiceAction.IGNORE -> Unit
                         VoiceAction.WAKE_ONLY -> {
@@ -232,10 +243,22 @@ class VoskEar(
     private fun wakeGrammar(): String {
         val commands = listener.lexicon().allPhrases()
         val phrases = CommandGrammar.wakePhrases(listener.wakePhrase(), commands, listener.vocab())
+            .toMutableList()
+        if (correction.get()) {
+            val bare = CommandGrammar.commandPhrases(correctionPhrases(), listener.vocab())
+            for (phrase in bare) {
+                if (phrase !in phrases) phrases.add(phrase)
+            }
+        }
         if (phrases.isEmpty()) {
             throw IllegalStateException("wake phrase is not in the model")
         }
         return CommandGrammar.json(phrases)
+    }
+
+    private fun correctionPhrases(): List<String> {
+        val lexicon = listener.lexicon()
+        return lexicon.phrases[VoiceCommand.WRONG].orEmpty() + lexicon.phrases[VoiceCommand.MISSED].orEmpty()
     }
 
     private fun commandGrammar(): String {

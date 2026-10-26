@@ -23,6 +23,7 @@ enum class VoiceCommand {
     START_COLLECTING,
     STOP_COLLECTING,
     MISSED,
+    WRONG,
 }
 
 enum class VoiceAction {
@@ -44,6 +45,7 @@ enum class VoiceAction {
     START_COLLECTING,
     STOP_COLLECTING,
     MISSED,
+    WRONG,
 }
 
 data class CommandLexicon(
@@ -83,6 +85,7 @@ data class CommandLexicon(
                 VoiceCommand.START_COLLECTING to listOf("start collecting"),
                 VoiceCommand.STOP_COLLECTING to listOf("stop collecting"),
                 VoiceCommand.MISSED to listOf("missed"),
+                VoiceCommand.WRONG to listOf("wrong", "false alarm", "wrong warning"),
             ),
         )
 
@@ -177,6 +180,7 @@ object VoiceInterpreter {
         lexicon: CommandLexicon = CommandLexicon.ENGLISH,
         wakePhrase: String = CommandLexicon.DEFAULT_WAKE,
         requireWake: Boolean,
+        allowBareCorrection: Boolean = false,
     ): VoiceAction {
         val text = CommandLexicon.normalize(transcript)
         if (text.isEmpty() || text == "unk") {
@@ -185,7 +189,13 @@ object VoiceInterpreter {
         val wake = CommandLexicon.normalize(wakePhrase)
         val woke = wake.isNotEmpty() && containsPhrase(text, wake)
         val remainder = if (woke) removeFirst(text, wake) else text
-        if (requireWake && !woke) return VoiceAction.IGNORE
+        if (requireWake && !woke) {
+            if (allowBareCorrection) {
+                val bare = CommandParser.parse(text, lexicon)
+                if (bare == VoiceCommand.WRONG || bare == VoiceCommand.MISSED) return bare.toAction()
+            }
+            return VoiceAction.IGNORE
+        }
         if (remainder.isEmpty()) return VoiceAction.WAKE_ONLY
         val command = CommandParser.parse(remainder, lexicon)
             ?: return if (requireWake) VoiceAction.WAKE_ONLY else VoiceAction.UNKNOWN
@@ -211,9 +221,14 @@ object VoiceInterpreter {
  * The microphone hears the speaker. A warning such as "stop sign" must not
  * be treated as a command, so recognition is dropped while speech is playing
  * and for a short tail after it ends.
+ *
+ * Right after a warning, [acceptsCorrection] opens a short window. The user
+ * says "wrong" or "missed" as soon as the warning finishes. Ordinary commands
+ * still wait out the tail.
  */
 object RecognitionGate {
     const val TAIL_MS = 400L
+    const val CORRECTION_WINDOW_MS = 2_500L
 
     fun accepts(speechActive: Boolean, nowMs: Long, quietUntilMs: Long): Boolean {
         if (speechActive) return false
@@ -221,6 +236,18 @@ object RecognitionGate {
     }
 
     fun quietUntil(speechEndedAtMs: Long): Long = speechEndedAtMs + TAIL_MS
+
+    fun correctionUntil(warningEndedAtMs: Long): Long = warningEndedAtMs + CORRECTION_WINDOW_MS
+
+    /** True only while speech is idle and the post-warning window is still open. */
+    fun acceptsCorrection(
+        speechActive: Boolean,
+        nowMs: Long,
+        correctionUntilMs: Long,
+    ): Boolean {
+        if (speechActive) return false
+        return nowMs <= correctionUntilMs
+    }
 }
 
 private fun VoiceCommand.toAction(): VoiceAction = when (this) {
@@ -239,4 +266,5 @@ private fun VoiceCommand.toAction(): VoiceAction = when (this) {
     VoiceCommand.START_COLLECTING -> VoiceAction.START_COLLECTING
     VoiceCommand.STOP_COLLECTING -> VoiceAction.STOP_COLLECTING
     VoiceCommand.MISSED -> VoiceAction.MISSED
+    VoiceCommand.WRONG -> VoiceAction.WRONG
 }

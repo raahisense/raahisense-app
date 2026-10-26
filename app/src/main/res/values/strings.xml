@@ -151,7 +151,7 @@
     <string name="confirm_language">Language changed.</string>
     <string name="confirm_unknown">That was not a command. Say help for the list.</string>
     <string name="ahead_clear">Nothing is in front of you right now.</string>
-    <string name="help_commands">After %1$s, say one command: start, stop, stop app, exit, close, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, start collecting, stop collecting, missed, or help. Stop closes RaahiSense. Pause turns warnings off, and resume turns them on. Start collecting saves training photos while warnings stay on. Say missed when an obstacle was not warned. You can also shake the phone hard, double-tap the screen when TalkBack is off, or hold a volume key while this screen is open.</string>
+    <string name="help_commands">After %1$s, say one command: start, stop, stop app, exit, close, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, start collecting, stop collecting, missed, wrong, or help. Stop closes RaahiSense. Pause turns warnings off, and resume turns them on. Start collecting saves training photos while warnings stay on. Say missed when an obstacle was not warned. Say wrong, false alarm, or wrong warning when a warning was false or the wrong object. You can also shake the phone hard, double-tap the screen when TalkBack is off, or hold a volume key while this screen is open.</string>
     <string name="cmd_start">start|start guide|begin</string>
     <string name="cmd_stop">stop|stop app|exit|close|stop guide</string>
     <string name="cmd_pause">pause</string>
@@ -227,9 +227,11 @@
     <string name="confirm_collect_already_off">Training photos are already off.</string>
     <string name="confirm_missed">Marked as missed.</string>
     <string name="confirm_missed_off">Collect training photos is off, so nothing was saved.</string>
+    <string name="confirm_noted">Noted.</string>
     <string name="cmd_collect_start">start collecting</string>
     <string name="cmd_collect_stop">stop collecting</string>
     <string name="cmd_missed">missed</string>
+    <string name="cmd_wrong">wrong|false alarm|wrong warning</string>
     <string name="collect_note">Full photos stay on this phone. Warnings keep running. Nothing is uploaded. Export shares a zip only when you tap Export.</string>
 </resources>
 

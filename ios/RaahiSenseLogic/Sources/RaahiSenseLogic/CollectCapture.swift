@@ -1,7 +1,41 @@
 import Foundation
 
 public enum CollectEvent: String, Codable, CaseIterable {
-    case periodic, warning, missed
+    case periodic, warning, missed, wrong
+}
+
+/// The warning the user just heard. A "wrong" photo keeps this so the
+/// false or misidentified detection can be found later.
+public struct SpokenWarning: Equatable {
+    public var label: String
+    public var confidence: Float?
+    public var left: Float?
+    public var top: Float?
+    public var right: Float?
+    public var bottom: Float?
+    public var spokenAtIso: String
+
+    public init(
+        label: String,
+        confidence: Float?,
+        left: Float?,
+        top: Float?,
+        right: Float?,
+        bottom: Float?,
+        spokenAtIso: String
+    ) {
+        self.label = label
+        self.confidence = confidence
+        self.left = left
+        self.top = top
+        self.right = right
+        self.bottom = bottom
+        self.spokenAtIso = spokenAtIso
+    }
+
+    public func hasBox() -> Bool {
+        left != nil && top != nil && right != nil && bottom != nil
+    }
 }
 
 public struct GpsReading: Equatable {
@@ -191,6 +225,40 @@ public enum CollectCapture {
         )
     }
 
+    public static func spokenWarning(
+        warning: ObstacleWarning,
+        boxes: [DetectionBox],
+        spokenAtIso: String
+    ) -> SpokenWarning {
+        let matched = boxes.filter { box in
+            guard let made = WarningLogic.fromBox(box) else { return false }
+            return made.label == warning.label &&
+                made.position == warning.position &&
+                made.closeness == warning.closeness
+        }.max { $0.score < $1.score }
+            ?? boxes.filter { $0.label.lowercased() == warning.label.lowercased() && $0.score.isFinite }
+                .max { $0.score < $1.score }
+        let finite = matched.flatMap { box -> DetectionBox? in
+            guard box.left.isFinite, box.top.isFinite, box.right.isFinite, box.bottom.isFinite else { return nil }
+            return box
+        }
+        let confidence: Float?
+        if let score = matched?.score, score.isFinite {
+            confidence = score
+        } else {
+            confidence = nil
+        }
+        return SpokenWarning(
+            label: warning.label,
+            confidence: confidence,
+            left: finite?.left,
+            top: finite?.top,
+            right: finite?.right,
+            bottom: finite?.bottom,
+            spokenAtIso: spokenAtIso
+        )
+    }
+
     public static func sidecarJson(
         timestampIso: String,
         event: CollectEvent,
@@ -202,7 +270,9 @@ public enum CollectCapture {
         jpegQuality: Int = CollectCapture.jpegQuality,
         width: Int?,
         height: Int?,
-        fullResolution: Bool
+        fullResolution: Bool,
+        spokenWarning: SpokenWarning? = nil,
+        includeSpokenWarning: Bool = false
     ) -> String {
         let savedGps = gpsEnabled ? gps : nil
         var text = "{\n"
@@ -250,6 +320,9 @@ public enum CollectCapture {
         } else {
             text += "  \"gps\": null,\n"
         }
+        if includeSpokenWarning {
+            text += "  \"spokenWarning\": \(spokenWarningJson(spokenWarning)),\n"
+        }
         text += "  \"note\": \(jsonString(shareNote))\n"
         text += "}\n"
         return text
@@ -282,6 +355,19 @@ public enum CollectCapture {
             second: components.second ?? 0,
             millis: millis < 0 ? millis + 1000 : millis
         )
+    }
+
+    private static func spokenWarningJson(_ warning: SpokenWarning?) -> String {
+        guard let warning else { return "null" }
+        let box: String
+        if warning.hasBox() {
+            box = "{ \"left\": \(jsonFloat(warning.left)), \"top\": \(jsonFloat(warning.top)), " +
+                "\"right\": \(jsonFloat(warning.right)), \"bottom\": \(jsonFloat(warning.bottom)) }"
+        } else {
+            box = "null"
+        }
+        return "{ \"label\": \(jsonString(warning.label)), \"confidence\": \(jsonFloat(warning.confidence)), " +
+            "\"box\": \(box), \"spokenAt\": \(jsonString(warning.spokenAtIso)) }"
     }
 
     private static func jsonString(_ value: String) -> String {
@@ -355,6 +441,8 @@ public final class CollectScheduler {
     public func onWarning() { enqueue(.warning, front: false) }
 
     public func onMissed() { enqueue(.missed, front: true) }
+
+    public func onWrong() { enqueue(.wrong, front: true) }
 
     public func requeue(_ event: CollectEvent) {
         lock.lock()

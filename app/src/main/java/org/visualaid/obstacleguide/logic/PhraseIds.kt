@@ -225,9 +225,11 @@ object PhraseIds {
         "confirm_collect_already_off",
         "confirm_missed",
         "confirm_missed_off",
+        "confirm_noted",
         "cmd_collect_start",
         "cmd_collect_stop",
         "cmd_missed",
+        "cmd_wrong",
         "collect_note",
     )
 

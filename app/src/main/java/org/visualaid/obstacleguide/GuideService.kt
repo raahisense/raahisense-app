@@ -64,6 +64,7 @@ import org.visualaid.obstacleguide.logic.DetectionBox
 import org.visualaid.obstacleguide.logic.LowLight
 import org.visualaid.obstacleguide.logic.LowLightController
 import org.visualaid.obstacleguide.logic.SceneLight
+import org.visualaid.obstacleguide.logic.SpokenWarning
 import org.visualaid.obstacleguide.logic.TorchMode
 import org.visualaid.obstacleguide.logic.ObstacleWarning
 import org.visualaid.obstacleguide.logic.RecognitionGate
@@ -142,6 +143,12 @@ class GuideService : LifecycleService() {
     private val quitFinished = AtomicBoolean(false)
     private var quietUntilMs = 0L
     private var unmuteRunnable: Runnable? = null
+    private var correctionUntilMs = 0L
+    private var correctionToken = 0
+    private var openCorrectionOnIdle = false
+    private var closeCorrection: Runnable? = null
+    @Volatile
+    private var lastSpokenWarning: SpokenWarning? = null
     private var inForeground = false
     private var stopRunnable: Runnable? = null
     private var lastFrameAt = 0L
@@ -235,18 +242,41 @@ class GuideService : LifecycleService() {
             unmuteRunnable?.let { handler.removeCallbacks(it) }
             unmuteRunnable = null
             ear?.setIgnoreRecognition(true)
-        } else {
-            val ended = SystemClock.elapsedRealtime()
-            quietUntilMs = RecognitionGate.quietUntil(ended)
-            val runnable = Runnable {
-                unmuteRunnable = null
-                if (!speaker.speaking.get() && SystemClock.elapsedRealtime() >= quietUntilMs) {
-                    ear?.setIgnoreRecognition(false)
-                }
-            }
-            unmuteRunnable = runnable
-            handler.postDelayed(runnable, RecognitionGate.TAIL_MS)
+            return
         }
+        val ended = SystemClock.elapsedRealtime()
+        if (openCorrectionOnIdle) {
+            // A warning just finished. Listen now for "wrong" or "missed".
+            // Other commands still wait out the usual tail.
+            openCorrectionOnIdle = false
+            correctionUntilMs = RecognitionGate.correctionUntil(ended)
+            quietUntilMs = RecognitionGate.quietUntil(ended)
+            val token = ++correctionToken
+            ear?.setCorrectionListening(true)
+            ear?.setIgnoreRecognition(false)
+            closeCorrection?.let { handler.removeCallbacks(it) }
+            val close = Runnable {
+                closeCorrection = null
+                if (token == correctionToken) ear?.setCorrectionListening(false)
+            }
+            closeCorrection = close
+            handler.postDelayed(close, RecognitionGate.CORRECTION_WINDOW_MS)
+            return
+        }
+        correctionToken += 1
+        correctionUntilMs = 0L
+        ear?.setCorrectionListening(false)
+        closeCorrection?.let { handler.removeCallbacks(it) }
+        closeCorrection = null
+        quietUntilMs = RecognitionGate.quietUntil(ended)
+        val runnable = Runnable {
+            unmuteRunnable = null
+            if (!speaker.speaking.get() && SystemClock.elapsedRealtime() >= quietUntilMs) {
+                ear?.setIgnoreRecognition(false)
+            }
+        }
+        unmuteRunnable = runnable
+        handler.postDelayed(runnable, RecognitionGate.TAIL_MS)
     }
 
     override fun onBind(intent: Intent): IBinder {
@@ -418,7 +448,11 @@ class GuideService : LifecycleService() {
 
     private fun performVoice(action: VoiceAction) {
         if (quitting) return
-        if (!RecognitionGate.accepts(speaker.speaking.get(), SystemClock.elapsedRealtime(), quietUntilMs)) return
+        val now = SystemClock.elapsedRealtime()
+        val speaking = speaker.speaking.get()
+        val correction = (action == VoiceAction.WRONG || action == VoiceAction.MISSED) &&
+            RecognitionGate.acceptsCorrection(speaking, now, correctionUntilMs)
+        if (!correction && !RecognitionGate.accepts(speaking, now, quietUntilMs)) return
         val speech = speechContext()
         when (action) {
             VoiceAction.IGNORE, VoiceAction.WAKE_ONLY -> Unit
@@ -468,6 +502,7 @@ class GuideService : LifecycleService() {
             VoiceAction.START_COLLECTING -> setCollectingFromVoice(on = true)
             VoiceAction.STOP_COLLECTING -> setCollectingFromVoice(on = false)
             VoiceAction.MISSED -> markMissed()
+            VoiceAction.WRONG -> markWrong()
         }
     }
 
@@ -496,7 +531,19 @@ class GuideService : LifecycleService() {
         }
         collectScheduler.onMissed()
         handler.post { maybeCapture() }
-        speakTracked(speech.getString(R.string.confirm_missed), flush = true)
+        speakTracked(speech.getString(R.string.confirm_noted), flush = true)
+        if (!running) startGuidingIfCameraAllowed()
+    }
+
+    private fun markWrong() {
+        val speech = speechContext()
+        if (!settings.collectEnabled) {
+            speakTracked(speech.getString(R.string.confirm_missed_off), flush = true)
+            return
+        }
+        collectScheduler.onWrong()
+        handler.post { maybeCapture() }
+        speakTracked(speech.getString(R.string.confirm_noted), flush = true)
         if (!running) startGuidingIfCameraAllowed()
     }
 
@@ -577,6 +624,7 @@ class GuideService : LifecycleService() {
                 VoiceCommand.START_COLLECTING to phrases(R.string.cmd_collect_start),
                 VoiceCommand.STOP_COLLECTING to phrases(R.string.cmd_collect_stop),
                 VoiceCommand.MISSED to phrases(R.string.cmd_missed),
+                VoiceCommand.WRONG to phrases(R.string.cmd_wrong),
             ),
         )
     }
@@ -1126,6 +1174,7 @@ class GuideService : LifecycleService() {
         val phrase = PhraseBook.warning(speechContext(), choice)
         if (phrase.isBlank()) return
         lastWarningPhrase = phrase
+        val warningBoxes = boxes.toList()
         if (settings.collectEnabled) {
             collectScheduler.onWarning()
             handler.post { maybeCapture() }
@@ -1139,7 +1188,13 @@ class GuideService : LifecycleService() {
                 speechBusy.set(false)
                 return@post
             }
+            lastSpokenWarning = CollectCapture.spokenWarning(
+                choice,
+                warningBoxes,
+                CollectCapture.isoTimestamp(System.currentTimeMillis()),
+            )
             postStatus(phrase)
+            openCorrectionOnIdle = true
             speaker.speak(phrase, flush = true) { speechBusy.set(false) }
         }
         Log.i(TAG, "warn ${choice.label} ${choice.position} ${choice.closeness}")
@@ -1564,6 +1619,7 @@ class GuideService : LifecycleService() {
             gpsEnabled = gpsOn,
             gps = CollectLocation.readingIfAllowed(gpsOn),
             fullResolution = fullResolution,
+            spokenWarning = if (event == CollectEvent.WRONG) lastSpokenWarning else null,
         )
     }
 

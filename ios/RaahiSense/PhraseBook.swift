@@ -22,10 +22,12 @@ enum PhraseBook {
     static func speechLanguageCode(_ tag: String) -> String {
         switch tag {
         case "hi": return "hi-IN"
+        case "es": return "es-ES"
+        case "kn": return "kn-IN"
+        case "te": return "te-IN"
         case "ta": return "ta-IN"
         case "bn": return "bn-IN"
         case "sw": return "sw"
-        case "es": return "es-ES"
         default: return "en-US"
         }
     }

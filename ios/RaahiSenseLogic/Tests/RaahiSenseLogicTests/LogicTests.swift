@@ -276,6 +276,29 @@ final class LogicTests: XCTestCase {
         XCTAssertEqual(VoiceInterpreter.interpret("hey guide wrong", requireWake: true), .wrong)
         XCTAssertEqual(CommandParser.parse("please speak louder"), .louder)
         XCTAssertEqual(VoiceInterpreter.interpret("the weather", requireWake: false), .unknown)
+        let hindi = CommandLexicon.english.withExtra([
+            .start: ["शुरू", "शुरू करो"],
+            .pause: ["विराम"],
+        ])
+        XCTAssertEqual(CommandParser.parse("शुरू करो", lexicon: hindi), .start)
+        XCTAssertEqual(CommandParser.parse("stop", lexicon: hindi), .stop)
+        XCTAssertNil(CommandParser.parse("रुको", lexicon: hindi))
+        XCTAssertEqual(
+            VoiceInterpreter.interpret(
+                "हे गाइड शुरू",
+                lexicon: hindi,
+                wakePhrase: "hey guide",
+                requireWake: true,
+                extraWakePhrases: SpokenEar.nativeWakes("hi")
+            ),
+            .start
+        )
+        XCTAssertEqual(EarChoice.prefer(language: .start, english: .stop), .stop)
+        XCTAssertEqual(EarChoice.prefer(language: .start, english: .unknown), .start)
+        XCTAssertTrue(SpokenEar.hasCommandModel("es"))
+        XCTAssertFalse(SpokenEar.hasCommandModel("kn"))
+        XCTAssertFalse(SpokenEar.hasCommandModel("te"))
+        XCTAssertEqual(GuideSettings.languageTags, ["en", "hi", "es", "kn", "te", "ta", "bn", "sw"])
     }
 
     func testRotateDepth() {

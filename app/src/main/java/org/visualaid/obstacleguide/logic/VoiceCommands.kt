@@ -174,6 +174,53 @@ object CommandParser {
     }
 }
 
+/**
+ * Hindi and Spanish have a small offline command model. Other languages do not.
+ * The native wake is added beside the saved wake phrase. It does not replace it.
+ */
+object SpokenEar {
+    fun hasCommandModel(languageTag: String): Boolean = languageTag == "hi" || languageTag == "es"
+
+    fun nativeWakes(languageTag: String): List<String> = when (languageTag) {
+        "hi" -> listOf("हे गाइड")
+        "es" -> listOf("oye guía")
+        else -> emptyList()
+    }
+}
+
+/**
+ * Two recognizers can hear the same moment. Stop and the training commands
+ * stay on the English recognizer, so they win over a language-lane guess.
+ * An everyday command from the selected language wins over English.
+ */
+object EarChoice {
+    private val englishPinned = setOf(
+        VoiceAction.STOP,
+        VoiceAction.START_COLLECTING,
+        VoiceAction.STOP_COLLECTING,
+        VoiceAction.MISSED,
+        VoiceAction.WRONG,
+    )
+
+    fun prefer(language: VoiceAction?, english: VoiceAction): VoiceAction {
+        if (english in englishPinned) return english
+        if (language != null && isCommand(language)) return language
+        if (isCommand(english)) return english
+        if (language == VoiceAction.WAKE_ONLY || english == VoiceAction.WAKE_ONLY) {
+            return VoiceAction.WAKE_ONLY
+        }
+        if (language == VoiceAction.UNKNOWN || english == VoiceAction.UNKNOWN) {
+            return VoiceAction.UNKNOWN
+        }
+        return VoiceAction.IGNORE
+    }
+
+    private fun isCommand(action: VoiceAction): Boolean = when (action) {
+        VoiceAction.IGNORE, VoiceAction.WAKE_ONLY, VoiceAction.UNKNOWN -> false
+        else -> true
+    }
+}
+
 object VoiceInterpreter {
     fun interpret(
         transcript: String,
@@ -181,14 +228,15 @@ object VoiceInterpreter {
         wakePhrase: String = CommandLexicon.DEFAULT_WAKE,
         requireWake: Boolean,
         allowBareCorrection: Boolean = false,
+        extraWakePhrases: List<String> = emptyList(),
     ): VoiceAction {
         val text = CommandLexicon.normalize(transcript)
         if (text.isEmpty() || text == "unk") {
             return if (requireWake) VoiceAction.IGNORE else VoiceAction.UNKNOWN
         }
-        val wake = CommandLexicon.normalize(wakePhrase)
-        val woke = wake.isNotEmpty() && containsPhrase(text, wake)
-        val remainder = if (woke) removeFirst(text, wake) else text
+        val wake = matchingWake(text, wakePhrase, extraWakePhrases)
+        val woke = wake != null
+        val remainder = if (wake != null) removeFirst(text, wake) else text
         if (requireWake && !woke) {
             if (allowBareCorrection) {
                 val bare = CommandParser.parse(text, lexicon)
@@ -202,8 +250,23 @@ object VoiceInterpreter {
         return command.toAction()
     }
 
-    private fun containsPhrase(text: String, phrase: String): Boolean {
-        return " $text ".contains(" $phrase ")
+    private fun matchingWake(text: String, wakePhrase: String, extra: List<String>): String? {
+        val padded = " $text "
+        var best: String? = null
+        var bestIndex = Int.MAX_VALUE
+        val candidates = listOf(wakePhrase) + extra
+        for (candidate in candidates) {
+            val wake = CommandLexicon.normalize(candidate)
+            if (wake.isEmpty()) continue
+            val index = padded.indexOf(" $wake ")
+            if (index < 0) continue
+            val longer = best != null && index == bestIndex && wake.length > best.length
+            if (index < bestIndex || longer) {
+                best = wake
+                bestIndex = index
+            }
+        }
+        return best
     }
 
     private fun removeFirst(text: String, phrase: String): String {

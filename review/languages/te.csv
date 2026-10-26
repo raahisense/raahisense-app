@@ -1,0 +1,212 @@
+number,phrase,english
+1,ఎడమవైపు చాలా దగ్గర వ్యక్తి,Very close person on the left
+2,ముందు చాలా దగ్గర వ్యక్తి,Very close person ahead
+3,కుడివైపు చాలా దగ్గర వ్యక్తి,Very close person on the right
+4,ఎడమవైపు దగ్గర వ్యక్తి,Near person on the left
+5,ముందు దగ్గర వ్యక్తి,Near person ahead
+6,కుడివైపు దగ్గర వ్యక్తి,Near person on the right
+7,ఎడమవైపు దూరం వ్యక్తి,Far person on the left
+8,ముందు దూరం వ్యక్తి,Far person ahead
+9,కుడివైపు దూరం వ్యక్తి,Far person on the right
+10,వ్యక్తి,person
+11,సైకిల్,bicycle
+12,కారు,car
+13,మోటార్ సైకిల్,motorcycle
+14,బస్సు,bus
+15,ట్రక్,truck
+16,ట్రాఫిక్ లైట్,traffic light
+17,ఫైర్ హైడ్రెంట్,fire hydrant
+18,స్టాప్ బోర్డు,stop sign
+19,పార్కింగ్ మీటర్,parking meter
+20,బెంచ్,bench
+21,పిల్లి,cat
+22,కుక్క,dog
+23,గుర్రం,horse
+24,గొర్రె,sheep
+25,ఆవు,cow
+26,బ్యాగ్,backpack
+27,గొడుగు,umbrella
+28,సూట్కేస్,suitcase
+29,సీసా,bottle
+30,కుర్చీ,chair
+31,సోఫా,couch
+32,మొక్క,plant
+33,మంచం,bed
+34,బల్ల,table
+35,మరుగుదొడ్డి,toilet
+36,టీవీ,television
+37,పొయ్యి,oven
+38,వాష్ బేసిన్,sink
+39,ఫ్రిజ్,refrigerator
+40,ఆటో,auto rickshaw
+41,సైకిల్ రిక్షా,cycle rickshaw
+42,చేతి బండి,handcart
+43,గుంత,pothole
+44,తెరిచిన కాలువ,open drain
+45,అంచు,curb
+46,మెట్లు,stairs
+47,స్తంభం,pole
+48,అడ్డు,barrier
+49,వీధి వస్తువు,street object
+50,చెట్టు,tree
+51,తలుపు,door
+52,"ఎడమవైపు తెలియని వస్తువు, చాలా దగ్గర","Unknown object on the left, very close"
+53,"ముందు తెలియని వస్తువు, చాలా దగ్గర","Unknown object ahead, very close"
+54,"కుడివైపు తెలియని వస్తువు, చాలా దగ్గర","Unknown object on the right, very close"
+55,"ఎడమవైపు తెలియని వస్తువు, దగ్గర","Unknown object on the left, near"
+56,"ముందు తెలియని వస్తువు, దగ్గర","Unknown object ahead, near"
+57,"కుడివైపు తెలియని వస్తువు, దగ్గర","Unknown object on the right, near"
+58,"ముందు గోడ, చాలా దగ్గర","Wall ahead, very close"
+59,"ముందు గోడ, దగ్గర","Wall ahead, near"
+60,ఎడమవైపు నుంచి ఏదో దగ్గరకు వస్తోంది,Something approaching on your left
+61,ముందు నుంచి ఏదో దగ్గరకు వస్తోంది,Something approaching ahead
+62,కుడివైపు నుంచి ఏదో దగ్గరకు వస్తోంది,Something approaching on your right
+63,మొదలు|మొదలు పెట్టు,start|start guide|begin
+64,విరామం,pause
+65,మళ్ళీ మొదలు,resume
+66,ముందు ఏముంది,what is in front of me|what is ahead|what is in front
+67,మళ్ళీ చెప్పు,repeat|say again|repeat that
+68,బిగ్గరగా చెప్పు,louder|speak louder|volume up
+69,నెమ్మదిగా చెప్పు,quieter|speak quieter|softer|volume down
+70,వేగంగా చెప్పు,faster|speak faster
+71,ఇంకా నెమ్మదిగా చెప్పు,slower|speak slower
+72,భాష మార్చు,change language|next language
+73,సహాయం,help|list commands|what can i say
+74,"Hey Guide తర్వాత ఒక ఆదేశం చెప్పండి. తెలుగుకు వాడదగిన ఆఫ్‌లైన్ ఆదేశ నమూనా లేదు, కాబట్టి ఆదేశాలు ఇంగ్లీషులో చెప్పండి. ఇంగ్లీషు ఎప్పుడూ పని చేస్తుంది. stop, stop app, exit, close, start collecting, stop collecting, missed, wrong, false alarm, wrong warning అన్ని భాషల్లోనూ ఇంగ్లీషు. Stop RaahiSenseను మూస్తుంది. Pause హెచ్చరికను ఆపుతుంది, resume మొదలు పెడుతుంది. Start collecting శిక్షణ ఫోటోలు దాచుతుంది, హెచ్చరిక కొనసాగుతుంది. హెచ్చరిక రాని అడ్డంకికి missed చెప్పండి. తప్పు హెచ్చరికకు wrong, false alarm, లేదా wrong warning చెప్పండి. ఫోనును గట్టిగా ఊపండి, TalkBack ఆఫ్ అయితే స్క్రీన్‌పై రెండుసార్లు నొక్కండి, లేదా ఈ స్క్రీన్ తెరిచి ఉన్నప్పుడు వాల్యూమ్ కీని నొక్కి పట్టుకోండి.","After Hey Guide, say one everyday command. Hindi and Spanish everyday commands work when that language is selected and the phone has its offline recognizer. English always works. These stay English in every language: stop, stop app, exit, close, start collecting, stop collecting, missed, wrong, false alarm, and wrong warning. Everyday commands are start, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, and help. Stop closes RaahiSense. Pause turns warnings off, and resume turns them on. Start collecting saves training photos while warnings stay on. Say missed when an obstacle was not warned. Say wrong, false alarm, or wrong warning when a warning was false or the wrong object. Kannada, Telugu, Tamil, Bengali, and Swahili listen for the English command words. You can also shake the phone hard, double-tap the screen when TalkBack is off, or hold a volume key while this screen is open."
+75,"వినే నమూనా ఇంగ్లీషు. Hey Guide చెప్పి, తర్వాత ఇంగ్లీషు ఆదేశం. stop, start collecting, stop collecting, missed, wrong ఎప్పుడూ ఇంగ్లీషు. స్వరం ఫోనులోనే ఉంటుంది.","Listening stays on the phone. Nothing is uploaded. Hindi and Spanish everyday commands work in that language, and English always works. Stop, start collecting, stop collecting, missed, and wrong stay English. Kannada, Telugu, Tamil, Bengali, and Swahili commands are English."
+76,RaahiSense,RaahiSense
+77,ఇది తెల్లటి చేతికర్రకు సహాయం. దాని బదులు కాదు. ఇంటర్నెట్ లేకుండా పని చేస్తుంది.,An extra to your white cane. Not a replacement. Works fully offline.
+78,ఫోనును నిటారుగా పట్టుకోండి. వెనుక కెమెరా మీరు నడిచే వైపు ఉండాలి.,Hold the phone upright. The rear camera faces the way you walk.
+79,"ముందు సహాయకుడితో ఇంట్లో సాధన చేయండి. ఈ యాప్ మెట్లు, గుంతలు, స్తంభాలు, ఇంకా చాలా అడ్డంకులను వదిలేయవచ్చు. చేతికర్రను ఉంచుకోండి.","Practice indoors with a helper first. This app misses steps, holes, poles, and many other obstacles. Keep using your cane."
+80,మొదలు,START
+81,ఆపు,STOP
+82,RaahiSense ఆపు,Stop RaahiSense
+83,కెమెరా అనుమతి ఇవ్వండి,Allow camera
+84,సెట్టింగ్ తెరవండి,Open settings
+85,అడ్డంకి హెచ్చరిక మొదలు పెట్టండి,Start obstacle warnings
+86,అడ్డంకి హెచ్చరిక ఆపండి,Stop obstacle warnings
+87,RaahiSense ఆపండి,Stop RaahiSense
+88,హెచ్చరిక మొదలు కావాలంటే కెమెరా అనుమతి ఇవ్వండి,Allow the camera so obstacle warnings can start
+89,కెమెరా అనుమతికి ఫోన్ సెట్టింగ్ తెరవండి,Open phone settings to allow the camera
+90,సిద్ధం. మొదలు పెట్టడానికి పెద్ద బటన్ నొక్కండి.,Ready. Tap the big button to start.
+91,మొదలైంది. అడ్డంకుల కోసం వింటోంది.,Started. Listening for obstacles.
+92,ఆగింది.,Stopped.
+93,అడ్డంకుల కోసం వింటోంది.,Listening for obstacles.
+94,కెమెరా ఆఫ్‌లో ఉంది. పెద్ద బటన్ నొక్కి కెమెరా అనుమతి ఇవ్వండి. ఫోటోలు దాచబడవు.,The camera is off. Tap the big button and allow the camera. Photos are not saved.
+95,కెమెరా అనుమతి రాలేదు. కెమెరా లేకుండా హెచ్చరిక రాదు.,Camera permission was not allowed. Obstacle Guide cannot warn you without the camera.
+96,"కెమెరా అనుమతి నిలిచింది. సెట్టింగ్, తర్వాత అనుమతులు తెరిచి కెమెరా ఆన్ చేయండి.","Camera permission is blocked. Open settings, then Permissions, and turn the camera on."
+97,కెమెరా అందుబాటులో లేదు.,The camera is not available.
+98,గుర్తింపు నమూనా తెరవలేదు. యాప్ మూసి మళ్ళీ తెరవండి.,The detection model could not be loaded. Close the app and open it again.
+99,ఈ ఫోనులో మాట్లాడే స్వరం లేదు. టాక్‌బ్యాక్ ఆన్ చేయండి లేదా స్వరం పెట్టండి.,No text-to-speech voice is installed on this phone. Turn on TalkBack or install a voice in text-to-speech settings.
+100,ఈ ఫోనులో బ్యాటరీ సెట్టింగ్ తెరవలేదు.,Battery settings could not be opened on this phone.
+101,ఫోన్ కెమెరా అడుగుతుంది. దయచేసి అనుమతి ఇవ్వండి. ఫోటోలు దాచబడవు. ఇంటర్నెట్ వాడదు.,Your phone will ask to use the camera. Please allow it. Obstacle Guide does not save photos and does not use the internet.
+102,సెట్టింగ్,Settings
+103,భాష,Language
+104,మాట వేగం,Speech rate
+105,నెమ్మది,Slow
+106,సాధారణం,Normal
+107,వేగం,Fast
+108,బ్యాటరీ ఆదా: ఆన్,Battery saver: on
+109,బ్యాటరీ ఆదా: ఆఫ్,Battery saver: off
+110,కంపనం: ఆన్,Vibration: on
+111,కంపనం: ఆఫ్,Vibration: off
+112,బ్యాటరీ ఆదా ఆఫ్‌లో ఉంది. ఆన్ చేయడానికి రెండుసార్లు నొక్కండి.,Battery saver is off. Double tap to turn it on.
+113,బ్యాటరీ ఆదా ఆన్‌లో ఉంది. ఆఫ్ చేయడానికి రెండుసార్లు నొక్కండి.,Battery saver is on. Double tap to turn it off.
+114,కంపనం ఆఫ్‌లో ఉంది. ఆన్ చేయడానికి రెండుసార్లు నొక్కండి.,Vibration is off. Double tap to turn it on.
+115,కంపనం ఆన్‌లో ఉంది. ఆఫ్ చేయడానికి రెండుసార్లు నొక్కండి.,Vibration is on. Double tap to turn it off.
+116,స్క్రీన్ ఆఫ్ అయినా నడవనివ్వండి,Keep running with the screen off
+117,స్క్రీన్ ఆఫ్ అయినా యాప్ నడవడానికి ఫోన్ సెట్టింగ్ తెరవండి,Open phone settings so Obstacle Guide can keep running when the screen is off
+118,స్క్రీన్ ఆఫ్ అయినా ఈ ఫోన్ యాప్‌ను నడవనిస్తుంది.,This phone allows Obstacle Guide to keep running with the screen off.
+119,స్క్రీన్ ఆఫ్ అయితే ఫోన్ యాప్‌ను ఆపవచ్చు. కింది బటన్ నొక్కి బ్యాటరీ పరిమితి తీసేయండి.,This phone may stop the app when the screen is off. Tap the button below and allow unrestricted battery use.
+120,ఈ వాక్యాలు చిత్తు. వాడే ముందు స్థానిక మాట్లాడేవారి సమీక్ష కావాలి.,
+121,ఈ ఫోనులో తెలుగు ఆఫ్‌లైన్ స్వరం లేదు. హెచ్చరికలు ఇంగ్లీషులో వస్తాయి. టెక్స్ట్-టు-స్పీచ్ సెట్టింగ్‌లో తెలుగు స్వరం దించండి.,The English voice is not installed. Install a text-to-speech voice in phone settings.
+122,అడ్డంకి మార్గదర్శి,Obstacle Guide
+123,అడ్డంకి మార్గదర్శి ఆన్‌లో ఉంది,Obstacle Guide is on
+124,అడ్డంకుల వైపు చూస్తోంది,Listening for obstacles
+125,ఆపు,Stop
+126,Hey Guide,Hey Guide
+127,స్వర ఆదేశాలు: ఆన్,Voice commands: on
+128,స్వర ఆదేశాలు: ఆఫ్,Voice commands: off
+129,స్వర ఆదేశాలు ఆఫ్‌లో ఉన్నాయి. ఆన్ చేయడానికి రెండుసార్లు నొక్కండి.,Voice commands are off. Double tap to turn them on.
+130,స్వర ఆదేశాలు ఆన్‌లో ఉన్నాయి. ఆఫ్ చేయడానికి రెండుసార్లు నొక్కండి.,Voice commands are on. Double tap to turn them off.
+131,మేల్కొలిపే మాట,Wake phrase
+132,మేల్కొలిపే మాట. ఆదేశానికి ముందు ఇది చెప్పండి. మొదటి మాట Hey Guide.,Wake phrase. The words you say before a command. The default is Hey Guide.
+133,మేల్కొలిపే మాట ఇప్పుడు Hey Guide.,Wake phrase set to Hey Guide.
+134,ఈ మాటలు ఆఫ్‌లైన్ ఇంగ్లీషు నమూనాలో లేవు. మేల్కొలిపే మాట మారలేదు.,Those words are not in the offline model for this language or in the English model. The wake phrase was not changed.
+135,"ఫోన్ మైక్రోఫోన్ అడుగుతుంది. దయచేసి అనుమతి ఇవ్వండి. యాప్ ఫోనులోనే మేల్కొలిపే మాట వింటుంది, తర్వాత ఒక ఆదేశం. స్వరం ఇంటర్నెట్‌కు వెళ్ళదు.","Your phone will ask to use the microphone. Please allow it. Obstacle Guide listens on the phone for the wake phrase, then for one command. It does not send your voice to the internet. You can turn this off in settings."
+136,మైక్రోఫోన్ ఆఫ్‌లో ఉంది. స్వర ఆదేశాలు ఆన్ చేసి మైక్రోఫోన్ అనుమతి ఇవ్వండి.,The microphone is off. Turn voice commands on and allow the microphone.
+137,మైక్రోఫోన్ అనుమతి రాలేదు. స్వర ఆదేశాలకు అది కావాలి.,Microphone permission was not allowed. Voice commands need the microphone.
+138,"మైక్రోఫోన్ అనుమతి నిలిచింది. సెట్టింగ్, తర్వాత అనుమతులు తెరిచి మైక్రోఫోన్ ఆన్ చేయండి.","Microphone permission is blocked. Open settings, then Permissions, and turn the microphone on."
+139,ఆఫ్‌లైన్ మాట నమూనా తెరవలేదు. యాప్ మూసి మళ్ళీ తెరవండి.,The offline speech model could not be opened. Close Obstacle Guide and open it again.
+140,"మైక్రోఫోన్ వేరే యాప్ వాడుతోంది. దాన్ని మూసి, తర్వాత స్వర ఆదేశాలు ఆన్ చేయండి.","The microphone is being used by another app. Close that app, then turn voice commands on again."
+141,స్వర ఆదేశాలు ఆఫ్‌లో ఉన్నాయి.,Voice commands are off.
+142,Hey Guide కోసం వేచి ఉంది.,Waiting for Hey Guide.
+143,ఒక ఆదేశం వింటోంది.,Listening for one command.
+144,అవును?,Yes?
+145,అడ్డంకి హెచ్చరిక ఇప్పటికే ఆన్‌లో ఉంది.,Obstacle warnings are already on.
+146,అడ్డంకి హెచ్చరిక ఇప్పటికే ఆఫ్‌లో ఉంది.,Obstacle warnings are already off.
+147,RaahiSense ఆగింది,RaahiSense stopped
+148,మళ్ళీ చెబుతున్నాను.,Repeating.
+149,మళ్ళీ చెప్పడానికి ఇంకా హెచ్చరిక లేదు.,There is no warning to repeat yet.
+150,స్వరం పెంచాను.,Louder.
+151,స్వరం తగ్గించాను.,Quieter.
+152,స్వరం ఇప్పటికే అతి బిగ్గర.,Speech is already at the loudest.
+153,స్వరం ఇప్పటికే అతి నెమ్మది.,Speech is already at the quietest.
+154,మాట వేగమైంది.,Faster.
+155,మాట నెమ్మదైంది.,Slower.
+156,మాట ఇప్పటికే అతి వేగం.,Speech is already at the fastest.
+157,మాట ఇప్పటికే అతి నెమ్మది.,Speech is already at the slowest.
+158,భాష మారింది.,Language changed.
+159,అది ఆదేశం కాదు. జాబితాకు help చెప్పండి.,That was not a command. Say help for the list.
+160,ఇప్పుడు ముందు ఏమీ కనిపించడం లేదు.,Nothing is in front of you right now.
+161,స్వరం ఆఫ్ చేయండి,Turn voice off
+162,దూరం సరిచేయండి,Calibrate distance
+163,ఈ ఫోనులో గోడ ఎంత దగ్గరో సరిచేయండి,Set how close a wall is on this phone
+164,"ముందు మార్గదర్శి మొదలు పెట్టండి, తర్వాత దూరం సరిచేయండి.","Start the guide, then calibrate distance."
+165,"కెమెరాను తెరిచిన దారి వైపు పెట్టండి, తర్వాత దూరం సరిచేయి మళ్ళీ నొక్కండి.","Point along an open path, then tap Calibrate distance again."
+166,"ఒక అడుగు దూరంలో గోడ వైపు పెట్టండి, తర్వాత దూరం సరిచేయి మళ్ళీ నొక్కండి.","Point at a wall one step away, then tap Calibrate distance again."
+167,దూరం సరిపోయింది.,Distance is calibrated.
+168,ఆ కొలత పనికి రాలేదు. ఫోనును నిలకడగా పట్టి తెరిచిన దారి నుంచి మళ్ళీ మొదలు పెట్టండి.,That reading was not usable. Hold the phone steady and start again from an open path.
+169,గోడ తెరిచిన దారిలా కనిపించింది. గోడ దగ్గరికి వెళ్ళి మళ్ళీ నొక్కండి.,The wall looked like the open path. Move closer to a wall and tap again.
+170,వెలుతురు,Light
+171,అంతటా,Auto
+172,ఎప్పుడూ ఆన్,Always on
+173,ఆఫ్,Off
+174,చీకటి ఉంటే టార్చ్ వెలిగించండి,Turn the flashlight on when it stays dark
+175,టార్చ్ ఆన్ ఉంచండి,Keep the flashlight on
+176,టార్చ్ ఆఫ్ ఉంచండి,Keep the flashlight off
+177,"చీకటి ఉంది, లైట్ వెలిగిస్తున్నాను.","It's dark, turning on the light."
+178,"చాలా చీకటి, స్పష్టంగా కనిపించడం లేదు. దయచేసి జాగ్రత్తగా ఉండండి.","Too dark to see clearly, please use caution."
+179,పరిచయం మరియు లైసెన్స్,About and licenses
+180,మాట మరియు చిత్రాల లైసెన్స్ తెరవండి,Open the list of speech and picture licenses
+181,పరిచయం,About
+182,అడ్డంకి మార్గదర్శి తెల్లటి చేతికర్రకు సహాయం. దాని బదులు కాదు.,Obstacle Guide is an extra to a white cane. It is not a replacement.
+183,వెనక్కి,Back
+184,ముఖ్య స్క్రీన్‌కు వెనక్కి వెళ్ళండి,Go back to the main screen
+185,శిక్షణ ఫోటోలు సేకరించు: ఆన్,Collect training photos: on
+186,శిక్షణ ఫోటోలు సేకరించు: ఆఫ్,Collect training photos: off
+187,శిక్షణ ఫోటోలు ఆఫ్‌లో ఉన్నాయి. ఆన్ చేయడానికి రెండుసార్లు నొక్కండి.,Collect training photos is off. Double tap to turn it on.
+188,శిక్షణ ఫోటోలు ఆన్‌లో ఉన్నాయి. ఆఫ్ చేయడానికి రెండుసార్లు నొక్కండి. హెచ్చరిక కొనసాగుతుంది.,Collect training photos is on. Double tap to turn it off. Warnings keep running.
+189,ఫోటో విరామం: 2 సెకన్లు,Photo interval: 2 seconds
+190,దాచిన ఫోటోల మధ్య సమయం. మార్చడానికి రెండుసార్లు నొక్కండి. ఇప్పుడు 2 సెకన్లు.,Time between saved photos. Double tap to change it. It is 2 seconds now.
+191,ఫోటోతో GPS: ఆన్,Save GPS with photos: on
+192,ఫోటోతో GPS: ఆఫ్,Save GPS with photos: off
+193,GPS ఫోటోతో దాచబడదు. చేర్చడానికి రెండుసార్లు నొక్కండి.,GPS is not saved with photos. Double tap to include it.
+194,GPS ఫోటోతో దాచబడుతుంది. ఆఫ్ చేయడానికి రెండుసార్లు నొక్కండి.,GPS is saved with photos. Double tap to turn GPS off.
+195,స్థల అనుమతి రాలేదు. GPS ఆఫ్‌లో ఉంటుంది.,Location was not allowed. GPS stays off.
+196,"2 ఫోటోలు, 1 MB","2 photos, 1 MB"
+197,శిక్షణ ఫోటోలు ఎగుమతి చేయండి,Export training photos
+198,ఈ సేకరణను జిప్ చేసి పంచుకునే షీట్ తెరవండి. మీరు ఎక్కడికి పంపాలో ఎంచుకునే వరకు ఏమీ అప్‌లోడ్ కాదు.,Zip this collection and open the share sheet. Nothing is uploaded until you choose where to send it.
+199,ఎగుమతి చేయడానికి శిక్షణ ఫోటోలు లేవు.,There are no training photos to export.
+200,ఫోటోల జిప్ కాలేదు.,The photos could not be zipped.
+201,జిప్ సిద్ధమవుతోంది.,Preparing the zip.
+202,ఫోటో సేకరణ ఆగింది. ఫోన్ వేడెక్కింది.,Photo collection paused. The phone is hot.
+203,ఫోటోలు మళ్ళీ సేకరిస్తున్నాం.,Collecting photos again.
+204,శిక్షణ ఫోటోలు సేకరిస్తున్నాం. హెచ్చరిక ఆన్‌లో ఉంది.,Collecting training photos. Warnings stay on.
+205,ఫోటో సేకరణ ఆగింది. హెచ్చరిక ఆన్‌లో ఉంది.,Stopped collecting photos. Warnings stay on.
+206,శిక్షణ ఫోటోలు ఇప్పటికే సేకరిస్తున్నాం.,Already collecting training photos.
+207,శిక్షణ ఫోటోలు ఇప్పటికే ఆఫ్‌లో ఉన్నాయి.,Training photos are already off.
+208,తప్పినదిగా గుర్తించాను.,Marked as missed.
+209,"శిక్షణ ఫోటోలు ఆఫ్‌లో ఉన్నాయి, కాబట్టి ఏమీ దాచలేదు.","Collect training photos is off, so nothing was saved."
+210,గమనించాను.,Noted.
+211,పూర్తి ఫోటోలు ఈ ఫోనులోనే ఉంటాయి. హెచ్చరిక కొనసాగుతుంది. ఏమీ అప్‌లోడ్ కాదు. Export నొక్కితేనే జిప్ పంచుకుంటారు.,Full photos stay on this phone. Warnings keep running. Nothing is uploaded. Export shares a zip only when you tap Export.

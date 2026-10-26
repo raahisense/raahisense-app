@@ -2,44 +2,51 @@ import AVFoundation
 import Foundation
 import Speech
 
-/// On-device English recognition. This is not the Vosk model used on Android.
-/// The Vosk iOS library is not published, so the same grammar is given to Apple's
-/// on-device recognizer. Nothing is sent to a server: requiresOnDeviceRecognition stays on.
+/// On-device recognition. This is not the Vosk model used on Android.
+/// The Vosk iOS library is not published, so the same phrases are given to Apple's
+/// on-device recognizer. English is always on. A second recognizer is added when
+/// that language is installed on the phone. Nothing is sent to a server.
 final class EarEngine {
-    var onTranscript: ((String, Bool) -> Void)?
+    var onTranscript: ((String, Bool, Bool) -> Void)?
     var onFailure: ((String) -> Void)?
 
-    private let recognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))
+    private let englishRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))
+    private var languageRecognizer: SFSpeechRecognizer?
     private let audioEngine = AVAudioEngine()
-    private var request: SFSpeechAudioBufferRecognitionRequest?
-    private var task: SFSpeechRecognitionTask?
-    private var phrases: [String] = ["hey guide"]
+    private var requests: [LaneRequest] = []
+    private var englishPhrases: [String] = ["hey guide"]
+    private var languagePhrases: [String] = []
+    private var languageTag = "en"
     private var wanted = false
     private var ducked = false
     private var tapInstalled = false
     private var taskGeneration = 0
-    private var failures = 0
+    private var englishFailures = 0
     private let queue = DispatchQueue(label: "app.raahisense.ear")
     private let stateLock = NSLock()
     private var muted = false
 
     var onDeviceSupported: Bool {
-        recognizer?.supportsOnDeviceRecognition == true
+        englishRecognizer?.supportsOnDeviceRecognition == true
     }
 
-    func start(phrases: [String]) {
-        self.phrases = phrases
+    func start(english: [String], language: [String], languageTag: String) {
+        englishPhrases = english
+        languagePhrases = language
+        self.languageTag = languageTag
         wanted = true
         queue.async { [weak self] in
             self?.startOnQueue()
         }
     }
 
-    func updatePhrases(_ phrases: [String]) {
-        self.phrases = phrases
+    func updatePhrases(english: [String], language: [String], languageTag: String) {
+        englishPhrases = english
+        languagePhrases = language
+        self.languageTag = languageTag
         guard wanted else { return }
         queue.async { [weak self] in
-            self?.beginTask()
+            self?.beginTasks()
         }
     }
 
@@ -53,13 +60,10 @@ final class EarEngine {
                 self.stateLock.unlock()
                 guard self.wanted else { return }
                 self.taskGeneration += 1
-                self.task?.cancel()
-                self.task = nil
-                self.request?.endAudio()
-                self.request = nil
+                self.cancelRequests()
             } else {
                 if self.wanted {
-                    self.beginTask()
+                    self.beginTasks()
                 }
                 self.stateLock.lock()
                 self.muted = false
@@ -83,15 +87,11 @@ final class EarEngine {
     }
 
     private func startOnQueue() {
-        guard let recognizer else {
+        guard let englishRecognizer else {
             onFailure?("status_speech_unavailable")
             return
         }
-        guard recognizer.isAvailable else {
-            onFailure?("status_speech_unavailable")
-            return
-        }
-        if !recognizer.supportsOnDeviceRecognition {
+        guard englishRecognizer.isAvailable, englishRecognizer.supportsOnDeviceRecognition else {
             onFailure?("status_speech_unavailable")
             return
         }
@@ -102,7 +102,7 @@ final class EarEngine {
                 audioEngine.prepare()
                 try audioEngine.start()
             }
-            beginTask()
+            beginTasks()
         } catch {
             onFailure?("status_mic_unavailable")
         }
@@ -128,17 +128,56 @@ final class EarEngine {
             throw EarError.noInput
         }
         input.installTap(onBus: 0, bufferSize: 1024, format: format) { [weak self] buffer, _ in
-            self?.request?.append(buffer)
+            guard let self else { return }
+            self.stateLock.lock()
+            let current = self.requests
+            self.stateLock.unlock()
+            for lane in current {
+                lane.request.append(buffer)
+            }
         }
         tapInstalled = true
     }
 
-    private func beginTask() {
+    private func beginTasks() {
         taskGeneration += 1
         let generation = taskGeneration
-        task?.cancel()
-        task = nil
-        request?.endAudio()
+        cancelRequests()
+        var lanes: [LaneRequest] = []
+        if let english = makeRequest(
+            recognizer: englishRecognizer,
+            phrases: englishPhrases,
+            languageLane: false,
+            generation: generation
+        ) {
+            lanes.append(english)
+        }
+        if languageTag != "en", !languagePhrases.isEmpty {
+            let code = PhraseBook.speechLanguageCode(languageTag)
+            let recognizer = SFSpeechRecognizer(locale: Locale(identifier: code))
+            languageRecognizer = recognizer
+            if recognizer?.supportsOnDeviceRecognition == true,
+               let language = makeRequest(
+                recognizer: recognizer,
+                phrases: languagePhrases,
+                languageLane: true,
+                generation: generation
+               ) {
+                lanes.append(language)
+            }
+        }
+        stateLock.lock()
+        requests = lanes
+        stateLock.unlock()
+    }
+
+    private func makeRequest(
+        recognizer: SFSpeechRecognizer?,
+        phrases: [String],
+        languageLane: Bool,
+        generation: Int
+    ) -> LaneRequest? {
+        guard let recognizer, recognizer.supportsOnDeviceRecognition else { return nil }
         let request = SFSpeechAudioBufferRecognitionRequest()
         request.shouldReportPartialResults = true
         request.requiresOnDeviceRecognition = true
@@ -146,30 +185,41 @@ final class EarEngine {
         if #available(iOS 16.0, *) {
             request.addsPunctuation = false
         }
-        self.request = request
-        task = recognizer?.recognitionTask(with: request) { [weak self] result, error in
+        let task = recognizer.recognitionTask(with: request) { [weak self] result, error in
             guard let self, generation == self.taskGeneration else { return }
             if let result {
-                self.failures = 0
+                if !languageLane { self.englishFailures = 0 }
                 if self.isMuted() { return }
                 let text = result.bestTranscription.formattedString
                 if !text.isEmpty {
-                    self.onTranscript?(text, result.isFinal)
+                    self.onTranscript?(text, result.isFinal, languageLane)
                 }
-            } else if error != nil {
-                self.failures += 1
+            } else if error != nil, !languageLane {
+                self.englishFailures += 1
             }
             let finished = result?.isFinal == true || error != nil
             guard finished, self.wanted, generation == self.taskGeneration else { return }
-            if self.failures > 4 {
+            if !languageLane && self.englishFailures > 4 {
                 self.wanted = false
                 self.onFailure?("status_speech_unavailable")
                 return
             }
             self.queue.asyncAfter(deadline: .now() + 0.35) { [weak self] in
                 guard let self, self.wanted, generation == self.taskGeneration else { return }
-                self.beginTask()
+                self.beginTasks()
             }
+        }
+        return LaneRequest(request: request, task: task, languageLane: languageLane)
+    }
+
+    private func cancelRequests() {
+        stateLock.lock()
+        let current = requests
+        requests = []
+        stateLock.unlock()
+        for lane in current {
+            lane.task?.cancel()
+            lane.request.endAudio()
         }
     }
 
@@ -184,10 +234,7 @@ final class EarEngine {
         muted = false
         stateLock.unlock()
         taskGeneration += 1
-        task?.cancel()
-        task = nil
-        request?.endAudio()
-        request = nil
+        cancelRequests()
         if audioEngine.isRunning {
             audioEngine.stop()
         }
@@ -196,6 +243,12 @@ final class EarEngine {
             tapInstalled = false
         }
     }
+}
+
+private struct LaneRequest {
+    let request: SFSpeechAudioBufferRecognitionRequest
+    let task: SFSpeechRecognitionTask?
+    let languageLane: Bool
 }
 
 enum EarError: Error {

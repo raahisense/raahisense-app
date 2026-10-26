@@ -93,8 +93,10 @@ final class GuideSession: ObservableObject {
         camera.onFailed = { [weak self] in
             DispatchQueue.main.async { self?.speakKey("status_camera_error", flush: true) }
         }
-        ear.onTranscript = { [weak self] text, isFinal in
-            DispatchQueue.main.async { self?.handleTranscript(text, isFinal: isFinal) }
+        ear.onTranscript = { [weak self] text, isFinal, languageLane in
+            DispatchQueue.main.async {
+                self?.handleTranscript(text, isFinal: isFinal, languageLane: languageLane)
+            }
         }
         ear.onFailure = { [weak self] key in
             DispatchQueue.main.async { self?.speakKey(key, flush: true) }
@@ -208,7 +210,7 @@ final class GuideSession: ObservableObject {
     func commitWake(_ raw: String) {
         let proposed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
         if CommandLexicon.normalize(proposed) == CommandLexicon.normalize(settings.wakePhrase) { return }
-        guard WakeVocab.allows(proposed) else {
+        guard WakeVocab.allows(proposed, languageTag: settings.languageTag) else {
             speakKey("wake_phrase_rejected", flush: true)
             return
         }
@@ -508,7 +510,11 @@ final class GuideSession: ObservableObject {
                         return
                     }
                     if !self.earRunning {
-                        self.ear.start(phrases: self.spottingPhrases())
+                        self.ear.start(
+                            english: self.englishPhrases(correction: false),
+                            language: self.languagePhrases(),
+                            languageTag: self.settings.languageTag
+                        )
                         self.earRunning = true
                     } else {
                         self.refreshEarPhrases()
@@ -526,7 +532,11 @@ final class GuideSession: ObservableObject {
         guard speechStatus == .authorized, mic == .granted else { return }
         guard ear.onDeviceSupported else { return }
         if !earRunning {
-            ear.start(phrases: spottingPhrases())
+            ear.start(
+                english: englishPhrases(correction: false),
+                language: languagePhrases(),
+                languageTag: settings.languageTag
+            )
             earRunning = true
         }
     }
@@ -539,7 +549,11 @@ final class GuideSession: ObservableObject {
         captureFlag.set(true)
         lastHeard = ""
         ear.setDucked(true)
-        ear.updatePhrases(commandPhrases())
+        ear.updatePhrases(
+            english: englishPhrases(correction: false),
+            language: languagePhrases(),
+            languageTag: settings.languageTag
+        )
         speakKey("wake_ack", flush: true)
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
             guard let self, self.captureToken == token else { return }
@@ -556,11 +570,15 @@ final class GuideSession: ObservableObject {
         lastHeard = ""
         ear.setDucked(false)
         if settings.voiceEnabled && earRunning {
-            ear.updatePhrases(spottingPhrases())
+            ear.updatePhrases(
+                english: englishPhrases(correction: false),
+                language: languagePhrases(),
+                languageTag: settings.languageTag
+            )
         }
     }
 
-    private func handleTranscript(_ text: String, isFinal: Bool) {
+    private func handleTranscript(_ text: String, isFinal: Bool, languageLane: Bool) {
         let now = Self.nowMs()
         let speaking = speech.speaking
         let correctionOpen = RecognitionGate.acceptsCorrection(
@@ -582,7 +600,8 @@ final class GuideSession: ObservableObject {
             lexicon: currentLexicon(),
             wakePhrase: settings.wakePhrase,
             requireWake: !phaseCapturing,
-            allowBareCorrection: correctionOpen && !phaseCapturing
+            allowBareCorrection: correctionOpen && !phaseCapturing && !languageLane,
+            extraWakePhrases: languageLane ? SpokenEar.nativeWakes(settings.languageTag) : []
         )
         let correctionAction = action == .wrong || action == .missed
         if !gateOpen && !(correctionOpen && correctionAction) { return }
@@ -718,24 +737,62 @@ final class GuideSession: ObservableObject {
         return CommandLexicon.english.withExtra(extra.phrases)
     }
 
-    private func spottingPhrases() -> [String] {
+    private func englishPhrases(correction: Bool) -> [String] {
         let wake = CommandLexicon.normalize(settings.wakePhrase)
+        let lexicon = CommandLexicon.english
+        if phaseCapturing {
+            return VoiceCommand.allCases.flatMap { lexicon.phrases[$0] ?? [] }
+        }
         var list = [wake]
         for command in VoiceCommand.allCases {
-            for phrase in currentLexicon().phrases[command] ?? [] {
+            for phrase in lexicon.phrases[command] ?? [] {
+                list.append("\(wake) \(phrase)")
+            }
+        }
+        if correction {
+            for command in [VoiceCommand.wrong, VoiceCommand.missed] {
+                list.append(contentsOf: lexicon.phrases[command] ?? [])
+            }
+        }
+        return list
+    }
+
+    private func languagePhrases() -> [String] {
+        let tag = settings.languageTag
+        if tag == "en" { return [] }
+        let everyday: [VoiceCommand] = [
+            .start, .pause, .resume, .whatIsAhead, .repeatLast,
+            .louder, .quieter, .faster, .slower, .changeLanguage, .help,
+        ]
+        let english = CommandLexicon.english
+        var localized: [String] = []
+        for command in everyday {
+            let phrases = currentLexicon().phrases[command] ?? []
+            let known = Set(english.phrases[command] ?? [])
+            localized.append(contentsOf: phrases.filter { !known.contains($0) })
+        }
+        var wakes = SpokenEar.nativeWakes(tag)
+        let saved = CommandLexicon.normalize(settings.wakePhrase)
+        if !wakes.contains(saved) { wakes.append(saved) }
+        if phaseCapturing {
+            return wakes + localized
+        }
+        var list = wakes
+        for wake in wakes {
+            for phrase in localized {
                 list.append("\(wake) \(phrase)")
             }
         }
         return list
     }
 
-    private func commandPhrases() -> [String] {
-        VoiceCommand.allCases.flatMap { currentLexicon().phrases[$0] ?? [] }
-    }
-
     private func refreshEarPhrases() {
         guard earRunning else { return }
-        ear.updatePhrases(phaseCapturing ? commandPhrases() : spottingPhrases())
+        ear.updatePhrases(
+            english: englishPhrases(correction: false),
+            language: languagePhrases(),
+            languageTag: settings.languageTag
+        )
     }
 
     private func startMotion() {
@@ -768,6 +825,8 @@ final class GuideSession: ObservableObject {
         case "bn": key = "voice_missing_bn"
         case "sw": key = "voice_missing_sw"
         case "es": key = "voice_missing_es"
+        case "kn": key = "voice_missing_kn"
+        case "te": key = "voice_missing_te"
         default: key = nil
         }
         if let key, !speech.voiceAvailable(tag) {
@@ -872,7 +931,12 @@ final class GuideSession: ObservableObject {
             correctionToken += 1
             let correction = correctionToken
             if earRunning {
-                ear.updatePhrases(listeningPhrases(correction: true))
+                let phrases = listeningPhrases(correction: true)
+                ear.updatePhrases(
+                    english: phrases.english,
+                    language: phrases.language,
+                    languageTag: settings.languageTag
+                )
                 ear.setMuted(false)
             }
             let window = RecognitionGate.correctionWindowMs
@@ -895,21 +959,18 @@ final class GuideSession: ObservableObject {
         }
     }
 
-    private func listeningPhrases(correction: Bool) -> [String] {
-        var list = phaseCapturing ? commandPhrases() : spottingPhrases()
-        if correction && !phaseCapturing {
-            for command in [VoiceCommand.wrong, VoiceCommand.missed] {
-                for phrase in currentLexicon().phrases[command] ?? [] {
-                    list.append(phrase)
-                }
-            }
-        }
-        return list
+    private func listeningPhrases(correction: Bool) -> (english: [String], language: [String]) {
+        (englishPhrases(correction: correction), languagePhrases())
     }
 
     private func restoreListeningPhrases() {
         guard earRunning else { return }
-        ear.updatePhrases(listeningPhrases(correction: false))
+        let phrases = listeningPhrases(correction: false)
+        ear.updatePhrases(
+            english: phrases.english,
+            language: phrases.language,
+            languageTag: settings.languageTag
+        )
     }
 
     private func storeSpokenWarning(_ warning: SpokenWarning) {

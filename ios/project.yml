@@ -41,6 +41,8 @@ targets:
           cp "$ASSETS/obstacles_v1.tflite" "$DEST/obstacles_v1.tflite"
           cp "$ASSETS/depth_anything_v2_small.tflite" "$DEST/depth_anything_v2_small.tflite"
           cp "$ASSETS/vosk-small-en-words.txt" "$DEST/vosk-small-en-words.txt"
+          cp "$ASSETS/vosk-small-hi-words.txt" "$DEST/vosk-small-hi-words.txt"
+          cp "$ASSETS/vosk-small-es-words.txt" "$DEST/vosk-small-es-words.txt"
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.raahisense.guide

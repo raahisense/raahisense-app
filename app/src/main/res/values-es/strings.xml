@@ -5,7 +5,7 @@
     <string name="app_name">RaahiSense</string>
     <string name="tagline">Es una ayuda para el bastón blanco, no un reemplazo. Funciona sin internet.</string>
     <string name="hold_phone">Sostenga el teléfono vertical. La cámara trasera mira hacia donde camina.</string>
-    <string name="safety_note">Practique adentro con un ayudante primero. Esta aplicación no ve escalones, huecos ni postes. Siga usando el bastón.</string>
+    <string name="safety_note">Practique adentro con un ayudante primero. Esta aplicación puede no avisar escalones, huecos, postes y muchos otros obstáculos. Siga usando el bastón.</string>
     <string name="action_start">INICIAR</string>
     <string name="action_stop">DETENER</string>
     <string name="action_quit">Detener RaahiSense</string>
@@ -110,7 +110,7 @@
     <string name="wake_phrase_label">Frase de activación</string>
     <string name="cd_wake_phrase">Frase de activación. Dígalo antes de una orden. La frase inicial es Hey Guide.</string>
     <string name="confirm_wake_phrase">La frase de activación ahora es %1$s.</string>
-    <string name="wake_phrase_rejected">Esas palabras no están en el modelo de inglés sin internet. La frase no cambió.</string>
+    <string name="wake_phrase_rejected">Esas palabras no están en el modelo sin internet de este idioma ni en el modelo de inglés. La frase no cambió.</string>
     <string name="prompt_allow_microphone">El teléfono pedirá usar el micrófono. Permítalo. Obstacle Guide escucha en el teléfono la frase de activación y después una orden. La voz no se envía a internet. Puede apagarlo en los ajustes.</string>
     <string name="status_mic_needed">El micrófono está apagado. Active las órdenes de voz y permita el micrófono.</string>
     <string name="status_mic_denied">No se permitió el micrófono. Las órdenes de voz lo necesitan.</string>
@@ -137,21 +137,21 @@
     <string name="confirm_language">Idioma cambiado.</string>
     <string name="confirm_unknown">Eso no fue una orden. Diga help para oír la lista.</string>
     <string name="ahead_clear">Ahora no hay nada delante de usted.</string>
-    <string name="help_commands">Después de %1$s, diga una orden en inglés: start, stop, stop app, exit, close, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, start collecting, stop collecting, missed, wrong, o help. Stop cierra RaahiSense. Pause apaga los avisos y resume los enciende. Start collecting guarda fotos de entrenamiento y los avisos siguen. Diga missed si un obstáculo no fue avisado. Diga wrong, false alarm, o wrong warning si un aviso fue falso o el objeto era otro. También puede sacudir el teléfono con fuerza, tocar dos veces la pantalla si TalkBack está apagado, o mantener pulsada una tecla de volumen con esta pantalla abierta.</string>
-    <string name="cmd_start">empezar|iniciar|start|start guide|begin</string>
-    <string name="cmd_stop">parar|detener|stop|stop app|exit|close|stop guide</string>
-    <string name="cmd_pause">pausa|pause</string>
-    <string name="cmd_resume">reanudar|resume</string>
-    <string name="cmd_ahead">qué hay delante de mí|what is in front of me|what is ahead|what is in front</string>
-    <string name="cmd_repeat">repetir|repeat|say again|repeat that</string>
-    <string name="cmd_louder">más alto|louder|speak louder|volume up</string>
-    <string name="cmd_quieter">más bajo|quieter|speak quieter|softer|volume down</string>
-    <string name="cmd_faster">más rápido|faster|speak faster</string>
-    <string name="cmd_slower">más lento|slower|speak slower</string>
-    <string name="cmd_language">cambiar idioma|change language|next language</string>
-    <string name="cmd_help">ayuda|help|list commands|what can i say</string>
+    <string name="help_commands">Después de %1$s, diga una orden cotidiana. El español funciona cuando el teléfono tiene el reconocedor sin internet. El inglés siempre funciona. Estas órdenes se quedan en inglés en todos los idiomas: stop, stop app, exit, close, start collecting, stop collecting, missed, wrong, false alarm y wrong warning. Órdenes cotidianas: empezar, pausa, sigue, qué hay delante, repetir, más alto, más bajo, más rápido, más despacio, cambiar idioma o ayuda. Stop cierra RaahiSense. Pause apaga los avisos y resume los enciende. Start collecting guarda fotos de entrenamiento y los avisos siguen. Diga missed si un obstáculo no fue avisado. Diga wrong, false alarm o wrong warning si un aviso fue falso o el objeto era otro. También puede sacudir el teléfono con fuerza, tocar dos veces la pantalla si TalkBack está apagado, o mantener pulsada una tecla de volumen con esta pantalla abierta.</string>
+    <string name="cmd_start">empezar|comienza</string>
+    <string name="cmd_stop">stop|stop app|exit|close|stop guide</string>
+    <string name="cmd_pause">pausa</string>
+    <string name="cmd_resume">sigue|continuar</string>
+    <string name="cmd_ahead">qué hay delante</string>
+    <string name="cmd_repeat">repetir</string>
+    <string name="cmd_louder">más alto</string>
+    <string name="cmd_quieter">más bajo</string>
+    <string name="cmd_faster">más rápido</string>
+    <string name="cmd_slower">más despacio</string>
+    <string name="cmd_language">cambiar idioma</string>
+    <string name="cmd_help">ayuda</string>
     <string name="voice_off_action">Apagar la voz</string>
-    <string name="voice_ear_note">El modelo que escucha está en inglés. Diga Hey Guide y después una orden en inglés. La voz se queda en el teléfono.</string>
+    <string name="voice_ear_note">La escucha se queda en el teléfono. No se sube nada. Las órdenes cotidianas funcionan en español y en inglés. Stop, start collecting, stop collecting, missed y wrong se dicen en inglés.</string>
     <string name="depth_unknown_very_close_left">Objeto desconocido a la izquierda, muy cerca</string>
     <string name="depth_unknown_very_close_ahead">Objeto desconocido delante, muy cerca</string>
     <string name="depth_unknown_very_close_right">Objeto desconocido a la derecha, muy cerca</string>
@@ -186,7 +186,7 @@
     <string name="about_intro">Obstacle Guide es un complemento del bastón blanco. No lo sustituye.</string>
     <string name="action_back">Volver</string>
     <string name="cd_back">Volver a la pantalla principal</string>
-    <string name="about_body">Speech. Wake-word listening uses Vosk, the small English model vosk-model-small-en-us-0.15, by Alpha Cephei. The library and the model are Apache License 2.0. Your voice stays on the phone. The ear is English, so say the English command words. The spoken warnings can still use the language you picked. Pictures. The camera uses a small YOLO model trained for this app. It can speak people, bicycles, motorcycles, cars, buses, trucks, cows, dogs, cats, auto-rickshaws, cycle rickshaws, handcarts, potholes, open drains, curbs, stairs, poles, barriers, street objects, trees, chairs, couches, tables, beds, toilets, plants, refrigerators, televisions, and doors. Speed bump and low branch are not included. Curb pictures are few, so curbs are easy to miss. Depth. Walls and unnamed close objects use Depth Anything V2 Small, Apache License 2.0. The number is relative depth, not meters. Calibrate distance on this phone. Glass doors and glass walls are often missed. If this phone already has ARCore with depth, that map is used instead. This app does not download ARCore. Picture sources. ROD: Amirkabir University of Technology, Zandi and colleagues, MIT, from Roboflow sets that are mostly CC BY 4.0. RDD2022 India potholes: Arya and colleagues, Geoscience Data Journal 2024, CC BY 4.0. Open Images, including doors, stairs, street lights, carts, and cattle: annotations CC BY 4.0, Flickr photos CC BY 2.0. COCO 2017 indoor pictures: annotations CC BY 4.0. Those photos are from Flickr and are not all cleared for commercial use. Roboflow pothole sets, CC BY 4.0. Tuk-tuk and rickshaw pictures via shravya11, CC BY 4.0. Datacluster Labs auto-rickshaw sample, CC BY 4.0 on the dataset card. AssistEye road obstacles: MIT for the collection. Some upstream pictures are CC0 or CC BY 4.0. Some curb pictures in that collection carry stock-photo watermarks and are not redistributed. This app is an extra to a white cane. It is not a replacement.</string>
+    <string name="about_body">Voz. La escucha usa Vosk de Alpha Cephei, Apache License 2.0. El inglés es vosk-model-small-en-us-0.15. El hindi es vosk-model-small-hi-0.22. El español es vosk-model-small-es-0.42. La voz se queda en el teléfono. Las órdenes cotidianas en hindi y español usan el modelo de ese idioma, y el inglés siempre funciona. Stop, start collecting, stop collecting, missed y wrong se quedan en inglés en todos los idiomas. Kannada, telugu, tamil, bengalí y suajili escuchan en inglés. El modelo pequeño de telugu no se incluyó porque su tasa de error publicada es de cerca del 88 por ciento. Tamil y kannada no tienen modelo Vosk. Los avisos hablados siguen el idioma elegido. Pictures. The camera uses a small YOLO model trained for this app. It can speak people, bicycles, motorcycles, cars, buses, trucks, cows, dogs, cats, auto-rickshaws, cycle rickshaws, handcarts, potholes, open drains, curbs, stairs, poles, barriers, street objects, trees, chairs, couches, tables, beds, toilets, plants, refrigerators, televisions, and doors. Speed bump and low branch are not included. Curb pictures are few, so curbs are easy to miss. Depth. Walls and unnamed close objects use Depth Anything V2 Small, Apache License 2.0. The number is relative depth, not meters. Calibrate distance on this phone. Glass doors and glass walls are often missed. If this phone already has ARCore with depth, that map is used instead. This app does not download ARCore. Picture sources. ROD: Amirkabir University of Technology, Zandi and colleagues, MIT, from Roboflow sets that are mostly CC BY 4.0. RDD2022 India potholes: Arya and colleagues, Geoscience Data Journal 2024, CC BY 4.0. Open Images, including doors, stairs, street lights, carts, and cattle: annotations CC BY 4.0, Flickr photos CC BY 2.0. COCO 2017 indoor pictures: annotations CC BY 4.0. Those photos are from Flickr and are not all cleared for commercial use. Roboflow pothole sets, CC BY 4.0. Tuk-tuk and rickshaw pictures via shravya11, CC BY 4.0. Datacluster Labs auto-rickshaw sample, CC BY 4.0 on the dataset card. AssistEye road obstacles: MIT for the collection. Some upstream pictures are CC0 or CC BY 4.0. Some curb pictures in that collection carry stock-photo watermarks and are not redistributed. This app is an extra to a white cane. It is not a replacement.</string>
     <string name="wake_phrase_hint">Hey Guide</string>
 
     <string name="collect_on">Recoger fotos de entrenamiento: activado</string>
@@ -220,5 +220,14 @@
     <string name="cmd_missed">missed</string>
     <string name="cmd_wrong">wrong|false alarm|wrong warning</string>
     <string name="collect_note">Las fotos completas se quedan en este teléfono. Los avisos siguen. No se sube nada. Exportar comparte un archivo comprimido solo cuando lo toca.</string>
+
+    <string name="lang_en">English</string>
+    <string name="lang_hi">हिन्दी (Hindi) — draft, needs native-speaker review</string>
+    <string name="lang_ta">தமிழ் (Tamil) — draft, needs native-speaker review</string>
+    <string name="lang_bn">বাংলা (Bengali) — draft, needs native-speaker review</string>
+    <string name="lang_sw">Kiswahili — draft, needs native-speaker review</string>
+    <string name="lang_es">Español — draft, needs native-speaker review</string>
+    <string name="lang_kn">ಕನ್ನಡ (Kannada) — draft, needs native-speaker review</string>
+    <string name="lang_te">తెలుగు (Telugu) — draft, needs native-speaker review</string>
 </resources>
 

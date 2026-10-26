@@ -99,21 +99,61 @@ public enum CommandParser {
     }
 }
 
+/// Hindi and Spanish have a small offline command model. Other languages do not.
+public enum SpokenEar {
+    public static func hasCommandModel(_ languageTag: String) -> Bool {
+        languageTag == "hi" || languageTag == "es"
+    }
+
+    public static func nativeWakes(_ languageTag: String) -> [String] {
+        switch languageTag {
+        case "hi": return ["हे गाइड"]
+        case "es": return ["oye guía"]
+        default: return []
+        }
+    }
+}
+
+/// Stop and the training commands stay on the English recognizer, so they win.
+/// An everyday command from the selected language wins over English.
+public enum EarChoice {
+    private static let englishPinned: Set<VoiceAction> = [
+        .stop, .startCollecting, .stopCollecting, .missed, .wrong,
+    ]
+
+    public static func prefer(language: VoiceAction?, english: VoiceAction) -> VoiceAction {
+        if englishPinned.contains(english) { return english }
+        if let language, isCommand(language) { return language }
+        if isCommand(english) { return english }
+        if language == .wakeOnly || english == .wakeOnly { return .wakeOnly }
+        if language == .unknown || english == .unknown { return .unknown }
+        return .ignore
+    }
+
+    private static func isCommand(_ action: VoiceAction) -> Bool {
+        switch action {
+        case .ignore, .wakeOnly, .unknown: return false
+        default: return true
+        }
+    }
+}
+
 public enum VoiceInterpreter {
     public static func interpret(
         _ transcript: String,
         lexicon: CommandLexicon = .english,
         wakePhrase: String = CommandLexicon.defaultWake,
         requireWake: Bool,
-        allowBareCorrection: Bool = false
+        allowBareCorrection: Bool = false,
+        extraWakePhrases: [String] = []
     ) -> VoiceAction {
         let text = CommandLexicon.normalize(transcript)
         if text.isEmpty || text == "unk" {
             return requireWake ? .ignore : .unknown
         }
-        let wake = CommandLexicon.normalize(wakePhrase)
-        let woke = !wake.isEmpty && " \(text) ".contains(" \(wake) ")
-        let remainder = woke ? removeFirst(text, wake) : text
+        let wake = matchingWake(text, wakePhrase: wakePhrase, extra: extraWakePhrases)
+        let woke = wake != nil
+        let remainder = wake.map { removeFirst(text, $0) } ?? text
         if requireWake && !woke {
             if allowBareCorrection {
                 if let bare = CommandParser.parse(text, lexicon: lexicon), bare == .wrong || bare == .missed {
@@ -127,6 +167,24 @@ public enum VoiceInterpreter {
             return requireWake ? .wakeOnly : .unknown
         }
         return command.action
+    }
+
+    private static func matchingWake(_ text: String, wakePhrase: String, extra: [String]) -> String? {
+        let padded = " \(text) "
+        var best: String?
+        var bestIndex = Int.max
+        for candidate in [wakePhrase] + extra {
+            let wake = CommandLexicon.normalize(candidate)
+            if wake.isEmpty { continue }
+            guard let range = padded.range(of: " \(wake) ") else { continue }
+            let index = padded.distance(from: padded.startIndex, to: range.lowerBound)
+            let longer = best != nil && index == bestIndex && wake.count > (best?.count ?? 0)
+            if index < bestIndex || longer {
+                best = wake
+                bestIndex = index
+            }
+        }
+        return best
     }
 
     private static func removeFirst(_ text: String, _ phrase: String) -> String {

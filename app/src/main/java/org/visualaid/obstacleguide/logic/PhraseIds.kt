@@ -242,5 +242,7 @@ object PhraseIds {
         "voice_missing_bn",
         "voice_missing_sw",
         "voice_missing_es",
+        "voice_missing_kn",
+        "voice_missing_te",
     )
 }

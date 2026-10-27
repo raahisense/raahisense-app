@@ -12,6 +12,7 @@
 synth160.zip
 /synth160/
 /training/runs/
+/training/metrics/*.tflite
 *.pt
 __pycache__/
 *.pyc

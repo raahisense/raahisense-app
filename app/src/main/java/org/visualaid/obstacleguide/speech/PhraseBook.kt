@@ -54,6 +54,13 @@ object PhraseBook {
         "refrigerator" to R.string.obj_refrigerator,
         "tv" to R.string.obj_tv,
         "door" to R.string.obj_door,
+        "wall" to R.string.obj_wall,
+        "shoe" to R.string.obj_shoe,
+        "bag" to R.string.obj_bag,
+        "toy" to R.string.obj_toy,
+        "bin" to R.string.obj_bin,
+        "appliance" to R.string.obj_appliance,
+        "cabinet" to R.string.obj_cabinet,
     )
 
     private val depthSentences = mapOf(

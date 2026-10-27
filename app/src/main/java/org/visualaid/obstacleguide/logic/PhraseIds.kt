@@ -54,6 +54,13 @@ object PhraseIds {
         "refrigerator" to "obj_refrigerator",
         "tv" to "obj_tv",
         "door" to "obj_door",
+        "wall" to "obj_wall",
+        "shoe" to "obj_shoe",
+        "bag" to "obj_bag",
+        "toy" to "obj_toy",
+        "bin" to "obj_bin",
+        "appliance" to "obj_appliance",
+        "cabinet" to "obj_cabinet",
     )
 
     /**

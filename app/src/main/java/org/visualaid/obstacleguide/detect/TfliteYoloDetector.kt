@@ -15,7 +15,7 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 /**
- * 29-class walking and indoor detector. The file is int8 TFLite, loaded from assets.
+ * 36-class walking and indoor detector, including wall and household obstacles. The file is int8 TFLite, loaded from assets.
  * Boxes are mapped back through the same letterbox used at inference.
  */
 class TfliteYoloDetector(context: Context) : Closeable {

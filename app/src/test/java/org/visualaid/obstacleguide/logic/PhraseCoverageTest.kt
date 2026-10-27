@@ -21,7 +21,7 @@ class PhraseCoverageTest {
             }
         }
         assertEquals(9, PhraseIds.templates.size)
-        assertEquals(29, PhraseIds.objects.size)
+        assertEquals(36, PhraseIds.objects.size)
         assertFalse("airplane" in PhraseIds.objects)
         assertFalse("???" in PhraseIds.objects)
         assertTrue("person" in PhraseIds.objects)
@@ -29,6 +29,13 @@ class PhraseCoverageTest {
         assertTrue("chair" in PhraseIds.objects)
         assertTrue("potted plant" in PhraseIds.objects)
         assertTrue("door" in PhraseIds.objects)
+        assertTrue("wall" in PhraseIds.objects)
+        assertTrue("shoe" in PhraseIds.objects)
+        assertTrue("bag" in PhraseIds.objects)
+        assertTrue("toy" in PhraseIds.objects)
+        assertTrue("bin" in PhraseIds.objects)
+        assertTrue("appliance" in PhraseIds.objects)
+        assertTrue("cabinet" in PhraseIds.objects)
         assertTrue("pothole" in PhraseIds.objects)
         assertTrue("auto_rickshaw" in PhraseIds.objects)
     }

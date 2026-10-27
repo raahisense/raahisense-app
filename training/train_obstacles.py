@@ -1,24 +1,42 @@
 #!/usr/bin/env python3
-"""Fine-tune YOLO11n on CPU and export an int8 TFLite file.
+"""Fine-tune YOLO11n and export an int8 TFLite file.
 
-Reports are written under training/metrics. The multi-GB image set is not
-copied there. Numbers are from this machine, not a Helio G99 phone.
+The shipped detector is YOLO11n, int8 TFLite. That file cannot be a training
+checkpoint, so the run starts from yolo11n.pt, the same architecture, and
+keeps input size 320. One new class, wall, extends the head. Epochs and hours
+are capped. Ultralytics writes last.pt every epoch and best.pt when val
+improves, and save_period copies an extra checkpoint each epoch.
+
+The phone asset is replaced only by evaluate_compare.py, and only when the
+exported file beats the current asset on the held-out set, including low light.
 """
 from __future__ import annotations
 
 import json
 import os
 import shutil
+import sys
 import time
 from pathlib import Path
 
-from ultralytics import YOLO
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-DATA = "/workspace/datasets/obstacles_v1/data.yaml"
-WEIGHTS = "/workspace/training/yolo11n.pt"
-RUN = Path("/workspace/training/runs/obstacles19")
+from lowlight import install_batch_darkening
+
+DATA = os.environ.get("OBSTACLE_DATA", "/workspace/datasets/obstacles_v2/data.yaml")
+RUN = Path(os.environ.get("OBSTACLE_RUN", "/workspace/training/runs/obstacles_v2"))
 METRICS = Path("/workspace/training/metrics")
-ASSET = Path("/workspace/app/src/main/assets/obstacles_v1.tflite")
+WEIGHTS_OUT = Path(os.environ.get("OBSTACLE_WEIGHTS_OUT", "/workspace/training/weights/obstacles_v2.pt"))
+TFLITE_NAME = os.environ.get("OBSTACLE_TFLITE", "obstacles_v2_int8.tflite")
+REPORT_NAME = os.environ.get("OBSTACLE_REPORT", "train_report_v2.json")
+
+
+def device_name() -> str:
+    import torch
+
+    if torch.cuda.is_available():
+        return "0"
+    return "cpu"
 
 
 def per_class(metrics) -> list[dict]:
@@ -32,114 +50,106 @@ def per_class(metrics) -> list[dict]:
     return rows
 
 
-def evaluate(model: YOLO, split: str) -> dict:
-    metrics = model.val(data=DATA, split=split, imgsz=320, batch=8, device="cpu", workers=2, plots=False)
-    return {
-        "split": split,
-        "map50": float(metrics.box.map50),
-        "map50_95": float(metrics.box.map),
-        "per_class_map50_95": per_class(metrics),
-    }
-
-
-def measure_tflite(path: Path) -> dict:
-    import numpy as np
-    import tensorflow as tf
-
-    cpu = "unknown"
-    for line in Path("/proc/cpuinfo").read_text().splitlines():
-        if line.startswith("model name"):
-            cpu = line.split(":", 1)[1].strip()
-            break
-    interpreter = tf.lite.Interpreter(model_path=str(path), num_threads=2)
-    interpreter.allocate_tensors()
-    details = interpreter.get_input_details()[0]
-    shape = details["shape"]
-    if details["dtype"] == np.float32:
-        sample = np.random.rand(*shape).astype(np.float32)
-    else:
-        sample = np.random.randint(0, 256, size=shape, dtype=details["dtype"])
-    interpreter.set_tensor(details["index"], sample)
-    for _ in range(3):
-        interpreter.invoke()
-    times = []
-    for _ in range(20):
-        started = time.perf_counter()
-        interpreter.invoke()
-        times.append(time.perf_counter() - started)
-    out = interpreter.get_output_details()[0]
-    return {
-        "hardware": cpu,
-        "threads": 2,
-        "input_shape": [int(v) for v in shape],
-        "input_dtype": str(details["dtype"]),
-        "output_shape": [int(v) for v in out["shape"]],
-        "output_dtype": str(out["dtype"]),
-        "mean_ms": 1000 * sum(times) / len(times),
-        "min_ms": 1000 * min(times),
-        "note": "Python TFLite on this CPU. Not a Helio G99 and not the Android app.",
-    }
-
-
 def main() -> None:
+    if not os.path.exists(DATA):
+        raise SystemExit(f"missing {DATA}. Run training/fetch_v2.py and training/build_dataset.py first.")
+    from ultralytics import YOLO
+    import torch
+
     METRICS.mkdir(parents=True, exist_ok=True)
-    if not os.path.exists(WEIGHTS):
-        model = YOLO("yolo11n.pt")
-        shutil.copy("yolo11n.pt", WEIGHTS)
-    else:
-        model = YOLO(WEIGHTS)
+    install_batch_darkening(0.40)
+    device = device_name()
+    # yolo11n.pt is the trainable parent of obstacles_v1. The int8 asset is not.
+    base = os.environ.get("OBSTACLE_WEIGHTS", "yolo11n.pt")
+    model = YOLO(base)
+    epochs = int(os.environ.get("OBSTACLE_EPOCHS", "8"))
+    hours = float(os.environ.get("OBSTACLE_HOURS", "2.5"))
+    batch = int(os.environ.get("OBSTACLE_BATCH", "8"))
+    workers = int(os.environ.get("OBSTACLE_WORKERS", "2"))
     started = time.perf_counter()
-    model.train(
+    train_args = dict(
         data=DATA,
-        epochs=int(os.environ.get("OBSTACLE_EPOCHS", "5")),
+        epochs=epochs,
         imgsz=320,
-        batch=int(os.environ.get("OBSTACLE_BATCH", "8")),
-        device="cpu",
-        workers=2,
+        batch=batch,
+        device=device,
+        workers=workers,
         cache=False,
-        patience=3,
+        patience=int(os.environ.get("OBSTACLE_PATIENCE", "8")),
         project=str(RUN.parent),
         name=RUN.name,
         exist_ok=True,
         plots=False,
-        mosaic=0.5,
+        mosaic=0.8,
+        mixup=0.05,
+        fliplr=0.5,
+        scale=0.4,
+        degrees=5.0,
+        close_mosaic=3,
         pretrained=True,
+        lr0=0.003,
+        lrf=0.01,
+        amp=device != "cpu",
+        seed=0,
+        deterministic=False,
+        val=True,
+        save=True,
+        save_period=1,
     )
+    # hours <= 0 leaves the epoch cap in charge. The real-photo run passes 2.5.
+    if hours > 0:
+        train_args["time"] = hours
+    model.train(**train_args)
     train_seconds = time.perf_counter() - started
     best = RUN / "weights" / "best.pt"
+    if not best.exists():
+        raise SystemExit(f"training did not write {best}")
+    WEIGHTS_OUT.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy(best, WEIGHTS_OUT)
     trained = YOLO(str(best))
     report = {
-        "hardware": "CPU only. torch.cuda is not available. Not a Helio G99.",
-        "base": "yolo11n.pt COCO pretrained",
+        "hardware": "cuda" if torch.cuda.is_available() else "CPU only. No GPU was visible.",
+        "base": base,
+        "model": "yolo11n",
         "imgsz": 320,
-        "epochs_requested": int(os.environ.get("OBSTACLE_EPOCHS", "5")),
-        "batch": int(os.environ.get("OBSTACLE_BATCH", "8")),
+        "epochs_cap": epochs,
+        "hours_cap": hours,
+        "batch": batch,
         "train_seconds": train_seconds,
+        "lowlight_batch_probability": 0.40,
+        "weights": str(WEIGHTS_OUT),
     }
-    report["val"] = evaluate(trained, "val")
-    report["test"] = evaluate(trained, "test")
+    print("val", flush=True)
+    metrics = trained.val(data=DATA, split="val", imgsz=320, batch=batch, device=device, workers=workers, plots=False)
+    report["val"] = {
+        "map50": float(metrics.box.map50),
+        "map50_95": float(metrics.box.map),
+        "per_class_map50_95": per_class(metrics),
+    }
     print("export tflite int8", flush=True)
     export_started = time.perf_counter()
-    exported = trained.export(format="tflite", imgsz=320, int8=True, data=DATA)
+    # quantize=8 is static int8 weights with float32 input and output, which is
+    # what the phone decoder already accepts. format=tflite is the LiteRT path.
+    exported = trained.export(format="tflite", imgsz=320, quantize=8, data=DATA)
     report["export_seconds"] = time.perf_counter() - export_started
     exported_path = Path(exported)
-    # Ultralytics may write best_saved_model/ or a .tflite next to the weights.
-    tflite_files = list(exported_path.parent.rglob("*.tflite")) if exported_path.is_dir() else [exported_path]
     if exported_path.suffix == ".tflite":
         tflite_files = [exported_path]
     else:
-        tflite_files = sorted(Path(exported).rglob("*.tflite") if Path(exported).exists() else exported_path.parent.rglob("*.tflite"))
+        tflite_files = sorted(Path(exported).rglob("*.tflite")) if Path(exported).exists() else []
     if not tflite_files:
         tflite_files = list(best.parent.rglob("*.tflite"))
-    chosen = max(tflite_files, key=lambda path: path.stat().st_size)
-    ASSET.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy(chosen, ASSET)
-    report["tflite"] = str(ASSET)
-    report["tflite_bytes"] = ASSET.stat().st_size
+    int8 = [path for path in tflite_files if "int8" in path.name or "integer" in path.name]
+    pool = int8 or tflite_files
+    chosen = max(pool, key=lambda path: path.stat().st_size)
+    staged = METRICS / TFLITE_NAME
+    shutil.copy(chosen, staged)
+    report["tflite"] = str(staged)
+    report["tflite_bytes"] = staged.stat().st_size
     report["tflite_source"] = str(chosen)
-    report["tflite_latency"] = measure_tflite(ASSET)
-    (METRICS / "train_report.json").write_text(json.dumps(report, indent=2))
-    print(json.dumps({k: report[k] for k in report if "per_class" not in k}, indent=2), flush=True)
+    report["data"] = DATA
+    (METRICS / REPORT_NAME).write_text(json.dumps(report, indent=2))
+    print(json.dumps({key: report[key] for key in report if "per_class" not in str(key)}, indent=2), flush=True)
 
 
 if __name__ == "__main__":

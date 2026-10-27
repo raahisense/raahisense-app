@@ -1,0 +1,1472 @@
+{
+ "classes": [
+  "person",
+  "bicycle",
+  "motorcycle",
+  "car",
+  "bus",
+  "truck",
+  "cow",
+  "dog",
+  "auto_rickshaw",
+  "cycle_rickshaw",
+  "handcart",
+  "pothole",
+  "manhole_open_drain",
+  "curb",
+  "stairs",
+  "pole_bollard",
+  "barrier",
+  "street_furniture",
+  "tree",
+  "cat",
+  "chair",
+  "couch",
+  "dining table",
+  "bed",
+  "toilet",
+  "potted plant",
+  "refrigerator",
+  "tv",
+  "door",
+  "wall",
+  "shoe",
+  "bag",
+  "toy",
+  "bin",
+  "appliance",
+  "cabinet"
+ ],
+ "notes": [
+  "Open Images images with boxes 20090",
+  "COCO-Stuff images with wall or fence boxes 2447",
+  "AssistEye images hash-split 1177",
+  "skipped OAODD: the Hub repo has labels and no images",
+  "skipped google-search folders in tuk-tuk: unlabeled, license unknown",
+  "skipped RDD2022: CC BY-SA share-alike may encumber shipped weights",
+  "AssistEye hole (crack) dropped; bump mapped to curb",
+  "train records 26350 kept 12000",
+  "val records 3169 kept 1600",
+  "test records 3819 kept 2400"
+ ],
+ "mapping": [
+  [
+   "ROD",
+   "Bike",
+   "bicycle"
+  ],
+  [
+   "ROD",
+   "Building",
+   "wall"
+  ],
+  [
+   "ROD",
+   "Car",
+   "car"
+  ],
+  [
+   "ROD",
+   "Person",
+   "person"
+  ],
+  [
+   "ROD",
+   "Stairs",
+   "stairs"
+  ],
+  [
+   "ROD",
+   "Traffic sign",
+   "street_furniture"
+  ],
+  [
+   "ROD",
+   "Electrical Pole",
+   "pole_bollard"
+  ],
+  [
+   "ROD",
+   "Road",
+   "(dropped)"
+  ],
+  [
+   "ROD",
+   "Motorcycle",
+   "motorcycle"
+  ],
+  [
+   "ROD",
+   "Dustbin",
+   "bin"
+  ],
+  [
+   "ROD",
+   "Dog",
+   "dog"
+  ],
+  [
+   "ROD",
+   "Manhole",
+   "manhole_open_drain"
+  ],
+  [
+   "ROD",
+   "Tree",
+   "tree"
+  ],
+  [
+   "ROD",
+   "Guard rail",
+   "barrier"
+  ],
+  [
+   "ROD",
+   "Pedestrian crosswalk",
+   "(dropped)"
+  ],
+  [
+   "ROD",
+   "Truck",
+   "truck"
+  ],
+  [
+   "ROD",
+   "Bus",
+   "bus"
+  ],
+  [
+   "ROD",
+   "Bench",
+   "street_furniture"
+  ],
+  [
+   "ROD",
+   "Traffic Cone",
+   "barrier"
+  ],
+  [
+   "ROD",
+   "Fire hydrant",
+   "street_furniture"
+  ],
+  [
+   "ROD",
+   "Teraffic Barrel",
+   "barrier"
+  ],
+  [
+   "ROD",
+   "Plant Pot",
+   "potted plant"
+  ],
+  [
+   "ROD",
+   "Electrical Box",
+   "street_furniture"
+  ],
+  [
+   "ROD",
+   "Chair",
+   "chair"
+  ],
+  [
+   "ROD",
+   "Bicycle Rack",
+   "street_furniture"
+  ],
+  [
+   "AssistEye-unified-obstacles",
+   "animal",
+   "(dropped)"
+  ],
+  [
+   "AssistEye-unified-obstacles",
+   "open_manhole",
+   "manhole_open_drain"
+  ],
+  [
+   "AssistEye-unified-obstacles",
+   "waste_container",
+   "bin"
+  ],
+  [
+   "AssistEye-unified-obstacles",
+   "pothole",
+   "pothole"
+  ],
+  [
+   "AssistEye-unified-obstacles",
+   "bump",
+   "curb"
+  ],
+  [
+   "AssistEye-unified-obstacles",
+   "fence",
+   "barrier"
+  ],
+  [
+   "AssistEye-unified-obstacles",
+   "hole",
+   "(dropped)"
+  ],
+  [
+   "AssistEye-unified-obstacles",
+   "pole",
+   "pole_bollard"
+  ],
+  [
+   "Roboflow-pothole-keremberke",
+   "pothole",
+   "pothole"
+  ],
+  [
+   "Roboflow-pothole-keremberke",
+   "pothole",
+   "pothole"
+  ],
+  [
+   "Roboflow-pothole-keremberke",
+   "pothole",
+   "pothole"
+  ],
+  [
+   "OpenImagesV6",
+   "Person",
+   "person"
+  ],
+  [
+   "OpenImagesV6",
+   "Man",
+   "person"
+  ],
+  [
+   "OpenImagesV6",
+   "Woman",
+   "person"
+  ],
+  [
+   "OpenImagesV6",
+   "Boy",
+   "person"
+  ],
+  [
+   "OpenImagesV6",
+   "Girl",
+   "person"
+  ],
+  [
+   "OpenImagesV6",
+   "Bicycle",
+   "bicycle"
+  ],
+  [
+   "OpenImagesV6",
+   "Motorcycle",
+   "motorcycle"
+  ],
+  [
+   "OpenImagesV6",
+   "Car",
+   "car"
+  ],
+  [
+   "OpenImagesV6",
+   "Taxi",
+   "car"
+  ],
+  [
+   "OpenImagesV6",
+   "Ambulance",
+   "car"
+  ],
+  [
+   "OpenImagesV6",
+   "Bus",
+   "bus"
+  ],
+  [
+   "OpenImagesV6",
+   "Truck",
+   "truck"
+  ],
+  [
+   "OpenImagesV6",
+   "Van",
+   "truck"
+  ],
+  [
+   "OpenImagesV6",
+   "Cattle",
+   "cow"
+  ],
+  [
+   "OpenImagesV6",
+   "Bull",
+   "cow"
+  ],
+  [
+   "OpenImagesV6",
+   "Dog",
+   "dog"
+  ],
+  [
+   "OpenImagesV6",
+   "Cat",
+   "cat"
+  ],
+  [
+   "OpenImagesV6",
+   "Chair",
+   "chair"
+  ],
+  [
+   "OpenImagesV6",
+   "Couch",
+   "couch"
+  ],
+  [
+   "OpenImagesV6",
+   "Studio couch",
+   "couch"
+  ],
+  [
+   "OpenImagesV6",
+   "Sofa bed",
+   "couch"
+  ],
+  [
+   "OpenImagesV6",
+   "Table",
+   "dining table"
+  ],
+  [
+   "OpenImagesV6",
+   "Coffee table",
+   "dining table"
+  ],
+  [
+   "OpenImagesV6",
+   "Desk",
+   "dining table"
+  ],
+  [
+   "OpenImagesV6",
+   "Kitchen & dining room table",
+   "dining table"
+  ],
+  [
+   "OpenImagesV6",
+   "Bed",
+   "bed"
+  ],
+  [
+   "OpenImagesV6",
+   "Infant bed",
+   "bed"
+  ],
+  [
+   "OpenImagesV6",
+   "Toilet",
+   "toilet"
+  ],
+  [
+   "OpenImagesV6",
+   "Houseplant",
+   "potted plant"
+  ],
+  [
+   "OpenImagesV6",
+   "Refrigerator",
+   "refrigerator"
+  ],
+  [
+   "OpenImagesV6",
+   "Television",
+   "tv"
+  ],
+  [
+   "OpenImagesV6",
+   "Door",
+   "door"
+  ],
+  [
+   "OpenImagesV6",
+   "Footwear",
+   "shoe"
+  ],
+  [
+   "OpenImagesV6",
+   "Boot",
+   "shoe"
+  ],
+  [
+   "OpenImagesV6",
+   "Sandal",
+   "shoe"
+  ],
+  [
+   "OpenImagesV6",
+   "High heels",
+   "shoe"
+  ],
+  [
+   "OpenImagesV6",
+   "Handbag",
+   "bag"
+  ],
+  [
+   "OpenImagesV6",
+   "Backpack",
+   "bag"
+  ],
+  [
+   "OpenImagesV6",
+   "Luggage and bags",
+   "bag"
+  ],
+  [
+   "OpenImagesV6",
+   "Suitcase",
+   "bag"
+  ],
+  [
+   "OpenImagesV6",
+   "Briefcase",
+   "bag"
+  ],
+  [
+   "OpenImagesV6",
+   "Toy",
+   "toy"
+  ],
+  [
+   "OpenImagesV6",
+   "Doll",
+   "toy"
+  ],
+  [
+   "OpenImagesV6",
+   "Teddy bear",
+   "toy"
+  ],
+  [
+   "OpenImagesV6",
+   "Microwave oven",
+   "appliance"
+  ],
+  [
+   "OpenImagesV6",
+   "Oven",
+   "appliance"
+  ],
+  [
+   "OpenImagesV6",
+   "Washing machine",
+   "appliance"
+  ],
+  [
+   "OpenImagesV6",
+   "Dishwasher",
+   "appliance"
+  ],
+  [
+   "OpenImagesV6",
+   "Toaster",
+   "appliance"
+  ],
+  [
+   "OpenImagesV6",
+   "Gas stove",
+   "appliance"
+  ],
+  [
+   "OpenImagesV6",
+   "Kitchen appliance",
+   "appliance"
+  ],
+  [
+   "OpenImagesV6",
+   "Chest of drawers",
+   "cabinet"
+  ],
+  [
+   "OpenImagesV6",
+   "Wardrobe",
+   "cabinet"
+  ],
+  [
+   "OpenImagesV6",
+   "Bookcase",
+   "cabinet"
+  ],
+  [
+   "OpenImagesV6",
+   "Filing cabinet",
+   "cabinet"
+  ],
+  [
+   "OpenImagesV6",
+   "Nightstand",
+   "cabinet"
+  ],
+  [
+   "OpenImagesV6",
+   "Stairs",
+   "stairs"
+  ],
+  [
+   "OpenImagesV6",
+   "Street light",
+   "pole_bollard"
+  ],
+  [
+   "OpenImagesV6",
+   "Bench",
+   "street_furniture"
+  ],
+  [
+   "OpenImagesV6",
+   "Waste container",
+   "bin"
+  ],
+  [
+   "OpenImagesV6",
+   "Fire hydrant",
+   "street_furniture"
+  ],
+  [
+   "OpenImagesV6",
+   "Traffic sign",
+   "street_furniture"
+  ],
+  [
+   "OpenImagesV6",
+   "Tree",
+   "tree"
+  ],
+  [
+   "OpenImagesV6",
+   "Palm tree",
+   "tree"
+  ],
+  [
+   "OpenImagesV6",
+   "Cart",
+   "handcart"
+  ],
+  [
+   "OpenImagesV6",
+   "Building",
+   "wall"
+  ],
+  [
+   "OpenImagesV6",
+   "Office building",
+   "wall"
+  ],
+  [
+   "OpenImagesV6",
+   "Billboard",
+   "wall"
+  ],
+  [
+   "COCO-Stuff",
+   "wall-*",
+   "wall"
+  ],
+  [
+   "COCO-Stuff",
+   "fence",
+   "barrier"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "tuktuk",
+   "auto_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "tuktuk",
+   "auto_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "tuktuk",
+   "auto_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "tuktuk",
+   "auto_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "tuktuk",
+   "auto_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "tuktuk",
+   "auto_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "tuktuk",
+   "auto_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "tuktuk",
+   "auto_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "tuktuk",
+   "auto_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "rickshaw",
+   "cycle_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "0",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "1",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "2",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "3",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "4",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "5",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "6",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "Bike",
+   "bicycle"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "Car",
+   "car"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "Rickshaw",
+   "cycle_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "auto",
+   "auto_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "auto-rickshaw",
+   "auto_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "bicycle",
+   "bicycle"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "bike",
+   "bicycle"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "bus",
+   "bus"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "car",
+   "car"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "lorry",
+   "truck"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "motorcycle",
+   "motorcycle"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "truck",
+   "truck"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "0",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "1",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "2",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "3",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "4",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "5",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "6",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "Bike",
+   "bicycle"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "Car",
+   "car"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "Rickshaw",
+   "cycle_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "auto",
+   "auto_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "auto-rickshaw",
+   "auto_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "bicycle",
+   "bicycle"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "bike",
+   "bicycle"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "bus",
+   "bus"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "car",
+   "car"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "lorry",
+   "truck"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "motorcycle",
+   "motorcycle"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "rickshaw",
+   "cycle_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "truck",
+   "truck"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "rickshaw",
+   "cycle_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "0",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "1",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "2",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "3",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "4",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "5",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "6",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "Bike",
+   "bicycle"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "Car",
+   "car"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "Rickshaw",
+   "cycle_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "auto",
+   "auto_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "auto-rickshaw",
+   "auto_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "bicycle",
+   "bicycle"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "bike",
+   "bicycle"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "bus",
+   "bus"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "car",
+   "car"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "lorry",
+   "truck"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "motorcycle",
+   "motorcycle"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "truck",
+   "truck"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "0",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "1",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "2",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "3",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "4",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "5",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "6",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "Bike",
+   "bicycle"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "Car",
+   "car"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "Rickshaw",
+   "cycle_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "auto",
+   "auto_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "auto-rickshaw",
+   "auto_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "bicycle",
+   "bicycle"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "bike",
+   "bicycle"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "bus",
+   "bus"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "car",
+   "car"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "lorry",
+   "truck"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "motorcycle",
+   "motorcycle"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "rickshaw",
+   "cycle_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "truck",
+   "truck"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "rickshaw",
+   "cycle_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "0",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "1",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "2",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "3",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "4",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "5",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "6",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "Bike",
+   "bicycle"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "Car",
+   "car"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "Rickshaw",
+   "cycle_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "auto",
+   "auto_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "auto-rickshaw",
+   "auto_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "bicycle",
+   "bicycle"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "bike",
+   "bicycle"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "bus",
+   "bus"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "car",
+   "car"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "lorry",
+   "truck"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "motorcycle",
+   "motorcycle"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "truck",
+   "truck"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "0",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "1",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "2",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "3",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "4",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "5",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "6",
+   "(dropped)"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "Bike",
+   "bicycle"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "Car",
+   "car"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "Rickshaw",
+   "cycle_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "auto",
+   "auto_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "auto-rickshaw",
+   "auto_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "bicycle",
+   "bicycle"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "bike",
+   "bicycle"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "bus",
+   "bus"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "car",
+   "car"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "lorry",
+   "truck"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "motorcycle",
+   "motorcycle"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "rickshaw",
+   "cycle_rickshaw"
+  ],
+  [
+   "tuk-tuk-rickshaw",
+   "truck",
+   "truck"
+  ],
+  [
+   "Datacluster-auto-rickshaw",
+   "auto",
+   "auto_rickshaw"
+  ]
+ ],
+ "src_cnt": {
+  "OpenImagesV6": 10034,
+  "AssistEye-unified-obstacles": 722,
+  "ROD": 3450,
+  "COCO-Stuff": 1030,
+  "Roboflow-pothole-keremberke": 89,
+  "tuk-tuk-rickshaw": 621,
+  "Datacluster-auto-rickshaw": 54
+ },
+ "images_per_class": {
+  "train": {
+   "shoe": 710,
+   "person": 2263,
+   "door": 701,
+   "handcart": 300,
+   "car": 593,
+   "truck": 281,
+   "appliance": 481,
+   "bag": 509,
+   "chair": 721,
+   "couch": 453,
+   "bicycle": 400,
+   "bus": 280,
+   "dog": 351,
+   "bin": 455,
+   "toy": 413,
+   "dining table": 700,
+   "street_furniture": 462,
+   "stairs": 551,
+   "wall": 1231,
+   "tree": 700,
+   "cow": 280,
+   "potted plant": 323,
+   "motorcycle": 350,
+   "cabinet": 450,
+   "tv": 280,
+   "pole_bollard": 552,
+   "refrigerator": 318,
+   "cat": 280,
+   "bed": 400,
+   "toilet": 311,
+   "curb": 33,
+   "barrier": 400,
+   "pothole": 260,
+   "manhole_open_drain": 450,
+   "auto_rickshaw": 500,
+   "cycle_rickshaw": 40
+  },
+  "val": {
+   "person": 363,
+   "shoe": 225,
+   "bag": 129,
+   "chair": 181,
+   "couch": 25,
+   "dining table": 124,
+   "street_furniture": 19,
+   "bicycle": 13,
+   "door": 117,
+   "tv": 4,
+   "car": 43,
+   "truck": 9,
+   "motorcycle": 11,
+   "toy": 97,
+   "bus": 6,
+   "tree": 82,
+   "cabinet": 80,
+   "wall": 306,
+   "potted plant": 12,
+   "handcart": 4,
+   "refrigerator": 11,
+   "bed": 28,
+   "bin": 98,
+   "cow": 2,
+   "pole_bollard": 110,
+   "toilet": 3,
+   "appliance": 94,
+   "dog": 6,
+   "stairs": 140,
+   "cat": 1,
+   "curb": 4,
+   "barrier": 13,
+   "pothole": 26,
+   "manhole_open_drain": 122
+  },
+  "test": {
+   "shoe": 195,
+   "person": 432,
+   "bag": 132,
+   "wall": 250,
+   "motorcycle": 48,
+   "dog": 14,
+   "bin": 113,
+   "door": 106,
+   "tree": 89,
+   "car": 75,
+   "street_furniture": 26,
+   "toy": 87,
+   "chair": 258,
+   "bicycle": 16,
+   "dining table": 204,
+   "truck": 27,
+   "stairs": 214,
+   "appliance": 98,
+   "refrigerator": 40,
+   "bus": 16,
+   "handcart": 42,
+   "pole_bollard": 139,
+   "cabinet": 107,
+   "couch": 64,
+   "cow": 2,
+   "tv": 41,
+   "bed": 79,
+   "cat": 8,
+   "potted plant": 79,
+   "toilet": 34,
+   "curb": 5,
+   "barrier": 76,
+   "pothole": 28,
+   "manhole_open_drain": 239,
+   "auto_rickshaw": 94,
+   "cycle_rickshaw": 41
+  }
+ },
+ "boxes_per_class": {
+  "train": {
+   "shoe": 3015,
+   "person": 8575,
+   "door": 1020,
+   "handcart": 434,
+   "truck": 435,
+   "car": 1592,
+   "appliance": 1227,
+   "bag": 904,
+   "chair": 3165,
+   "couch": 747,
+   "bicycle": 693,
+   "bus": 446,
+   "dog": 442,
+   "bin": 732,
+   "toy": 1196,
+   "dining table": 1289,
+   "street_furniture": 689,
+   "stairs": 735,
+   "wall": 1421,
+   "tree": 2079,
+   "cow": 1055,
+   "potted plant": 668,
+   "motorcycle": 711,
+   "cabinet": 706,
+   "tv": 349,
+   "pole_bollard": 1301,
+   "refrigerator": 336,
+   "cat": 339,
+   "bed": 456,
+   "toilet": 378,
+   "curb": 38,
+   "barrier": 493,
+   "pothole": 380,
+   "manhole_open_drain": 488,
+   "auto_rickshaw": 785,
+   "cycle_rickshaw": 63
+  },
+  "val": {
+   "person": 1454,
+   "shoe": 996,
+   "bag": 240,
+   "chair": 762,
+   "couch": 35,
+   "dining table": 299,
+   "street_furniture": 34,
+   "bicycle": 33,
+   "door": 148,
+   "tv": 8,
+   "car": 128,
+   "truck": 14,
+   "motorcycle": 24,
+   "toy": 329,
+   "bus": 8,
+   "tree": 237,
+   "cabinet": 128,
+   "wall": 358,
+   "potted plant": 28,
+   "handcart": 4,
+   "refrigerator": 11,
+   "bed": 30,
+   "bin": 187,
+   "cow": 3,
+   "pole_bollard": 311,
+   "appliance": 203,
+   "toilet": 3,
+   "dog": 6,
+   "stairs": 188,
+   "cat": 1,
+   "curb": 4,
+   "barrier": 13,
+   "pothole": 51,
+   "manhole_open_drain": 132
+  },
+  "test": {
+   "shoe": 885,
+   "person": 1589,
+   "bag": 203,
+   "wall": 292,
+   "motorcycle": 185,
+   "dog": 15,
+   "bin": 188,
+   "door": 143,
+   "tree": 275,
+   "car": 483,
+   "street_furniture": 60,
+   "toy": 268,
+   "chair": 827,
+   "bicycle": 36,
+   "dining table": 371,
+   "truck": 58,
+   "stairs": 298,
+   "appliance": 209,
+   "refrigerator": 41,
+   "bus": 37,
+   "handcart": 63,
+   "pole_bollard": 384,
+   "cabinet": 177,
+   "couch": 107,
+   "cow": 11,
+   "tv": 53,
+   "bed": 88,
+   "cat": 8,
+   "potted plant": 158,
+   "toilet": 35,
+   "curb": 7,
+   "barrier": 90,
+   "pothole": 39,
+   "manhole_open_drain": 250,
+   "auto_rickshaw": 197,
+   "cycle_rickshaw": 57
+  }
+ },
+ "images_written": 16000
+}

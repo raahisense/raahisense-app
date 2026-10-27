@@ -9,6 +9,8 @@
 /captures/
 /uploads/
 /datasets/
+synth160.zip
+/synth160/
 /training/runs/
 *.pt
 __pycache__/

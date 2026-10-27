@@ -40,6 +40,7 @@ struct ContentView: View {
                 .foregroundColor(GuideColor.yellow)
                 .fixedSize(horizontal: false, vertical: true)
             bigButton
+            stopButton
             listenButton
             Text(session.statusText)
                 .font(.system(size: 22, weight: .semibold))
@@ -62,6 +63,9 @@ struct ContentView: View {
         .modifier(DoubleTapListen(enabled: !voiceOver && session.settings.voiceEnabled) {
             session.listenNow()
         })
+        .sheet(item: $session.shareItem) { item in
+            ShareSheet(url: item.url)
+        }
     }
 
     private var bigButton: some View {
@@ -75,6 +79,19 @@ struct ContentView: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(bigAccessLabel)
+    }
+
+    private var stopButton: some View {
+        Button(action: session.stopEverything) {
+            Text(phrase("action_quit"))
+                .font(.system(size: 28, weight: .bold))
+                .foregroundColor(.black)
+                .frame(maxWidth: .infinity, minHeight: 80)
+                .background(GuideColor.yellow)
+                .cornerRadius(16)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(phrase("cd_quit"))
     }
 
     private var listenButton: some View {
@@ -140,6 +157,32 @@ struct ContentView: View {
                 selected: session.settings.voiceEnabled,
                 label: session.settings.voiceEnabled ? phrase("wake_on") : phrase("wake_off")
             ) { session.toggleVoice() }
+            option(
+                title: session.settings.collectEnabled ? phrase("collect_on") : phrase("collect_off"),
+                selected: session.settings.collectEnabled,
+                label: session.settings.collectEnabled ? phrase("cd_collect_turn_off") : phrase("cd_collect_turn_on")
+            ) { session.toggleCollect() }
+            option(
+                title: phrase("collect_interval", CollectCapture.intervalLabel(session.settings.collectIntervalMs)),
+                selected: false,
+                label: phrase("cd_collect_interval", CollectCapture.intervalLabel(session.settings.collectIntervalMs))
+            ) { session.cycleCollectInterval() }
+            option(
+                title: session.settings.collectGps ? phrase("collect_gps_on") : phrase("collect_gps_off"),
+                selected: session.settings.collectGps,
+                label: session.settings.collectGps ? phrase("cd_collect_gps_turn_off") : phrase("cd_collect_gps_turn_on")
+            ) { session.toggleCollectGps() }
+            Text(phrase("collect_usage", String(session.collectPhotos), CollectCapture.formatBytes(session.collectBytes)))
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundColor(GuideColor.yellow)
+                .fixedSize(horizontal: false, vertical: true)
+            Text(phrase("collect_note"))
+                .font(.system(size: 18, weight: .medium))
+                .foregroundColor(GuideColor.yellow)
+                .fixedSize(horizontal: false, vertical: true)
+            option(title: phrase("collect_export"), selected: false, label: phrase("cd_collect_export")) {
+                session.exportCollect()
+            }
             Text(phrase("wake_phrase_label"))
                 .font(.system(size: 20, weight: .bold))
                 .foregroundColor(GuideColor.yellow)
@@ -233,6 +276,20 @@ struct ContentView: View {
     private func phrase(_ key: String, _ arg: String) -> String {
         PhraseBook.text(key, language: session.settings.languageTag, arg)
     }
+
+    private func phrase(_ key: String, _ first: String, _ second: String) -> String {
+        PhraseBook.text(key, language: session.settings.languageTag, first, second)
+    }
+}
+
+private struct ShareSheet: UIViewControllerRepresentable {
+    let url: URL
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: [url], applicationActivities: nil)
+    }
+
+    func updateUIViewController(_ controller: UIActivityViewController, context: Context) {}
 }
 
 private enum GuideSettingsWake {

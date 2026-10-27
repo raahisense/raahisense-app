@@ -1,0 +1,212 @@
+number,phrase,english
+1,ಎಡಕ್ಕೆ ತುಂಬಾ ಹತ್ತಿರ ವ್ಯಕ್ತಿ,Very close person on the left
+2,ಮುಂದೆ ತುಂಬಾ ಹತ್ತಿರ ವ್ಯಕ್ತಿ,Very close person ahead
+3,ಬಲಕ್ಕೆ ತುಂಬಾ ಹತ್ತಿರ ವ್ಯಕ್ತಿ,Very close person on the right
+4,ಎಡಕ್ಕೆ ಹತ್ತಿರ ವ್ಯಕ್ತಿ,Near person on the left
+5,ಮುಂದೆ ಹತ್ತಿರ ವ್ಯಕ್ತಿ,Near person ahead
+6,ಬಲಕ್ಕೆ ಹತ್ತಿರ ವ್ಯಕ್ತಿ,Near person on the right
+7,ಎಡಕ್ಕೆ ದೂರ ವ್ಯಕ್ತಿ,Far person on the left
+8,ಮುಂದೆ ದೂರ ವ್ಯಕ್ತಿ,Far person ahead
+9,ಬಲಕ್ಕೆ ದೂರ ವ್ಯಕ್ತಿ,Far person on the right
+10,ವ್ಯಕ್ತಿ,person
+11,ಸೈಕಲ್,bicycle
+12,ಕಾರು,car
+13,ಮೋಟಾರ್ ಸೈಕಲ್,motorcycle
+14,ಬಸ್,bus
+15,ಟ್ರಕ್,truck
+16,ಟ್ರಾಫಿಕ್ ಲೈಟ್,traffic light
+17,ಫೈರ್ ಹೈಡ್ರಂಟ್,fire hydrant
+18,ಸ್ಟಾಪ್ ಬೋರ್ಡ್,stop sign
+19,ಪಾರ್ಕಿಂಗ್ ಮೀಟರ್,parking meter
+20,ಬೆಂಚ್,bench
+21,ಬೆಕ್ಕು,cat
+22,ನಾಯಿ,dog
+23,ಕುದುರೆ,horse
+24,ಕುರಿ,sheep
+25,ಹಸು,cow
+26,ಬ್ಯಾಗ್,backpack
+27,ಛತ್ರಿ,umbrella
+28,ಸೂಟ್ಕೇಸ್,suitcase
+29,ಬಾಟಲಿ,bottle
+30,ಕುರ್ಚಿ,chair
+31,ಸೋಫಾ,couch
+32,ಗಿಡ,plant
+33,ಹಾಸಿಗೆ,bed
+34,ಮೇಜು,table
+35,ಶೌಚಾಲಯ,toilet
+36,ಟಿವಿ,television
+37,ಒಲೆ,oven
+38,ತೊಳೆಯುವ ಬೇಸಿನ್,sink
+39,ಫ್ರಿಜ್,refrigerator
+40,ಆಟೋ,auto rickshaw
+41,ಸೈಕಲ್ ರಿಕ್ಷಾ,cycle rickshaw
+42,ಕೈಬಂಡಿ,handcart
+43,ಗುಂಡಿ,pothole
+44,ತೆರೆದ ಚರಂಡಿ,open drain
+45,ಅಂಚು,curb
+46,ಮೆಟ್ಟಿಲು,stairs
+47,ಕಂಬ,pole
+48,ತಡೆ,barrier
+49,ಬೀದಿ ವಸ್ತು,street object
+50,ಮರ,tree
+51,ಬಾಗಿಲು,door
+52,"ಎಡಕ್ಕೆ ಗೊತ್ತಿಲ್ಲದ ವಸ್ತು, ತುಂಬಾ ಹತ್ತಿರ","Unknown object on the left, very close"
+53,"ಮುಂದೆ ಗೊತ್ತಿಲ್ಲದ ವಸ್ತು, ತುಂಬಾ ಹತ್ತಿರ","Unknown object ahead, very close"
+54,"ಬಲಕ್ಕೆ ಗೊತ್ತಿಲ್ಲದ ವಸ್ತು, ತುಂಬಾ ಹತ್ತಿರ","Unknown object on the right, very close"
+55,"ಎಡಕ್ಕೆ ಗೊತ್ತಿಲ್ಲದ ವಸ್ತು, ಹತ್ತಿರ","Unknown object on the left, near"
+56,"ಮುಂದೆ ಗೊತ್ತಿಲ್ಲದ ವಸ್ತು, ಹತ್ತಿರ","Unknown object ahead, near"
+57,"ಬಲಕ್ಕೆ ಗೊತ್ತಿಲ್ಲದ ವಸ್ತು, ಹತ್ತಿರ","Unknown object on the right, near"
+58,"ಮುಂದೆ ಗೋಡೆ, ತುಂಬಾ ಹತ್ತಿರ","Wall ahead, very close"
+59,"ಮುಂದೆ ಗೋಡೆ, ಹತ್ತಿರ","Wall ahead, near"
+60,ಎಡದಿಂದ ಏನೋ ಹತ್ತಿರ ಬರುತ್ತಿದೆ,Something approaching on your left
+61,ಮುಂದಿನಿಂದ ಏನೋ ಹತ್ತಿರ ಬರುತ್ತಿದೆ,Something approaching ahead
+62,ಬಲದಿಂದ ಏನೋ ಹತ್ತಿರ ಬರುತ್ತಿದೆ,Something approaching on your right
+63,ಶುರು|ಶುರು ಮಾಡಿ,start|start guide|begin
+64,ವಿರಾಮ,pause
+65,ಮತ್ತೆ ಶುರು,resume
+66,ಮುಂದೆ ಏನಿದೆ,what is in front of me|what is ahead|what is in front
+67,ಇನ್ನೊಮ್ಮೆ ಹೇಳಿ,repeat|say again|repeat that
+68,ಜೋರಾಗಿ ಹೇಳಿ,louder|speak louder|volume up
+69,ನಿಧಾನವಾಗಿ ಹೇಳಿ,quieter|speak quieter|softer|volume down
+70,ವೇಗವಾಗಿ ಹೇಳಿ,faster|speak faster
+71,ಇನ್ನೂ ನಿಧಾನವಾಗಿ ಹೇಳಿ,slower|speak slower
+72,ಭಾಷೆ ಬದಲಿಸಿ,change language|next language
+73,ಸಹಾಯ,help|list commands|what can i say
+74,"Hey Guide ನಂತರ ಒಂದು ಆದೇಶ ಹೇಳಿ. ಕನ್ನಡಕ್ಕೆ ಬಳಸಬಹುದಾದ ಆಫ್‌ಲೈನ್ ಆದೇಶ ಮಾದರಿ ಇಲ್ಲ, ಆದ್ದರಿಂದ ಆದೇಶಗಳನ್ನು ಇಂಗ್ಲಿಷಿನಲ್ಲಿ ಹೇಳಿ. ಇಂಗ್ಲಿಷ್ ಯಾವಾಗಲೂ ನಡೆಯುತ್ತದೆ. stop, stop app, exit, close, start collecting, stop collecting, missed, wrong, false alarm, wrong warning ಎಲ್ಲ ಭಾಷೆಗಳಲ್ಲೂ ಇಂಗ್ಲಿಷ್. Stop RaahiSense ಅನ್ನು ಮುಚ್ಚುತ್ತದೆ. Pause ಎಚ್ಚರಿಕೆ ನಿಲ್ಲಿಸುತ್ತದೆ, resume ಶುರು ಮಾಡುತ್ತದೆ. Start collecting ತರಬೇತಿ ಫೋಟೋ ಉಳಿಸುತ್ತದೆ, ಎಚ್ಚರಿಕೆ ನಡೆಯುತ್ತದೆ. ಎಚ್ಚರಿಕೆ ಬಾರದ ಅಡೆತಡೆಗೆ missed ಹೇಳಿ. ತಪ್ಪು ಎಚ್ಚರಿಕೆಗೆ wrong, false alarm, ಅಥವಾ wrong warning ಹೇಳಿ. ಫೋನನ್ನು ಜೋರಾಗಿ ಅಲ್ಲಾಡಿಸಿ, TalkBack ಆಫ್ ಇದ್ದರೆ ಪರದೆಯನ್ನು ಎರಡು ಬಾರಿ ಟ್ಯಾಪ್ ಮಾಡಿ, ಅಥವಾ ಈ ಪರದೆ ತೆರೆದಿರುವಾಗ ಧ್ವನಿ ಕೀಲಿ ಒತ್ತಿ ಹಿಡಿಯಿರಿ.","After Hey Guide, say one everyday command. Hindi and Spanish everyday commands work when that language is selected and the phone has its offline recognizer. English always works. These stay English in every language: stop, stop app, exit, close, start collecting, stop collecting, missed, wrong, false alarm, and wrong warning. Everyday commands are start, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, and help. Stop closes RaahiSense. Pause turns warnings off, and resume turns them on. Start collecting saves training photos while warnings stay on. Say missed when an obstacle was not warned. Say wrong, false alarm, or wrong warning when a warning was false or the wrong object. Kannada, Telugu, Tamil, Bengali, and Swahili listen for the English command words. You can also shake the phone hard, double-tap the screen when TalkBack is off, or hold a volume key while this screen is open."
+75,"ಕೇಳುವ ಮಾದರಿ ಇಂಗ್ಲಿಷ್. Hey Guide ಹೇಳಿ, ನಂತರ ಇಂಗ್ಲಿಷ್ ಆದೇಶ. stop, start collecting, stop collecting, missed, wrong ಯಾವಾಗಲೂ ಇಂಗ್ಲಿಷ್. ಧ್ವನಿ ಫೋನಿನಲ್ಲೇ ಇರುತ್ತದೆ.","Listening stays on the phone. Nothing is uploaded. Hindi and Spanish everyday commands work in that language, and English always works. Stop, start collecting, stop collecting, missed, and wrong stay English. Kannada, Telugu, Tamil, Bengali, and Swahili commands are English."
+76,RaahiSense,RaahiSense
+77,ಇದು ಬಿಳಿ ಕೋಲಿಗೆ ಸಹಾಯ. ಅದರ ಬದಲಿ ಅಲ್ಲ. ಇಂಟರ್ನೆಟ್ ಇಲ್ಲದೆ ನಡೆಯುತ್ತದೆ.,An extra to your white cane. Not a replacement. Works fully offline.
+78,ಫೋನನ್ನು ನೇರವಾಗಿ ಹಿಡಿಯಿರಿ. ಹಿಂದಿನ ಕ್ಯಾಮೆರಾ ನೀವು ನಡೆಯುವ ಕಡೆಗೆ ಇರಲಿ.,Hold the phone upright. The rear camera faces the way you walk.
+79,"ಮೊದಲು ಸಹಾಯಕರೊಂದಿಗೆ ಮನೆಯೊಳಗೆ ಅಭ್ಯಾಸ ಮಾಡಿ. ಈ ಆ್ಯಪ್ ಮೆಟ್ಟಿಲು, ಗುಂಡಿ, ಕಂಬ ಮತ್ತು ಇನ್ನೂ ಹಲವು ಅಡೆತಡೆಗಳನ್ನು ತಪ್ಪಿಸಬಹುದು. ಕೋಲನ್ನು ಇಟ್ಟುಕೊಳ್ಳಿ.","Practice indoors with a helper first. This app misses steps, holes, poles, and many other obstacles. Keep using your cane."
+80,ಶುರು,START
+81,ನಿಲ್ಲಿಸಿ,STOP
+82,RaahiSense ನಿಲ್ಲಿಸಿ,Stop RaahiSense
+83,ಕ್ಯಾಮೆರಾ ಅನುಮತಿ ನೀಡಿ,Allow camera
+84,ಸೆಟ್ಟಿಂಗ್ ತೆರೆಯಿರಿ,Open settings
+85,ಅಡೆತಡೆ ಎಚ್ಚರಿಕೆ ಶುರು ಮಾಡಿ,Start obstacle warnings
+86,ಅಡೆತಡೆ ಎಚ್ಚರಿಕೆ ನಿಲ್ಲಿಸಿ,Stop obstacle warnings
+87,RaahiSense ನಿಲ್ಲಿಸಿ,Stop RaahiSense
+88,ಎಚ್ಚರಿಕೆ ಶುರು ಆಗಲು ಕ್ಯಾಮೆರಾ ಅನುಮತಿ ನೀಡಿ,Allow the camera so obstacle warnings can start
+89,ಕ್ಯಾಮೆರಾ ಅನುಮತಿಗೆ ಫೋನ್ ಸೆಟ್ಟಿಂಗ್ ತೆರೆಯಿರಿ,Open phone settings to allow the camera
+90,ಸಿದ್ಧ. ಶುರು ಮಾಡಲು ದೊಡ್ಡ ಬಟನ್ ಒತ್ತಿ.,Ready. Tap the big button to start.
+91,ಶುರು ಆಯಿತು. ಅಡೆತಡೆಗಳನ್ನು ಕೇಳುತ್ತಿದೆ.,Started. Listening for obstacles.
+92,ನಿಂತಿದೆ.,Stopped.
+93,ಅಡೆತಡೆಗಳನ್ನು ಕೇಳುತ್ತಿದೆ.,Listening for obstacles.
+94,ಕ್ಯಾಮೆರಾ ಆಫ್ ಆಗಿದೆ. ದೊಡ್ಡ ಬಟನ್ ಒತ್ತಿ ಕ್ಯಾಮೆರಾ ಅನುಮತಿ ನೀಡಿ. ಫೋಟೋ ಉಳಿಯುವುದಿಲ್ಲ.,The camera is off. Tap the big button and allow the camera. Photos are not saved.
+95,ಕ್ಯಾಮೆರಾ ಅನುಮತಿ ಸಿಗಲಿಲ್ಲ. ಕ್ಯಾಮೆರಾ ಇಲ್ಲದೆ ಎಚ್ಚರಿಕೆ ಸಾಧ್ಯವಿಲ್ಲ.,Camera permission was not allowed. Obstacle Guide cannot warn you without the camera.
+96,"ಕ್ಯಾಮೆರಾ ಅನುಮತಿ ನಿಂತಿದೆ. ಸೆಟ್ಟಿಂಗ್, ನಂತರ ಅನುಮತಿಗಳು ತೆರೆದು ಕ್ಯಾಮೆರಾ ಆನ್ ಮಾಡಿ.","Camera permission is blocked. Open settings, then Permissions, and turn the camera on."
+97,ಕ್ಯಾಮೆರಾ ಸಿಗುತ್ತಿಲ್ಲ.,The camera is not available.
+98,ಗುರುತಿಸುವ ಮಾದರಿ ತೆರೆಯಲಿಲ್ಲ. ಆ್ಯಪ್ ಮುಚ್ಚಿ ಮತ್ತೆ ತೆರೆಯಿರಿ.,The detection model could not be loaded. Close the app and open it again.
+99,ಈ ಫೋನಿನಲ್ಲಿ ಮಾತಿನ ಧ್ವನಿ ಇಲ್ಲ. ಟಾಕ್‌ಬ್ಯಾಕ್ ಆನ್ ಮಾಡಿ ಅಥವಾ ಧ್ವನಿ ಸ್ಥಾಪಿಸಿ.,No text-to-speech voice is installed on this phone. Turn on TalkBack or install a voice in text-to-speech settings.
+100,ಈ ಫೋನಿನಲ್ಲಿ ಬ್ಯಾಟರಿ ಸೆಟ್ಟಿಂಗ್ ತೆರೆಯಲಿಲ್ಲ.,Battery settings could not be opened on this phone.
+101,ಫೋನ್ ಕ್ಯಾಮೆರಾ ಕೇಳುತ್ತದೆ. ದಯವಿಟ್ಟು ಅನುಮತಿ ನೀಡಿ. ಫೋಟೋ ಉಳಿಯುವುದಿಲ್ಲ. ಇಂಟರ್ನೆಟ್ ಬಳಸುವುದಿಲ್ಲ.,Your phone will ask to use the camera. Please allow it. Obstacle Guide does not save photos and does not use the internet.
+102,ಸೆಟ್ಟಿಂಗ್,Settings
+103,ಭಾಷೆ,Language
+104,ಮಾತಿನ ವೇಗ,Speech rate
+105,ನಿಧಾನ,Slow
+106,ಸಾಮಾನ್ಯ,Normal
+107,ವೇಗ,Fast
+108,ಬ್ಯಾಟರಿ ಉಳಿತಾಯ: ಆನ್,Battery saver: on
+109,ಬ್ಯಾಟರಿ ಉಳಿತಾಯ: ಆಫ್,Battery saver: off
+110,ಕಂಪನ: ಆನ್,Vibration: on
+111,ಕಂಪನ: ಆಫ್,Vibration: off
+112,ಬ್ಯಾಟರಿ ಉಳಿತಾಯ ಆಫ್ ಆಗಿದೆ. ಆನ್ ಮಾಡಲು ಎರಡು ಬಾರಿ ಟ್ಯಾಪ್ ಮಾಡಿ.,Battery saver is off. Double tap to turn it on.
+113,ಬ್ಯಾಟರಿ ಉಳಿತಾಯ ಆನ್ ಆಗಿದೆ. ಆಫ್ ಮಾಡಲು ಎರಡು ಬಾರಿ ಟ್ಯಾಪ್ ಮಾಡಿ.,Battery saver is on. Double tap to turn it off.
+114,ಕಂಪನ ಆಫ್ ಆಗಿದೆ. ಆನ್ ಮಾಡಲು ಎರಡು ಬಾರಿ ಟ್ಯಾಪ್ ಮಾಡಿ.,Vibration is off. Double tap to turn it on.
+115,ಕಂಪನ ಆನ್ ಆಗಿದೆ. ಆಫ್ ಮಾಡಲು ಎರಡು ಬಾರಿ ಟ್ಯಾಪ್ ಮಾಡಿ.,Vibration is on. Double tap to turn it off.
+116,ಪರದೆ ಆಫ್ ಆದರೂ ನಡೆಯಲಿ,Keep running with the screen off
+117,ಪರದೆ ಆಫ್ ಆದರೂ ಆ್ಯಪ್ ನಡೆಯಲು ಫೋನ್ ಸೆಟ್ಟಿಂಗ್ ತೆರೆಯಿರಿ,Open phone settings so Obstacle Guide can keep running when the screen is off
+118,ಪರದೆ ಆಫ್ ಆದರೂ ಈ ಫೋನ್ ಆ್ಯಪ್ ಅನ್ನು ನಡೆಯಲು ಬಿಡುತ್ತದೆ.,This phone allows Obstacle Guide to keep running with the screen off.
+119,ಪರದೆ ಆಫ್ ಆದಾಗ ಫೋನ್ ಆ್ಯಪ್ ಅನ್ನು ನಿಲ್ಲಿಸಬಹುದು. ಕೆಳಗಿನ ಬಟನ್ ಒತ್ತಿ ಬ್ಯಾಟರಿ ನಿರ್ಬಂಧ ತೆಗೆಯಿರಿ.,This phone may stop the app when the screen is off. Tap the button below and allow unrestricted battery use.
+120,ಈ ವಾಕ್ಯಗಳು ಕರಡು. ಬಳಕೆಗೆ ಮುನ್ನ ಸ್ಥಳೀಯ ಭಾಷಿಕರ ಪರಿಶೀಲನೆ ಬೇಕು.,
+121,ಈ ಫೋನಿನಲ್ಲಿ ಕನ್ನಡದ ಆಫ್‌ಲೈನ್ ಧ್ವನಿ ಇಲ್ಲ. ಎಚ್ಚರಿಕೆ ಇಂಗ್ಲಿಷಿನಲ್ಲಿ ಬರುತ್ತದೆ. ಟೆಕ್ಸ್ಟ್-ಟು-ಸ್ಪೀಚ್ ಸೆಟ್ಟಿಂಗ್‌ನಲ್ಲಿ ಕನ್ನಡ ಧ್ವನಿ ಇಳಿಸಿ.,The English voice is not installed. Install a text-to-speech voice in phone settings.
+122,ಅಡೆತಡೆ ಮಾರ್ಗದರ್ಶಿ,Obstacle Guide
+123,ಅಡೆತಡೆ ಮಾರ್ಗದರ್ಶಿ ಆನ್ ಆಗಿದೆ,Obstacle Guide is on
+124,ಅಡೆತಡೆಗಳನ್ನು ಗಮನಿಸುತ್ತಿದೆ,Listening for obstacles
+125,ನಿಲ್ಲಿಸಿ,Stop
+126,Hey Guide,Hey Guide
+127,ಧ್ವನಿ ಆದೇಶ: ಆನ್,Voice commands: on
+128,ಧ್ವನಿ ಆದೇಶ: ಆಫ್,Voice commands: off
+129,ಧ್ವನಿ ಆದೇಶ ಆಫ್ ಆಗಿದೆ. ಆನ್ ಮಾಡಲು ಎರಡು ಬಾರಿ ಟ್ಯಾಪ್ ಮಾಡಿ.,Voice commands are off. Double tap to turn them on.
+130,ಧ್ವನಿ ಆದೇಶ ಆನ್ ಆಗಿದೆ. ಆಫ್ ಮಾಡಲು ಎರಡು ಬಾರಿ ಟ್ಯಾಪ್ ಮಾಡಿ.,Voice commands are on. Double tap to turn them off.
+131,ಎಚ್ಚರಿಸುವ ಪದ,Wake phrase
+132,ಎಚ್ಚರಿಸುವ ಪದ. ಆದೇಶಕ್ಕೆ ಮುನ್ನ ಇದನ್ನು ಹೇಳಿ. ಮೂಲ ಪದ Hey Guide.,Wake phrase. The words you say before a command. The default is Hey Guide.
+133,ಎಚ್ಚರಿಸುವ ಪದ ಈಗ Hey Guide.,Wake phrase set to Hey Guide.
+134,ಈ ಪದಗಳು ಆಫ್‌ಲೈನ್ ಇಂಗ್ಲಿಷ್ ಮಾದರಿಯಲ್ಲಿಲ್ಲ. ಎಚ್ಚರಿಸುವ ಪದ ಬದಲಾಗಲಿಲ್ಲ.,Those words are not in the offline model for this language or in the English model. The wake phrase was not changed.
+135,"ಫೋನ್ ಮೈಕ್ರೊಫೋನ್ ಕೇಳುತ್ತದೆ. ದಯವಿಟ್ಟು ಅನುಮತಿ ನೀಡಿ. ಆ್ಯಪ್ ಫೋನಿನಲ್ಲೇ ಎಚ್ಚರಿಸುವ ಪದವನ್ನು ಕೇಳುತ್ತದೆ, ನಂತರ ಒಂದು ಆದೇಶ. ಧ್ವನಿ ಇಂಟರ್ನೆಟ್‌ಗೆ ಹೋಗುವುದಿಲ್ಲ.","Your phone will ask to use the microphone. Please allow it. Obstacle Guide listens on the phone for the wake phrase, then for one command. It does not send your voice to the internet. You can turn this off in settings."
+136,ಮೈಕ್ರೊಫೋನ್ ಆಫ್ ಆಗಿದೆ. ಧ್ವನಿ ಆದೇಶ ಆನ್ ಮಾಡಿ ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿ ನೀಡಿ.,The microphone is off. Turn voice commands on and allow the microphone.
+137,ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿ ಸಿಗಲಿಲ್ಲ. ಧ್ವನಿ ಆದೇಶಕ್ಕೆ ಅದು ಬೇಕು.,Microphone permission was not allowed. Voice commands need the microphone.
+138,"ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿ ನಿಂತಿದೆ. ಸೆಟ್ಟಿಂಗ್, ನಂತರ ಅನುಮತಿಗಳು ತೆರೆದು ಮೈಕ್ರೊಫೋನ್ ಆನ್ ಮಾಡಿ.","Microphone permission is blocked. Open settings, then Permissions, and turn the microphone on."
+139,ಆಫ್‌ಲೈನ್ ಮಾತಿನ ಮಾದರಿ ತೆರೆಯಲಿಲ್ಲ. ಆ್ಯಪ್ ಮುಚ್ಚಿ ಮತ್ತೆ ತೆರೆಯಿರಿ.,The offline speech model could not be opened. Close Obstacle Guide and open it again.
+140,"ಮೈಕ್ರೊಫೋನ್ ಬೇರೆ ಆ್ಯಪ್ ಬಳಸುತ್ತಿದೆ. ಅದನ್ನು ಮುಚ್ಚಿ, ನಂತರ ಧ್ವನಿ ಆದೇಶ ಆನ್ ಮಾಡಿ.","The microphone is being used by another app. Close that app, then turn voice commands on again."
+141,ಧ್ವನಿ ಆದೇಶ ಆಫ್ ಆಗಿದೆ.,Voice commands are off.
+142,Hey Guide ಗಾಗಿ ಕಾಯುತ್ತಿದೆ.,Waiting for Hey Guide.
+143,ಒಂದು ಆದೇಶ ಕೇಳುತ್ತಿದೆ.,Listening for one command.
+144,ಹೌದು?,Yes?
+145,ಅಡೆತಡೆ ಎಚ್ಚರಿಕೆ ಈಗಾಗಲೇ ಆನ್ ಆಗಿದೆ.,Obstacle warnings are already on.
+146,ಅಡೆತಡೆ ಎಚ್ಚರಿಕೆ ಈಗಾಗಲೇ ಆಫ್ ಆಗಿದೆ.,Obstacle warnings are already off.
+147,RaahiSense ನಿಂತಿದೆ,RaahiSense stopped
+148,ಮತ್ತೆ ಹೇಳುತ್ತಿದ್ದೇನೆ.,Repeating.
+149,ಮತ್ತೆ ಹೇಳಲು ಇನ್ನೂ ಎಚ್ಚರಿಕೆ ಇಲ್ಲ.,There is no warning to repeat yet.
+150,ಧ್ವನಿ ಹೆಚ್ಚಿಸಿದೆ.,Louder.
+151,ಧ್ವನಿ ಕಡಿಮೆ ಮಾಡಿದೆ.,Quieter.
+152,ಧ್ವನಿ ಈಗಾಗಲೇ ಅತಿ ಜೋರು.,Speech is already at the loudest.
+153,ಧ್ವನಿ ಈಗಾಗಲೇ ಅತಿ ನಿಧಾನ.,Speech is already at the quietest.
+154,ಮಾತು ವೇಗವಾಯಿತು.,Faster.
+155,ಮಾತು ನಿಧಾನವಾಯಿತು.,Slower.
+156,ಮಾತು ಈಗಾಗಲೇ ಅತಿ ವೇಗ.,Speech is already at the fastest.
+157,ಮಾತು ಈಗಾಗಲೇ ಅತಿ ನಿಧಾನ.,Speech is already at the slowest.
+158,ಭಾಷೆ ಬದಲಾಯಿತು.,Language changed.
+159,ಅದು ಆದೇಶ ಅಲ್ಲ. ಪಟ್ಟಿಗೆ help ಹೇಳಿ.,That was not a command. Say help for the list.
+160,ಈಗ ಮುಂದೆ ಏನೂ ಕಾಣುತ್ತಿಲ್ಲ.,Nothing is in front of you right now.
+161,ಧ್ವನಿ ಆಫ್ ಮಾಡಿ,Turn voice off
+162,ದೂರ ಹೊಂದಿಸಿ,Calibrate distance
+163,ಈ ಫೋನಿನಲ್ಲಿ ಗೋಡೆ ಎಷ್ಟು ಹತ್ತಿರ ಎಂದು ಹೊಂದಿಸಿ,Set how close a wall is on this phone
+164,"ಮೊದಲು ಮಾರ್ಗದರ್ಶಿ ಶುರು ಮಾಡಿ, ನಂತರ ದೂರ ಹೊಂದಿಸಿ.","Start the guide, then calibrate distance."
+165,"ಕ್ಯಾಮೆರಾವನ್ನು ತೆರೆದ ದಾರಿಯ ಕಡೆ ಇಡಿ, ನಂತರ ದೂರ ಹೊಂದಿಸಿ ಮತ್ತೆ ಒತ್ತಿ.","Point along an open path, then tap Calibrate distance again."
+166,"ಒಂದು ಹೆಜ್ಜೆ ದೂರದ ಗೋಡೆಯ ಕಡೆ ಇಡಿ, ನಂತರ ದೂರ ಹೊಂದಿಸಿ ಮತ್ತೆ ಒತ್ತಿ.","Point at a wall one step away, then tap Calibrate distance again."
+167,ದೂರ ಹೊಂದಿಕೆ ಆಯಿತು.,Distance is calibrated.
+168,ಆ ಓದು ಬಳಕೆಗೆ ಬರಲಿಲ್ಲ. ಫೋನನ್ನು ಸ್ಥಿರವಾಗಿ ಹಿಡಿದು ತೆರೆದ ದಾರಿಯಿಂದ ಮತ್ತೆ ಶುರು ಮಾಡಿ.,That reading was not usable. Hold the phone steady and start again from an open path.
+169,ಗೋಡೆ ತೆರೆದ ದಾರಿಯಂತೆ ಕಾಣಿಸಿತು. ಗೋಡೆಗೆ ಹತ್ತಿರ ಹೋಗಿ ಮತ್ತೆ ಒತ್ತಿ.,The wall looked like the open path. Move closer to a wall and tap again.
+170,ಬೆಳಕು,Light
+171,ತಾನಾಗಿ,Auto
+172,ಯಾವಾಗಲೂ ಆನ್,Always on
+173,ಆಫ್,Off
+174,ಕತ್ತಲೆ ಇದ್ದರೆ ಟಾರ್ಚ್ ಹಚ್ಚಿ,Turn the flashlight on when it stays dark
+175,ಟಾರ್ಚ್ ಆನ್ ಇಡಿ,Keep the flashlight on
+176,ಟಾರ್ಚ್ ಆಫ್ ಇಡಿ,Keep the flashlight off
+177,"ಕತ್ತಲೆ ಇದೆ, ಬೆಳಕು ಹಚ್ಚುತ್ತಿದ್ದೇನೆ.","It's dark, turning on the light."
+178,"ತುಂಬಾ ಕತ್ತಲೆ, ಸ್ಪಷ್ಟವಾಗಿ ಕಾಣುತ್ತಿಲ್ಲ. ದಯವಿಟ್ಟು ಎಚ್ಚರಿಕೆಯಿಂದಿರಿ.","Too dark to see clearly, please use caution."
+179,ಪರಿಚಯ ಮತ್ತು ಪರವಾನಗಿ,About and licenses
+180,ಮಾತು ಮತ್ತು ಚಿತ್ರಗಳ ಪರವಾನಗಿ ತೆರೆಯಿರಿ,Open the list of speech and picture licenses
+181,ಪರಿಚಯ,About
+182,ಅಡೆತಡೆ ಮಾರ್ಗದರ್ಶಿ ಬಿಳಿ ಕೋಲಿಗೆ ಸಹಾಯ. ಅದರ ಬದಲಿ ಅಲ್ಲ.,Obstacle Guide is an extra to a white cane. It is not a replacement.
+183,ಹಿಂದೆ,Back
+184,ಮುಖ್ಯ ಪರದೆಗೆ ಹಿಂತಿರುಗಿ,Go back to the main screen
+185,ತರಬೇತಿ ಫೋಟೋ ಸೇರಿಸಿ: ಆನ್,Collect training photos: on
+186,ತರಬೇತಿ ಫೋಟೋ ಸೇರಿಸಿ: ಆಫ್,Collect training photos: off
+187,ತರಬೇತಿ ಫೋಟೋ ಆಫ್ ಆಗಿದೆ. ಆನ್ ಮಾಡಲು ಎರಡು ಬಾರಿ ಟ್ಯಾಪ್ ಮಾಡಿ.,Collect training photos is off. Double tap to turn it on.
+188,ತರಬೇತಿ ಫೋಟೋ ಆನ್ ಆಗಿದೆ. ಆಫ್ ಮಾಡಲು ಎರಡು ಬಾರಿ ಟ್ಯಾಪ್ ಮಾಡಿ. ಎಚ್ಚರಿಕೆ ನಡೆಯುತ್ತದೆ.,Collect training photos is on. Double tap to turn it off. Warnings keep running.
+189,ಫೋಟೋ ಅಂತರ: 2 ಸೆಕೆಂಡು,Photo interval: 2 seconds
+190,ಉಳಿಸಿದ ಫೋಟೋಗಳ ನಡುವಿನ ಸಮಯ. ಬದಲಿಸಲು ಎರಡು ಬಾರಿ ಟ್ಯಾಪ್ ಮಾಡಿ. ಈಗ 2 ಸೆಕೆಂಡು.,Time between saved photos. Double tap to change it. It is 2 seconds now.
+191,ಫೋಟೋ ಜೊತೆ GPS: ಆನ್,Save GPS with photos: on
+192,ಫೋಟೋ ಜೊತೆ GPS: ಆಫ್,Save GPS with photos: off
+193,GPS ಫೋಟೋ ಜೊತೆ ಉಳಿಯುತ್ತಿಲ್ಲ. ಸೇರಿಸಲು ಎರಡು ಬಾರಿ ಟ್ಯಾಪ್ ಮಾಡಿ.,GPS is not saved with photos. Double tap to include it.
+194,GPS ಫೋಟೋ ಜೊತೆ ಉಳಿಯುತ್ತದೆ. ಆಫ್ ಮಾಡಲು ಎರಡು ಬಾರಿ ಟ್ಯಾಪ್ ಮಾಡಿ.,GPS is saved with photos. Double tap to turn GPS off.
+195,ಸ್ಥಳ ಅನುಮತಿ ಸಿಗಲಿಲ್ಲ. GPS ಆಫ್ ಇರುತ್ತದೆ.,Location was not allowed. GPS stays off.
+196,"2 ಫೋಟೋ, 1 MB","2 photos, 1 MB"
+197,ತರಬೇತಿ ಫೋಟೋ ರಫ್ತು ಮಾಡಿ,Export training photos
+198,ಈ ಸಂಗ್ರಹದ ಜಿಪ್ ಮಾಡಿ ಹಂಚಿಕೆ ಪಟ್ಟಿ ತೆರೆಯಿರಿ. ನೀವು ಎಲ್ಲಿಗೆ ಕಳುಹಿಸಬೇಕು ಎಂದು ಆಯ್ಕೆ ಮಾಡುವವರೆಗೆ ಏನೂ ಅಪ್‌ಲೋಡ್ ಆಗುವುದಿಲ್ಲ.,Zip this collection and open the share sheet. Nothing is uploaded until you choose where to send it.
+199,ರಫ್ತು ಮಾಡಲು ತರಬೇತಿ ಫೋಟೋ ಇಲ್ಲ.,There are no training photos to export.
+200,ಫೋಟೋಗಳ ಜಿಪ್ ಆಗಲಿಲ್ಲ.,The photos could not be zipped.
+201,ಜಿಪ್ ಸಿದ್ಧವಾಗುತ್ತಿದೆ.,Preparing the zip.
+202,ಫೋಟೋ ಸಂಗ್ರಹ ನಿಂತಿದೆ. ಫೋನ್ ಬಿಸಿಯಾಗಿದೆ.,Photo collection paused. The phone is hot.
+203,ಫೋಟೋ ಮತ್ತೆ ಸೇರುತ್ತಿವೆ.,Collecting photos again.
+204,ತರಬೇತಿ ಫೋಟೋ ಸೇರುತ್ತಿವೆ. ಎಚ್ಚರಿಕೆ ಆನ್ ಇದೆ.,Collecting training photos. Warnings stay on.
+205,ಫೋಟೋ ಸಂಗ್ರಹ ನಿಂತಿದೆ. ಎಚ್ಚರಿಕೆ ಆನ್ ಇದೆ.,Stopped collecting photos. Warnings stay on.
+206,ತರಬೇತಿ ಫೋಟೋ ಈಗಾಗಲೇ ಸೇರುತ್ತಿವೆ.,Already collecting training photos.
+207,ತರಬೇತಿ ಫೋಟೋ ಈಗಾಗಲೇ ಆಫ್ ಆಗಿದೆ.,Training photos are already off.
+208,ತಪ್ಪಿದ್ದು ಎಂದು ಗುರುತಿಸಿದೆ.,Marked as missed.
+209,"ತರಬೇತಿ ಫೋಟೋ ಆಫ್ ಆಗಿದೆ, ಆದ್ದರಿಂದ ಏನೂ ಉಳಿಯಲಿಲ್ಲ.","Collect training photos is off, so nothing was saved."
+210,ಗಮನಿಸಿದೆ.,Noted.
+211,ಪೂರ್ಣ ಫೋಟೋ ಈ ಫೋನಿನಲ್ಲೇ ಇರುತ್ತವೆ. ಎಚ್ಚರಿಕೆ ನಡೆಯುತ್ತದೆ. ಏನೂ ಅಪ್‌ಲೋಡ್ ಆಗುವುದಿಲ್ಲ. Export ಒತ್ತಿದಾಗ ಮಾತ್ರ ಜಿಪ್ ಹಂಚಿಕೆಯಾಗುತ್ತದೆ.,Full photos stay on this phone. Warnings keep running. Nothing is uploaded. Export shares a zip only when you tap Export.

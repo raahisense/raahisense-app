@@ -1,12 +1,12 @@
 # RaahiSense
 
-Raahi means traveller. RaahiSense speaks short warnings about things the rear camera sees, while you walk. It is an extra to a white cane. It is not a replacement. It does not need the internet. It does not save photos. The Android app and the iPhone app live in this same project. Prepared for Dr. Chindanoor Rajesh.
+Raahi means traveller. RaahiSense speaks short warnings about things the rear camera sees, while you walk. It is an extra to a white cane. It is not a replacement. It does not need the internet. It does not save photos unless **Collect training photos** is on, and then the photos stay on that phone until you export them. The Android app and the iPhone app live in this same project. Prepared for Dr. Chindanoor Rajesh.
 
 The Android package name is still `org.visualaid.obstacleguide`. The name on the phone is RaahiSense.
 
 It is meant for a simple unlocked phone, such as a Samsung Galaxy A16 5G or a Moto G from 2025, including phones with about 4 GB of memory and no SIM card.
 
-Hindi, Tamil, Bengali, Swahili, and Spanish phrases in this version are drafts. A native speaker must review them before you trust the wording. English is the source wording.
+Hindi, Spanish, Kannada, Telugu, Tamil, Bengali, and Swahili phrases in this version are drafts. A native speaker must review them before you trust the wording. English is the source wording. Review audio and phrase sheets are in `review/languages/`.
 
 ## Install the app
 
@@ -33,11 +33,17 @@ On older phones the switch is under Settings, Security, Unknown sources. On newe
 The screen is black and yellow, with one big button.
 
 1. Tap the big button.
-2. The phone asks to use the camera. Allow it. Photos are not saved.
+2. The phone asks to use the camera. Allow it. Photos are not saved unless Collect training photos is on.
 3. The big button then says **START**. Tap it.
 4. You should hear "Started. Listening for obstacles."
 5. Lock the screen if you want. A notification stays up: **Obstacle Guide is on**. That means it is still working.
-6. To stop, open the app and tap the big **STOP** button, or open the notification and tap Stop.
+6. To close RaahiSense, say **stop** (or **stop app**, **exit**, or **close**), tap **Stop RaahiSense**, or open the notification and tap Stop. The phone says "RaahiSense stopped", then stops the camera, the warnings, speech, and the listening service, and removes the notification. On Android the app closes. On iPhone the work stops and the screen can sleep; iOS does not let an app remove itself. The big **STOP** button only turns warnings off and leaves the app open. **Pause** does that by voice, and **resume** turns warnings on again.
+
+On Android you can also touch and hold the RaahiSense icon. TalkBack reads two shortcuts: **Start guidance** and **Stop RaahiSense**. Start guidance opens the app and starts warnings, the same as the big START button. Stop RaahiSense is the full stop above, not the big STOP button. Those long-press shortcuts work as soon as the app is installed.
+
+"Hey Google, start RaahiSense", "Hey Google, stop RaahiSense", and "Hey Google, close RaahiSense" are Assistant App Actions. Google turns those voice phrases on fully only after the app is published on the Play Store. Until then, Hey Google may only open the app, or it may do nothing for stop. The long-press shortcuts still work on a sideloaded APK.
+
+On iPhone, Siri Shortcuts **Start RaahiSense** and **Stop RaahiSense** are built in. You can say "Hey Siri, start RaahiSense", "Hey Siri, stop RaahiSense", or "Hey Siri, close RaahiSense". Stop is the same full stop as the Stop RaahiSense button. Open RaahiSense once after installing so Siri can learn the shortcuts. iOS still cannot remove the app from the screen.
 
 Warnings sound like "Very close chair ahead" or "Near car on the left." The same warning is not repeated for about 4 seconds. A very close object straight ahead can interrupt other speech, and the phone vibrates in three pulses if vibration is on.
 
@@ -60,16 +66,22 @@ Voice commands are on the first time you open the app. The phone asks to use the
 
 Commands, in English:
 
-- start
-- stop, or pause
+- start, or resume
+- stop, stop app, exit, or close (closes the app)
+- pause (turns warnings off and leaves the app open)
 - what is in front of me
 - repeat
 - louder, or quieter
 - faster, or slower
 - change language
+- start collecting, or stop collecting (saves training photos, warnings stay on)
+- missed (an obstacle was not warned)
+- wrong, false alarm, or wrong warning (a warning was false or the wrong object)
 - help
 
 You can also say the wake phrase and the command in one breath, such as "Hey Guide, start."
+
+While RaahiSense is speaking, the microphone is ignored, including a short moment after the phrase ends. Right after a warning, you can say **wrong** or **missed** during that moment, and the phone says "Noted." Other commands still wait until the phrase and that short moment have finished. A warning such as "stop sign" does not close the app. Say those commands after the phrase finishes.
 
 Three backups need no aiming. They work only while voice commands are on:
 
@@ -79,7 +91,7 @@ Three backups need no aiming. They work only while voice commands are on:
 
 The volume key and the double-tap do not work while the screen is off. The wake phrase and the shake do, after you have allowed the microphone and the notification is up. If you only want the camera and not the microphone, tap **Voice commands: on** so it changes to off. The notification can also say **Turn voice off** when the camera is not running.
 
-The ear is English. Hindi, Tamil, Bengali, Swahili, and Spanish screens still list command words for a later review, but this model hears the English words. Help says that. Warning speech can still be in the language you picked.
+Listening stays on the phone. English commands always work. Hindi everyday commands use `vosk-model-small-hi-0.22` and Spanish everyday commands use `vosk-model-small-es-0.42`, both Apache License 2.0, with the English model still listening beside them. Stop, start collecting, stop collecting, missed, and wrong stay English in every language. Kannada, Telugu, Tamil, Bengali, and Swahili commands stay English: Telugu's small model was not bundled because its published error rate is about 88 percent, and Tamil and Kannada have no Vosk model. Help says that. Spoken warnings still use the language you picked.
 
 ## What the wake word costs
 
@@ -104,7 +116,7 @@ At equal speech and noise (0 dB) it started to miss. In louder noise, say the ph
 
 ## What each setting does
 
-**Language.** Chooses the words that are spoken, and the words on the screen. English is included. Hindi, Tamil, Bengali, Swahili, and Spanish are marked as drafts. If that language has no offline voice on the phone, the app says so in English and speaks the warnings in English until a voice is installed.
+**Language.** Chooses the words that are spoken, and the words on the screen. The order is English, Hindi, Spanish, Kannada, Telugu, Tamil, Bengali, and Swahili. All except English are marked as drafts. If that language has no offline voice on the phone, the app says so in English and speaks the warnings in English until a voice is installed. Changing language also changes which command model is loaded. Hindi and Spanish load that model beside English. The other languages keep the English ear.
 
 **Speech rate.** Slow, Normal, or Fast. Normal is a little brisk, so a warning can finish while you are still walking.
 
@@ -116,6 +128,10 @@ At equal speech and noise (0 dB) it started to miss. In louder noise, say the ph
 
 **Voice commands.** On or off. On means the phone listens for "Hey Guide" even when the screen is locked, as long as the notification is showing. Off closes the microphone. The wake phrase box is next to this button.
 
+**Collect training photos.** Off unless you turn it on. This is for the developer walking around to gather training pictures. Warnings keep running. About every 1.5 seconds the phone saves a full-resolution photo, and it also saves a short burst when a warning is spoken, when you say **missed**, or when you say **wrong**. Each photo has a JSON file next to it with the time, the detections, a depth summary, the kind of event (periodic, warning, missed, or wrong), and a lighting estimate. A wrong photo also records the last spoken warning: its label, box, confidence, and the time it was spoken. GPS is off unless you turn on **Save GPS with photos**. On Android the files are in the app's own external folder `RaahiSense/collect/`, one folder per date. The screen shows how many photos are saved and how much space they use. **Export training photos** zips the newest day and opens the share sheet, so you can send it to Google Drive yourself. The app does not upload anything. JPEG quality is about 90 percent. If the phone gets hot, saving pauses and warnings continue. Faces are not blurred in this personal collection. Blur them before sharing the zip with anyone else.
+
+The interval button steps through 1 second, 1.5 seconds, and 3 seconds. Say **start collecting** or **stop collecting** after Hey Guide, or tap the button. **Stop collecting** does not close the app and does not turn warnings off.
+
 **Calibrate distance.** Two taps while the guide is running: an open path, then a wall one step away. This teaches the phone what "close" looks like on this camera.
 
 **About and licenses** opens the credit for the speech model, the depth model, and the pictures.
@@ -124,7 +140,7 @@ At equal speech and noise (0 dB) it started to miss. In louder noise, say the ph
 
 ## If the voice is missing
 
-Many phones already have an English voice. Hindi, Tamil, Bengali, Swahili, or Spanish may need a voice download, and that download needs the internet once.
+Many phones already have an English voice. Hindi, Spanish, Kannada, Telugu, Tamil, Bengali, or Swahili may need a voice download, and that download needs the internet once.
 
 1. Open the phone Settings.
 2. Search for "Text-to-speech" (on Samsung it may be under General management, or Accessibility).
@@ -154,7 +170,7 @@ Until the voice is installed, the app tells you in spoken English, and it keeps 
 - The wake phrase is English. A noisy street can hide it. The noise test above was synthetic speech, not a recorded street.
 - Volume-key and double-tap commands work only while this app's screen is open. They do not work on the lock screen.
 - A hard shake can be triggered by a drop or by shaking the phone in a bag. Voice commands off also turns the shake off.
-- With TalkBack on, double-tap is left for TalkBack. Use the wake phrase or a shake instead.
+- With TalkBack on, double-tap is left for TalkBack. Use the wake phrase, a shake, or the launcher shortcuts. Touch and hold the RaahiSense icon. TalkBack reads **Start guidance** and **Stop RaahiSense**.
 
 ## For developers
 
@@ -205,9 +221,13 @@ Depth file: `app/src/main/assets/depth_anything_v2_small.tflite` (27,733,680 byt
 
 ### Wake word
 
-`com.alphacephei:vosk-android:0.3.75` loads `vosk-model-small-en-us-0.15` from assets. The zip is unpacked into app storage on first use. The recognizer grammar is the wake phrase, that phrase plus each in-vocabulary command, and `[unk]`. After a wake with no command attached, the grammar switches to the command list for 5 seconds, then returns to wake spotting. The same `AudioRecord` stays open across the switch. Sample rate 16000, source `VOICE_RECOGNITION`.
+`com.alphacephei:vosk-android:0.3.75` loads offline models from assets. English is `vosk-model-small-en-us-0.15` (Apache License 2.0). Hindi is `vosk-model-small-hi-0.22` (Apache License 2.0, about 43 MB). Spanish is `vosk-model-small-es-0.42` (Apache License 2.0, about 38 MB). Each zip is unpacked into app storage on first use, and unpacking one language leaves the others in place. When Hindi or Spanish is selected, that model and the English model both hear the same microphone audio. A wake on either model opens the command window on both. An everyday command from the selected language wins. Stop, start collecting, stop collecting, missed, and wrong are taken from the English model, including the short window after a warning. Kannada, Telugu, Tamil, Bengali, and Swahili use only the English model. Telugu's published small-model error rate is about 88 percent, so that zip is not in the app. Tamil and Kannada are not in the Vosk model list.
 
-Command phrases live in `logic/VoiceCommands.kt` and in `cmd_*` strings. English phrases are always merged in. A translated phrase is put in the grammar only when every word is in `vosk-small-en-words.txt`. Parsing is whole-word, longest phrase wins, and does not need Android, so `CommandParserTest` runs on a normal JVM.
+The recognizer grammar is the wake phrase, that phrase plus each in-vocabulary command, and `[unk]`. Hindi also listens for हे गाइड. Spanish also listens for oye guía. The saved wake phrase is not replaced. After a wake with no command attached, the grammar switches to the command list for 5 seconds, then returns to wake spotting. The same `AudioRecord` stays open across the switch. Sample rate 16000, source `VOICE_RECOGNITION`.
+
+Command phrases live in `logic/VoiceCommands.kt` and in `cmd_*` strings. English phrases are always merged in. A translated phrase is put in a model's grammar only when every word is in that model's word list. `cmd_stop`, `cmd_collect_start`, `cmd_collect_stop`, `cmd_missed`, and `cmd_wrong` are English in every language file. Parsing is whole-word, longest phrase wins, and does not need Android, so `CommandParserTest` runs on a normal JVM.
+
+The Hindi and Spanish word lists are about 3.6 MB and 0.9 MB on disk. In the arm64 debug APK they compress to about 0.64 MB and 0.26 MB. The model zips stay about their file size: Hindi 44.1 MB and Spanish 39.5 MB inside the APK. That debug APK is 162.4 MB. The same APK without those four new files would be about 81.9 MB, so the growth is about 80.6 MB. The obstacle model and the depth model are unchanged.
 
 `ShakeWatch` fires on two opposite jerks within 700 ms, each at least 28 m/s², with a release under 14 m/s² between them, then a 3 second cooldown. Walking-sized motion is ignored. `ShakeWatchTest` covers that.
 
@@ -229,12 +249,15 @@ Command phrases live in `logic/VoiceCommands.kt` and in `cmd_*` strings. English
 - `logic/ShakeWatch.kt` — backup shake.
 - `GuideService.kt` — foreground camera and microphone service.
 - `MainActivity.kt` — the high-contrast screen, permission flow, settings, volume-key long-press, and double-tap.
+- `AssistantActionActivity.kt` — exported deep link `raahisense://start`, `raahisense://stop`, and `raahisense://close`. It only accepts those hosts. Stop calls `GuideService.ACTION_QUIT`.
+- `res/xml/shortcuts.xml` — launcher shortcuts **Start guidance** and **Stop RaahiSense**, plus Assistant capabilities `actions.intent.OPEN_APP_FEATURE` and custom start, stop, and close intents. Launcher shortcuts work immediately. Assistant voice phrases work fully only after Play Store publishing.
 - `AboutActivity.kt` — speech and picture credits.
-- `res/values-hi`, `values-ta`, `values-bn`, `values-sw`, `values-es` — draft translations.
+- `res/values-hi`, `values-es`, `values-kn`, `values-te`, `values-ta`, `values-bn`, `values-sw` — draft translations.
+- `review/languages/` — spoken review files and phrase sheets for Hindi, Spanish, Kannada, Telugu, and Tamil. The review voice is espeak-ng, not the phone's text-to-speech voice. Stop, collect, missed, and wrong are left out of those files because those commands stay English.
 
 ## iPhone app
 
-The iPhone app is in `ios/`. It is native Swift and SwiftUI. It uses the same obstacle model, the same depth model, and the same spoken phrases as Android. The warning rules (side, distance, wall, unknown object, approaching, throttle, low light, shake) live in `ios/RaahiSenseLogic` and are covered by unit tests. The models are not converted to Core ML and they are not shrunk. A build copies `obstacles_v1.tflite`, `depth_anything_v2_small.tflite`, and the English wake-word word list out of `app/src/main/assets`. The Vosk zip is not copied. iOS does not have a public Vosk library.
+The iPhone app is in `ios/`. It is native Swift and SwiftUI. It uses the same obstacle model, the same depth model, and the same spoken phrases as Android. The warning rules (side, distance, wall, unknown object, approaching, throttle, low light, shake) live in `ios/RaahiSenseLogic` and are covered by unit tests. The models are not converted to Core ML and they are not shrunk. A build copies `obstacles_v1.tflite`, `depth_anything_v2_small.tflite`, and the English, Hindi, and Spanish wake-word lists out of `app/src/main/assets`. The Vosk zips are not copied. iOS does not have a public Vosk library.
 
 There is no Mac in the environment that built this repository, and this repository's remote is not GitHub, so the iPhone app has not been compiled here. The check that compiles it is `.github/workflows/ios.yml`. After this project is on GitHub, that workflow runs on a free GitHub-hosted macOS runner. It does not need an Apple Developer account. It turns signing off, generates the Xcode project with XcodeGen, runs `swift test` on the shared logic, builds RaahiSense, and runs the same logic tests on an iPhone simulator.
 
@@ -244,8 +267,9 @@ There is no Mac in the environment that built this repository, and this reposito
 - Spoken warnings with distance for the 36 detector classes, plus a depth wall, an unknown object, and approaching.
 - The screen stays awake while guiding. A very close object ahead vibrates in three pulses (about 280 ms on, 120 ms off) when vibration is on.
 - Hey Guide, then one command. A large Listen button does the same job without the wake phrase. A hard shake, or a double-tap on the screen when VoiceOver is off, also opens that command window.
-- English is the default. Hindi, Tamil, Bengali, Swahili, and Spanish are the same drafts as Android. The wake ear is English on both phones.
+- English is the default. Hindi, Spanish, Kannada, Telugu, Tamil, Bengali, and Swahili are the same drafts as Android. Apple's on-device recognizer is used for the selected language when that voice is installed, with English always listening too. Stop, start collecting, stop collecting, missed, and wrong stay English. The Vosk zips are not copied to iOS. The Hindi and Spanish word lists are copied so a wake phrase accepted on Android is accepted here.
 - VoiceOver: the big button, Listen, and each setting have labels. Warnings are spoken by the speech synthesizer and are not announced a second time by VoiceOver.
+- Siri Shortcuts **Start RaahiSense** and **Stop RaahiSense** (also "close"). Stop uses the same full stop as the Stop RaahiSense button. The phrases are App Intents in `ios/RaahiSense/GuideShortcuts.swift`.
 - Black and yellow, one large Start/Stop button.
 - Auto flashlight from the picture brightness, plus ISO and exposure time when the camera provides them. There is no ambient light sensor API on iOS.
 - Distance calibration, battery saver, speech rate, speech volume, and vibration match the Android settings.

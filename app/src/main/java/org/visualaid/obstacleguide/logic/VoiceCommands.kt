@@ -10,6 +10,8 @@ import java.util.Locale
 enum class VoiceCommand {
     START,
     STOP,
+    PAUSE,
+    RESUME,
     WHAT_IS_AHEAD,
     REPEAT,
     LOUDER,
@@ -18,6 +20,10 @@ enum class VoiceCommand {
     SLOWER,
     CHANGE_LANGUAGE,
     HELP,
+    START_COLLECTING,
+    STOP_COLLECTING,
+    MISSED,
+    WRONG,
 }
 
 enum class VoiceAction {
@@ -26,6 +32,8 @@ enum class VoiceAction {
     UNKNOWN,
     START,
     STOP,
+    PAUSE,
+    RESUME,
     WHAT_IS_AHEAD,
     REPEAT,
     LOUDER,
@@ -34,6 +42,10 @@ enum class VoiceAction {
     SLOWER,
     CHANGE_LANGUAGE,
     HELP,
+    START_COLLECTING,
+    STOP_COLLECTING,
+    MISSED,
+    WRONG,
 }
 
 data class CommandLexicon(
@@ -55,7 +67,9 @@ data class CommandLexicon(
         val ENGLISH = CommandLexicon(
             mapOf(
                 VoiceCommand.START to listOf("start", "start guide", "begin"),
-                VoiceCommand.STOP to listOf("stop", "pause", "stop guide"),
+                VoiceCommand.STOP to listOf("stop", "stop app", "exit", "close", "stop guide"),
+                VoiceCommand.PAUSE to listOf("pause"),
+                VoiceCommand.RESUME to listOf("resume"),
                 VoiceCommand.WHAT_IS_AHEAD to listOf(
                     "what is in front of me",
                     "what is ahead",
@@ -68,6 +82,10 @@ data class CommandLexicon(
                 VoiceCommand.SLOWER to listOf("slower", "speak slower"),
                 VoiceCommand.CHANGE_LANGUAGE to listOf("change language", "next language"),
                 VoiceCommand.HELP to listOf("help", "list commands", "what can i say"),
+                VoiceCommand.START_COLLECTING to listOf("start collecting"),
+                VoiceCommand.STOP_COLLECTING to listOf("stop collecting"),
+                VoiceCommand.MISSED to listOf("missed"),
+                VoiceCommand.WRONG to listOf("wrong", "false alarm", "wrong warning"),
             ),
         )
 
@@ -156,29 +174,99 @@ object CommandParser {
     }
 }
 
+/**
+ * Hindi and Spanish have a small offline command model. Other languages do not.
+ * The native wake is added beside the saved wake phrase. It does not replace it.
+ */
+object SpokenEar {
+    fun hasCommandModel(languageTag: String): Boolean = languageTag == "hi" || languageTag == "es"
+
+    fun nativeWakes(languageTag: String): List<String> = when (languageTag) {
+        "hi" -> listOf("हे गाइड")
+        "es" -> listOf("oye guía")
+        else -> emptyList()
+    }
+}
+
+/**
+ * Two recognizers can hear the same moment. Stop and the training commands
+ * stay on the English recognizer, so they win over a language-lane guess.
+ * An everyday command from the selected language wins over English.
+ */
+object EarChoice {
+    private val englishPinned = setOf(
+        VoiceAction.STOP,
+        VoiceAction.START_COLLECTING,
+        VoiceAction.STOP_COLLECTING,
+        VoiceAction.MISSED,
+        VoiceAction.WRONG,
+    )
+
+    fun prefer(language: VoiceAction?, english: VoiceAction): VoiceAction {
+        if (english in englishPinned) return english
+        if (language != null && isCommand(language)) return language
+        if (isCommand(english)) return english
+        if (language == VoiceAction.WAKE_ONLY || english == VoiceAction.WAKE_ONLY) {
+            return VoiceAction.WAKE_ONLY
+        }
+        if (language == VoiceAction.UNKNOWN || english == VoiceAction.UNKNOWN) {
+            return VoiceAction.UNKNOWN
+        }
+        return VoiceAction.IGNORE
+    }
+
+    private fun isCommand(action: VoiceAction): Boolean = when (action) {
+        VoiceAction.IGNORE, VoiceAction.WAKE_ONLY, VoiceAction.UNKNOWN -> false
+        else -> true
+    }
+}
+
 object VoiceInterpreter {
     fun interpret(
         transcript: String,
         lexicon: CommandLexicon = CommandLexicon.ENGLISH,
         wakePhrase: String = CommandLexicon.DEFAULT_WAKE,
         requireWake: Boolean,
+        allowBareCorrection: Boolean = false,
+        extraWakePhrases: List<String> = emptyList(),
     ): VoiceAction {
         val text = CommandLexicon.normalize(transcript)
         if (text.isEmpty() || text == "unk") {
             return if (requireWake) VoiceAction.IGNORE else VoiceAction.UNKNOWN
         }
-        val wake = CommandLexicon.normalize(wakePhrase)
-        val woke = wake.isNotEmpty() && containsPhrase(text, wake)
-        val remainder = if (woke) removeFirst(text, wake) else text
-        if (requireWake && !woke) return VoiceAction.IGNORE
+        val wake = matchingWake(text, wakePhrase, extraWakePhrases)
+        val woke = wake != null
+        val remainder = if (wake != null) removeFirst(text, wake) else text
+        if (requireWake && !woke) {
+            if (allowBareCorrection) {
+                val bare = CommandParser.parse(text, lexicon)
+                if (bare == VoiceCommand.WRONG || bare == VoiceCommand.MISSED) return bare.toAction()
+            }
+            return VoiceAction.IGNORE
+        }
         if (remainder.isEmpty()) return VoiceAction.WAKE_ONLY
         val command = CommandParser.parse(remainder, lexicon)
             ?: return if (requireWake) VoiceAction.WAKE_ONLY else VoiceAction.UNKNOWN
         return command.toAction()
     }
 
-    private fun containsPhrase(text: String, phrase: String): Boolean {
-        return " $text ".contains(" $phrase ")
+    private fun matchingWake(text: String, wakePhrase: String, extra: List<String>): String? {
+        val padded = " $text "
+        var best: String? = null
+        var bestIndex = Int.MAX_VALUE
+        val candidates = listOf(wakePhrase) + extra
+        for (candidate in candidates) {
+            val wake = CommandLexicon.normalize(candidate)
+            if (wake.isEmpty()) continue
+            val index = padded.indexOf(" $wake ")
+            if (index < 0) continue
+            val longer = best != null && index == bestIndex && wake.length > best.length
+            if (index < bestIndex || longer) {
+                best = wake
+                bestIndex = index
+            }
+        }
+        return best
     }
 
     private fun removeFirst(text: String, phrase: String): String {
@@ -192,9 +280,44 @@ object VoiceInterpreter {
     }
 }
 
+/**
+ * The microphone hears the speaker. A warning such as "stop sign" must not
+ * be treated as a command, so recognition is dropped while speech is playing
+ * and for a short tail after it ends.
+ *
+ * Right after a warning, [acceptsCorrection] opens a short window. The user
+ * says "wrong" or "missed" as soon as the warning finishes. Ordinary commands
+ * still wait out the tail.
+ */
+object RecognitionGate {
+    const val TAIL_MS = 400L
+    const val CORRECTION_WINDOW_MS = 2_500L
+
+    fun accepts(speechActive: Boolean, nowMs: Long, quietUntilMs: Long): Boolean {
+        if (speechActive) return false
+        return nowMs >= quietUntilMs
+    }
+
+    fun quietUntil(speechEndedAtMs: Long): Long = speechEndedAtMs + TAIL_MS
+
+    fun correctionUntil(warningEndedAtMs: Long): Long = warningEndedAtMs + CORRECTION_WINDOW_MS
+
+    /** True only while speech is idle and the post-warning window is still open. */
+    fun acceptsCorrection(
+        speechActive: Boolean,
+        nowMs: Long,
+        correctionUntilMs: Long,
+    ): Boolean {
+        if (speechActive) return false
+        return nowMs <= correctionUntilMs
+    }
+}
+
 private fun VoiceCommand.toAction(): VoiceAction = when (this) {
     VoiceCommand.START -> VoiceAction.START
     VoiceCommand.STOP -> VoiceAction.STOP
+    VoiceCommand.PAUSE -> VoiceAction.PAUSE
+    VoiceCommand.RESUME -> VoiceAction.RESUME
     VoiceCommand.WHAT_IS_AHEAD -> VoiceAction.WHAT_IS_AHEAD
     VoiceCommand.REPEAT -> VoiceAction.REPEAT
     VoiceCommand.LOUDER -> VoiceAction.LOUDER
@@ -203,4 +326,8 @@ private fun VoiceCommand.toAction(): VoiceAction = when (this) {
     VoiceCommand.SLOWER -> VoiceAction.SLOWER
     VoiceCommand.CHANGE_LANGUAGE -> VoiceAction.CHANGE_LANGUAGE
     VoiceCommand.HELP -> VoiceAction.HELP
+    VoiceCommand.START_COLLECTING -> VoiceAction.START_COLLECTING
+    VoiceCommand.STOP_COLLECTING -> VoiceAction.STOP_COLLECTING
+    VoiceCommand.MISSED -> VoiceAction.MISSED
+    VoiceCommand.WRONG -> VoiceAction.WRONG
 }

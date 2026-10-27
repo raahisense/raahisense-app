@@ -182,6 +182,9 @@ public struct GuideSettings: Equatable, Codable {
     public var depthOpenRaw: Float
     public var depthWallRaw: Float
     public var torchMode: TorchMode
+    public var collectEnabled: Bool
+    public var collectIntervalMs: Int64
+    public var collectGps: Bool
 
     public static let rateSlow: Float = 0.8
     public static let rateNormal: Float = 1.1
@@ -194,7 +197,7 @@ public struct GuideSettings: Equatable, Codable {
     public static let intervalSaverMs: Int64 = 1_500
     public static let depthIntervalNormalMs: Int64 = 500
     public static let depthIntervalSaverMs: Int64 = 2_000
-    public static let languageTags = ["en", "hi", "ta", "bn", "sw", "es"]
+    public static let languageTags = ["en", "hi", "es", "kn", "te", "ta", "bn", "sw"]
 
     public init(
         languageTag: String = "en",
@@ -206,7 +209,10 @@ public struct GuideSettings: Equatable, Codable {
         speechVolume: Float = GuideSettings.volumeHigh,
         depthOpenRaw: Float = 0,
         depthWallRaw: Float = 0,
-        torchMode: TorchMode = .auto
+        torchMode: TorchMode = .auto,
+        collectEnabled: Bool = false,
+        collectIntervalMs: Int64 = CollectCapture.defaultIntervalMs,
+        collectGps: Bool = false
     ) {
         self.languageTag = languageTag
         self.batterySaver = batterySaver
@@ -218,6 +224,49 @@ public struct GuideSettings: Equatable, Codable {
         self.depthOpenRaw = depthOpenRaw
         self.depthWallRaw = depthWallRaw
         self.torchMode = torchMode
+        self.collectEnabled = collectEnabled
+        self.collectIntervalMs = collectIntervalMs
+        self.collectGps = collectGps
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case languageTag, batterySaver, speechRate, vibrationEnabled, voiceEnabled
+        case wakePhrase, speechVolume, depthOpenRaw, depthWallRaw, torchMode
+        case collectEnabled, collectIntervalMs, collectGps
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        languageTag = try container.decodeIfPresent(String.self, forKey: .languageTag) ?? "en"
+        batterySaver = try container.decodeIfPresent(Bool.self, forKey: .batterySaver) ?? false
+        speechRate = try container.decodeIfPresent(Float.self, forKey: .speechRate) ?? Self.rateNormal
+        vibrationEnabled = try container.decodeIfPresent(Bool.self, forKey: .vibrationEnabled) ?? true
+        voiceEnabled = try container.decodeIfPresent(Bool.self, forKey: .voiceEnabled) ?? true
+        wakePhrase = try container.decodeIfPresent(String.self, forKey: .wakePhrase) ?? Self.defaultWake
+        speechVolume = try container.decodeIfPresent(Float.self, forKey: .speechVolume) ?? Self.volumeHigh
+        depthOpenRaw = try container.decodeIfPresent(Float.self, forKey: .depthOpenRaw) ?? 0
+        depthWallRaw = try container.decodeIfPresent(Float.self, forKey: .depthWallRaw) ?? 0
+        torchMode = try container.decodeIfPresent(TorchMode.self, forKey: .torchMode) ?? .auto
+        collectEnabled = try container.decodeIfPresent(Bool.self, forKey: .collectEnabled) ?? false
+        collectIntervalMs = try container.decodeIfPresent(Int64.self, forKey: .collectIntervalMs) ?? CollectCapture.defaultIntervalMs
+        collectGps = try container.decodeIfPresent(Bool.self, forKey: .collectGps) ?? false
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(languageTag, forKey: .languageTag)
+        try container.encode(batterySaver, forKey: .batterySaver)
+        try container.encode(speechRate, forKey: .speechRate)
+        try container.encode(vibrationEnabled, forKey: .vibrationEnabled)
+        try container.encode(voiceEnabled, forKey: .voiceEnabled)
+        try container.encode(wakePhrase, forKey: .wakePhrase)
+        try container.encode(speechVolume, forKey: .speechVolume)
+        try container.encode(depthOpenRaw, forKey: .depthOpenRaw)
+        try container.encode(depthWallRaw, forKey: .depthWallRaw)
+        try container.encode(torchMode, forKey: .torchMode)
+        try container.encode(collectEnabled, forKey: .collectEnabled)
+        try container.encode(collectIntervalMs, forKey: .collectIntervalMs)
+        try container.encode(collectGps, forKey: .collectGps)
     }
 
     public func normalized() -> GuideSettings {
@@ -235,6 +284,13 @@ public struct GuideSettings: Equatable, Codable {
         copy.wakePhrase = phrase.isEmpty ? Self.defaultWake : String(phrase.prefix(48))
         copy.depthOpenRaw = depthOpenRaw.isFinite && depthOpenRaw > 0 ? depthOpenRaw : 0
         copy.depthWallRaw = depthWallRaw.isFinite && depthWallRaw > 0 ? depthWallRaw : 0
+        copy.collectIntervalMs = CollectCapture.clampInterval(collectIntervalMs)
+        return copy
+    }
+
+    public func nextCollectInterval() -> GuideSettings {
+        var copy = self
+        copy.collectIntervalMs = CollectCapture.nextIntervalMs(collectIntervalMs)
         return copy
     }
 

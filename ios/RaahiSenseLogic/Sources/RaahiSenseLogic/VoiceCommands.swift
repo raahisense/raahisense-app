@@ -1,11 +1,13 @@
 import Foundation
 
 public enum VoiceCommand: String, CaseIterable {
-    case start, stop, whatIsAhead, repeatLast, louder, quieter, faster, slower, changeLanguage, help
+    case start, stop, pause, resume, whatIsAhead, repeatLast, louder, quieter, faster, slower, changeLanguage, help
+    case startCollecting, stopCollecting, missed, wrong
 }
 
 public enum VoiceAction: String {
-    case ignore, wakeOnly, unknown, start, stop, whatIsAhead, repeatLast, louder, quieter, faster, slower, changeLanguage, help
+    case ignore, wakeOnly, unknown, start, stop, pause, resume, whatIsAhead, repeatLast, louder, quieter, faster, slower, changeLanguage, help
+    case startCollecting, stopCollecting, missed, wrong
 }
 
 public struct CommandLexicon {
@@ -19,7 +21,9 @@ public struct CommandLexicon {
 
     public static let english = CommandLexicon(phrases: [
         .start: ["start", "start guide", "begin"],
-        .stop: ["stop", "pause", "stop guide"],
+        .stop: ["stop", "stop app", "exit", "close", "stop guide"],
+        .pause: ["pause"],
+        .resume: ["resume"],
         .whatIsAhead: ["what is in front of me", "what is ahead", "what is in front"],
         .repeatLast: ["repeat", "say again", "repeat that"],
         .louder: ["louder", "speak louder", "volume up"],
@@ -28,6 +32,10 @@ public struct CommandLexicon {
         .slower: ["slower", "speak slower"],
         .changeLanguage: ["change language", "next language"],
         .help: ["help", "list commands", "what can i say"],
+        .startCollecting: ["start collecting"],
+        .stopCollecting: ["stop collecting"],
+        .missed: ["missed"],
+        .wrong: ["wrong", "false alarm", "wrong warning"],
     ])
 
     public func withExtra(_ extra: [VoiceCommand: [String]]) -> CommandLexicon {
@@ -91,26 +99,92 @@ public enum CommandParser {
     }
 }
 
+/// Hindi and Spanish have a small offline command model. Other languages do not.
+public enum SpokenEar {
+    public static func hasCommandModel(_ languageTag: String) -> Bool {
+        languageTag == "hi" || languageTag == "es"
+    }
+
+    public static func nativeWakes(_ languageTag: String) -> [String] {
+        switch languageTag {
+        case "hi": return ["हे गाइड"]
+        case "es": return ["oye guía"]
+        default: return []
+        }
+    }
+}
+
+/// Stop and the training commands stay on the English recognizer, so they win.
+/// An everyday command from the selected language wins over English.
+public enum EarChoice {
+    private static let englishPinned: Set<VoiceAction> = [
+        .stop, .startCollecting, .stopCollecting, .missed, .wrong,
+    ]
+
+    public static func prefer(language: VoiceAction?, english: VoiceAction) -> VoiceAction {
+        if englishPinned.contains(english) { return english }
+        if let language, isCommand(language) { return language }
+        if isCommand(english) { return english }
+        if language == .wakeOnly || english == .wakeOnly { return .wakeOnly }
+        if language == .unknown || english == .unknown { return .unknown }
+        return .ignore
+    }
+
+    private static func isCommand(_ action: VoiceAction) -> Bool {
+        switch action {
+        case .ignore, .wakeOnly, .unknown: return false
+        default: return true
+        }
+    }
+}
+
 public enum VoiceInterpreter {
     public static func interpret(
         _ transcript: String,
         lexicon: CommandLexicon = .english,
         wakePhrase: String = CommandLexicon.defaultWake,
-        requireWake: Bool
+        requireWake: Bool,
+        allowBareCorrection: Bool = false,
+        extraWakePhrases: [String] = []
     ) -> VoiceAction {
         let text = CommandLexicon.normalize(transcript)
         if text.isEmpty || text == "unk" {
             return requireWake ? .ignore : .unknown
         }
-        let wake = CommandLexicon.normalize(wakePhrase)
-        let woke = !wake.isEmpty && " \(text) ".contains(" \(wake) ")
-        let remainder = woke ? removeFirst(text, wake) : text
-        if requireWake && !woke { return .ignore }
+        let wake = matchingWake(text, wakePhrase: wakePhrase, extra: extraWakePhrases)
+        let woke = wake != nil
+        let remainder = wake.map { removeFirst(text, $0) } ?? text
+        if requireWake && !woke {
+            if allowBareCorrection {
+                if let bare = CommandParser.parse(text, lexicon: lexicon), bare == .wrong || bare == .missed {
+                    return bare.action
+                }
+            }
+            return .ignore
+        }
         if remainder.isEmpty { return .wakeOnly }
         guard let command = CommandParser.parse(remainder, lexicon: lexicon) else {
             return requireWake ? .wakeOnly : .unknown
         }
         return command.action
+    }
+
+    private static func matchingWake(_ text: String, wakePhrase: String, extra: [String]) -> String? {
+        let padded = " \(text) "
+        var best: String?
+        var bestIndex = Int.max
+        for candidate in [wakePhrase] + extra {
+            let wake = CommandLexicon.normalize(candidate)
+            if wake.isEmpty { continue }
+            guard let range = padded.range(of: " \(wake) ") else { continue }
+            let index = padded.distance(from: padded.startIndex, to: range.lowerBound)
+            let longer = best != nil && index == bestIndex && wake.count > (best?.count ?? 0)
+            if index < bestIndex || longer {
+                best = wake
+                bestIndex = index
+            }
+        }
+        return best
     }
 
     private static func removeFirst(_ text: String, _ phrase: String) -> String {
@@ -122,11 +196,44 @@ public enum VoiceInterpreter {
     }
 }
 
+/// The microphone hears the speaker. A warning such as "stop sign" must not
+/// be treated as a command, so recognition is dropped while speech is playing
+/// and for a short tail after it ends.
+///
+/// Right after a warning, `acceptsCorrection` opens a short window. The user
+/// says "wrong" or "missed" as soon as the warning finishes. Ordinary commands
+/// still wait out the tail.
+public enum RecognitionGate {
+    public static let tailMs: Int64 = 400
+    public static let correctionWindowMs: Int64 = 2_500
+
+    public static func accepts(speechActive: Bool, nowMs: Int64, quietUntilMs: Int64) -> Bool {
+        if speechActive { return false }
+        return nowMs >= quietUntilMs
+    }
+
+    public static func quietUntil(speechEndedAtMs: Int64) -> Int64 {
+        speechEndedAtMs + tailMs
+    }
+
+    public static func correctionUntil(warningEndedAtMs: Int64) -> Int64 {
+        warningEndedAtMs + correctionWindowMs
+    }
+
+    /// True only while speech is idle and the post-warning window is still open.
+    public static func acceptsCorrection(speechActive: Bool, nowMs: Int64, correctionUntilMs: Int64) -> Bool {
+        if speechActive { return false }
+        return nowMs <= correctionUntilMs
+    }
+}
+
 private extension VoiceCommand {
     var action: VoiceAction {
         switch self {
         case .start: return .start
         case .stop: return .stop
+        case .pause: return .pause
+        case .resume: return .resume
         case .whatIsAhead: return .whatIsAhead
         case .repeatLast: return .repeatLast
         case .louder: return .louder
@@ -135,6 +242,10 @@ private extension VoiceCommand {
         case .slower: return .slower
         case .changeLanguage: return .changeLanguage
         case .help: return .help
+        case .startCollecting: return .startCollecting
+        case .stopCollecting: return .stopCollecting
+        case .missed: return .missed
+        case .wrong: return .wrong
         }
     }
 }

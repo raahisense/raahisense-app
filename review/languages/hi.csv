@@ -1,0 +1,212 @@
+number,phrase,english
+1,बाईं ओर बहुत पास व्यक्ति,Very close person on the left
+2,आगे बहुत पास व्यक्ति,Very close person ahead
+3,दाईं ओर बहुत पास व्यक्ति,Very close person on the right
+4,बाईं ओर पास व्यक्ति,Near person on the left
+5,आगे पास व्यक्ति,Near person ahead
+6,दाईं ओर पास व्यक्ति,Near person on the right
+7,बाईं ओर दूर व्यक्ति,Far person on the left
+8,आगे दूर व्यक्ति,Far person ahead
+9,दाईं ओर दूर व्यक्ति,Far person on the right
+10,व्यक्ति,person
+11,साइकिल,bicycle
+12,कार,car
+13,मोटरसाइकिल,motorcycle
+14,बस,bus
+15,ट्रक,truck
+16,ट्रैफ़िक लाइट,traffic light
+17,फायर हाइड्रेंट,fire hydrant
+18,स्टॉप साइन,stop sign
+19,पार्किंग मीटर,parking meter
+20,बेंच,bench
+21,बिल्ली,cat
+22,कुत्ता,dog
+23,घोड़ा,horse
+24,भेड़,sheep
+25,गाय,cow
+26,बैकपैक,backpack
+27,छाता,umbrella
+28,सूटकेस,suitcase
+29,बोतल,bottle
+30,कुर्सी,chair
+31,सोफ़ा,couch
+32,पौधा,plant
+33,बिस्तर,bed
+34,मेज़,table
+35,शौचालय,toilet
+36,टीवी,television
+37,ओवन,oven
+38,सिंक,sink
+39,फ़्रिज,refrigerator
+40,ऑटो रिक्शा,auto rickshaw
+41,साइकिल रिक्शा,cycle rickshaw
+42,ठेला,handcart
+43,गड्ढा,pothole
+44,खुली नाली,open drain
+45,फुटपाथ का किनारा,curb
+46,सीढ़ियाँ,stairs
+47,खंभा,pole
+48,अवरोध,barrier
+49,सड़क की वस्तु,street object
+50,पेड़,tree
+51,दरवाज़ा,door
+52,"बाईं ओर अज्ञात वस्तु, बहुत पास","Unknown object on the left, very close"
+53,"आगे अज्ञात वस्तु, बहुत पास","Unknown object ahead, very close"
+54,"दाईं ओर अज्ञात वस्तु, बहुत पास","Unknown object on the right, very close"
+55,"बाईं ओर अज्ञात वस्तु, पास","Unknown object on the left, near"
+56,"आगे अज्ञात वस्तु, पास","Unknown object ahead, near"
+57,"दाईं ओर अज्ञात वस्तु, पास","Unknown object on the right, near"
+58,"आगे दीवार, बहुत पास","Wall ahead, very close"
+59,"आगे दीवार, पास","Wall ahead, near"
+60,बाईं ओर से कुछ पास आ रहा है,Something approaching on your left
+61,आगे से कुछ पास आ रहा है,Something approaching ahead
+62,दाईं ओर से कुछ पास आ रहा है,Something approaching on your right
+63,शुरू|शुरू करो,start|start guide|begin
+64,विराम,pause
+65,फिर शुरू,resume
+66,सामने क्या है|आगे क्या है,what is in front of me|what is ahead|what is in front
+67,दोहराओ,repeat|say again|repeat that
+68,जोर से बोलो,louder|speak louder|volume up
+69,धीमा बोलो,quieter|speak quieter|softer|volume down
+70,तेज बोलो,faster|speak faster
+71,आहिस्ता बोलो,slower|speak slower
+72,भाषा बदलो,change language|next language
+73,मदद,help|list commands|what can i say
+74,"Hey Guide के बाद एक रोज़मर्रा का आदेश बोलें। हिन्दी तब चलती है जब फ़ोन पर हिन्दी का ऑफ़लाइन पहचानक हो। अंग्रेज़ी हमेशा चलती है। ये आदेश हर भाषा में अंग्रेज़ी ही रहते हैं: stop, stop app, exit, close, start collecting, stop collecting, missed, wrong, false alarm, और wrong warning। रोज़मर्रा के आदेश: शुरू, विराम, फिर शुरू, सामने क्या है, दोहराओ, जोर से बोलो, धीमा बोलो, तेज बोलो, आहिस्ता बोलो, भाषा बदलो, या मदद। Stop ऐप बंद करता है। Pause चेतावनी बंद करता है और resume चालू करता है। Start collecting प्रशिक्षण फ़ोटो सहेजता है और चेतावनी चालू रखता है। missed तब बोलें जब कोई बाधा चेतावनी के बिना रह जाए। गलत चेतावनी पर wrong, false alarm, या wrong warning बोलें। फ़ोन ज़ोर से हिलाएँ, TalkBack बंद हो तो स्क्रीन पर दो बार टैप करें, या यह स्क्रीन खुली हो तो वॉल्यूम कुंजी दबाकर रखें।","After Hey Guide, say one everyday command. Hindi and Spanish everyday commands work when that language is selected and the phone has its offline recognizer. English always works. These stay English in every language: stop, stop app, exit, close, start collecting, stop collecting, missed, wrong, false alarm, and wrong warning. Everyday commands are start, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, and help. Stop closes RaahiSense. Pause turns warnings off, and resume turns them on. Start collecting saves training photos while warnings stay on. Say missed when an obstacle was not warned. Say wrong, false alarm, or wrong warning when a warning was false or the wrong object. Kannada, Telugu, Tamil, Bengali, and Swahili listen for the English command words. You can also shake the phone hard, double-tap the screen when TalkBack is off, or hold a volume key while this screen is open."
+75,"सुनना फ़ोन पर ही रहता है। कुछ अपलोड नहीं होता। रोज़मर्रा के आदेश हिन्दी या अंग्रेज़ी में बोलें। stop, start collecting, stop collecting, missed, और wrong अंग्रेज़ी में ही बोलें।","Listening stays on the phone. Nothing is uploaded. Hindi and Spanish everyday commands work in that language, and English always works. Stop, start collecting, stop collecting, missed, and wrong stay English. Kannada, Telugu, Tamil, Bengali, and Swahili commands are English."
+76,RaahiSense,RaahiSense
+77,"यह सफेद छड़ी के साथ है, उसकी जगह नहीं। इंटरनेट के बिना चलता है।",An extra to your white cane. Not a replacement. Works fully offline.
+78,फ़ोन सीधा रखें। पिछला कैमरा चलने की तरफ़ हो।,Hold the phone upright. The rear camera faces the way you walk.
+79,"पहले घर के अंदर किसी सहायक के साथ अभ्यास करें। यह ऐप सीढ़ियाँ, गड्ढे, खंभे और कई और बाधाएँ छोड़ सकता है। छड़ी साथ रखें।","Practice indoors with a helper first. This app misses steps, holes, poles, and many other obstacles. Keep using your cane."
+80,शुरू,START
+81,रोकें,STOP
+82,RaahiSense रोकें,Stop RaahiSense
+83,कैमरा अनुमति दें,Allow camera
+84,सेटिंग खोलें,Open settings
+85,बाधा चेतावनी शुरू करें,Start obstacle warnings
+86,बाधा चेतावनी रोकें,Stop obstacle warnings
+87,RaahiSense रोकें,Stop RaahiSense
+88,कैमरा अनुमति दें ताकि बाधा चेतावनी शुरू हो,Allow the camera so obstacle warnings can start
+89,कैमरा चालू करने के लिए फ़ोन सेटिंग खोलें,Open phone settings to allow the camera
+90,तैयार। शुरू करने के लिए बड़ा बटन दबाएँ।,Ready. Tap the big button to start.
+91,शुरू हो गया। बाधाओं पर ध्यान है।,Started. Listening for obstacles.
+92,रुक गया।,Stopped.
+93,बाधाओं पर ध्यान है।,Listening for obstacles.
+94,कैमरा बंद है। बड़ा बटन दबाएँ और कैमरा अनुमति दें। फ़ोटो सेव नहीं होतीं।,The camera is off. Tap the big button and allow the camera. Photos are not saved.
+95,कैमरा अनुमति नहीं मिली। बिना कैमरे चेतावनी नहीं हो सकती।,Camera permission was not allowed. Obstacle Guide cannot warn you without the camera.
+96,"कैमरा अनुमति बंद है। सेटिंग खोलें, अनुमतियाँ, और कैमरा चालू करें।","Camera permission is blocked. Open settings, then Permissions, and turn the camera on."
+97,कैमरा उपलब्ध नहीं है।,The camera is not available.
+98,पहचान मॉडल नहीं खुला। ऐप बंद करके फिर खोलें।,The detection model could not be loaded. Close the app and open it again.
+99,इस फ़ोन पर बोलने की आवाज़ नहीं है। टॉकबैक चालू करें या टेक्स्ट-टू-स्पीच में आवाज़ जोड़ें।,No text-to-speech voice is installed on this phone. Turn on TalkBack or install a voice in text-to-speech settings.
+100,इस फ़ोन पर बैटरी सेटिंग नहीं खुली।,Battery settings could not be opened on this phone.
+101,फ़ोन कैमरा इस्तेमाल करने की अनुमति माँगेगा। अनुमति दें। यह ऐप फ़ोटो सेव नहीं करता और इंटरनेट नहीं इस्तेमाल करता।,Your phone will ask to use the camera. Please allow it. Obstacle Guide does not save photos and does not use the internet.
+102,सेटिंग,Settings
+103,भाषा,Language
+104,बोलने की गति,Speech rate
+105,धीमी,Slow
+106,सामान्य,Normal
+107,तेज़,Fast
+108,बैटरी बचाव: चालू,Battery saver: on
+109,बैटरी बचाव: बंद,Battery saver: off
+110,कंपन: चालू,Vibration: on
+111,कंपन: बंद,Vibration: off
+112,बैटरी बचाव बंद है। चालू करने के लिए दो बार टैप करें।,Battery saver is off. Double tap to turn it on.
+113,बैटरी बचाव चालू है। बंद करने के लिए दो बार टैप करें।,Battery saver is on. Double tap to turn it off.
+114,कंपन बंद है। चालू करने के लिए दो बार टैप करें।,Vibration is off. Double tap to turn it on.
+115,कंपन चालू है। बंद करने के लिए दो बार टैप करें।,Vibration is on. Double tap to turn it off.
+116,स्क्रीन बंद होने पर भी चलाएँ,Keep running with the screen off
+117,फ़ोन सेटिंग खोलें ताकि स्क्रीन बंद होने पर भी ऐप चलता रहे,Open phone settings so Obstacle Guide can keep running when the screen is off
+118,यह फ़ोन स्क्रीन बंद होने पर भी बाधा मार्गदर्शक को चलने देता है।,This phone allows Obstacle Guide to keep running with the screen off.
+119,स्क्रीन बंद होने पर फ़ोन ऐप रोक सकता है। नीचे का बटन दबाएँ और बैटरी को बिना रोक-टोक चुनें।,This phone may stop the app when the screen is off. Tap the button below and allow unrestricted battery use.
+120,ये वाक्य मसौदा हैं। इस्तेमाल से पहले मातृभाषी समीक्षा ज़रूरी है।,
+121,इस फ़ोन पर हिन्दी की ऑफ़लाइन आवाज़ नहीं है। चेतावनी अंग्रेज़ी में बोली जाएगी। टेक्स्ट-टू-स्पीच सेटिंग में हिन्दी आवाज़ डाउनलोड करें।,The English voice is not installed. Install a text-to-speech voice in phone settings.
+122,बाधा मार्गदर्शक,Obstacle Guide
+123,बाधा मार्गदर्शक चालू है,Obstacle Guide is on
+124,बाधाओं पर ध्यान है,Listening for obstacles
+125,रोकें,Stop
+126,Hey Guide,Hey Guide
+127,आवाज़ आदेश: चालू,Voice commands: on
+128,आवाज़ आदेश: बंद,Voice commands: off
+129,आवाज़ आदेश बंद हैं। चालू करने के लिए दो बार टैप करें।,Voice commands are off. Double tap to turn them on.
+130,आवाज़ आदेश चालू हैं। बंद करने के लिए दो बार टैप करें।,Voice commands are on. Double tap to turn them off.
+131,जगाने वाले शब्द,Wake phrase
+132,जगाने वाले शब्द। आदेश से पहले ये बोलें। मूल शब्द Hey Guide हैं।,Wake phrase. The words you say before a command. The default is Hey Guide.
+133,जगाने वाले शब्द अब Hey Guide हैं।,Wake phrase set to Hey Guide.
+134,ये शब्द इस भाषा के ऑफ़लाइन मॉडल या अंग्रेज़ी मॉडल में नहीं हैं। जगाने वाले शब्द नहीं बदले।,Those words are not in the offline model for this language or in the English model. The wake phrase was not changed.
+135,"फ़ोन माइक्रोफ़ोन की अनुमति माँगेगा। कृपया अनुमति दें। Obstacle Guide फ़ोन पर जगाने वाले शब्द सुनता है, फिर एक आदेश। आवाज़ इंटरनेट पर नहीं जाती। इसे सेटिंग में बंद कर सकते हैं।","Your phone will ask to use the microphone. Please allow it. Obstacle Guide listens on the phone for the wake phrase, then for one command. It does not send your voice to the internet. You can turn this off in settings."
+136,माइक्रोफ़ोन बंद है। आवाज़ आदेश चालू करें और माइक्रोफ़ोन की अनुमति दें।,The microphone is off. Turn voice commands on and allow the microphone.
+137,माइक्रोफ़ोन की अनुमति नहीं मिली। आवाज़ आदेश के लिए माइक्रोफ़ोन चाहिए।,Microphone permission was not allowed. Voice commands need the microphone.
+138,"माइक्रोफ़ोन की अनुमति रुकी है। सेटिंग, फिर अनुमतियाँ खोलें, और माइक्रोफ़ोन चालू करें।","Microphone permission is blocked. Open settings, then Permissions, and turn the microphone on."
+139,ऑफ़लाइन बोल पहचान नहीं खुली। Obstacle Guide बंद करके फिर खोलें।,The offline speech model could not be opened. Close Obstacle Guide and open it again.
+140,"माइक्रोफ़ोन किसी और ऐप के पास है। वह ऐप बंद करें, फिर आवाज़ आदेश चालू करें।","The microphone is being used by another app. Close that app, then turn voice commands on again."
+141,आवाज़ आदेश बंद हैं।,Voice commands are off.
+142,Hey Guide का इंतज़ार है।,Waiting for Hey Guide.
+143,एक आदेश सुना जा रहा है।,Listening for one command.
+144,हाँ?,Yes?
+145,बाधा चेतावनी पहले से चालू है।,Obstacle warnings are already on.
+146,बाधा चेतावनी पहले से बंद है।,Obstacle warnings are already off.
+147,RaahiSense रुक गया,RaahiSense stopped
+148,फिर से कह रहा हूँ।,Repeating.
+149,अभी दोहराने के लिए कोई चेतावनी नहीं है।,There is no warning to repeat yet.
+150,आवाज़ बढ़ाई।,Louder.
+151,आवाज़ घटाई।,Quieter.
+152,आवाज़ पहले से सबसे तेज़ है।,Speech is already at the loudest.
+153,आवाज़ पहले से सबसे धीमी है।,Speech is already at the quietest.
+154,बोलना तेज़ किया।,Faster.
+155,बोलना धीमा किया।,Slower.
+156,बोलना पहले से सबसे तेज़ है।,Speech is already at the fastest.
+157,बोलना पहले से सबसे धीमा है।,Speech is already at the slowest.
+158,भाषा बदल गई।,Language changed.
+159,यह आदेश नहीं था। सूची के लिए help बोलें।,That was not a command. Say help for the list.
+160,अभी सामने कुछ नहीं दिखा।,Nothing is in front of you right now.
+161,आवाज़ बंद करें,Turn voice off
+162,दूरी जाँचें,Calibrate distance
+163,इस फ़ोन पर दीवार की दूरी जाँचें,Set how close a wall is on this phone
+164,"पहले गाइड चालू करें, फिर दूरी जाँचें।","Start the guide, then calibrate distance."
+165,"कैमरा खुले रास्ते की ओर करें, फिर दूरी जाँचें फिर से दबाएँ।","Point along an open path, then tap Calibrate distance again."
+166,"कैमरा एक कदम दूर दीवार की ओर करें, फिर दूरी जाँचें फिर से दबाएँ।","Point at a wall one step away, then tap Calibrate distance again."
+167,दूरी जाँच हो गई।,Distance is calibrated.
+168,यह रीडिंग काम नहीं आई। फ़ोन स्थिर रखें और खुले रास्ते से फिर शुरू करें।,That reading was not usable. Hold the phone steady and start again from an open path.
+169,दीवार खुले रास्ते जैसी लगी। दीवार के पास जाकर फिर दबाएँ।,The wall looked like the open path. Move closer to a wall and tap again.
+170,रोशनी,Light
+171,अपने आप,Auto
+172,हमेशा चालू,Always on
+173,बंद,Off
+174,अंधेरा रहे तो टॉर्च जलाएँ,Turn the flashlight on when it stays dark
+175,टॉर्च चालू रखें,Keep the flashlight on
+176,टॉर्च बंद रखें,Keep the flashlight off
+177,"अंधेरा है, बत्ती जला रहा हूँ।","It's dark, turning on the light."
+178,"बहुत अंधेरा है, साफ़ नहीं दिख रहा। कृपया सावधानी रखें।","Too dark to see clearly, please use caution."
+179,परिचय और लाइसेंस,About and licenses
+180,बोलने और तस्वीरों के लाइसेंस खोलें,Open the list of speech and picture licenses
+181,परिचय,About
+182,"बाधा मार्गदर्शक सफेद छड़ी के साथ है, उसकी जगह नहीं।",Obstacle Guide is an extra to a white cane. It is not a replacement.
+183,वापस,Back
+184,मुख्य स्क्रीन पर वापस जाएँ,Go back to the main screen
+185,प्रशिक्षण फ़ोटो इकट्ठा करें: चालू,Collect training photos: on
+186,प्रशिक्षण फ़ोटो इकट्ठा करें: बंद,Collect training photos: off
+187,प्रशिक्षण फ़ोटो बंद हैं। चालू करने के लिए दो बार टैप करें।,Collect training photos is off. Double tap to turn it on.
+188,प्रशिक्षण फ़ोटो चालू हैं। बंद करने के लिए दो बार टैप करें। चेतावनी चलती रहेगी।,Collect training photos is on. Double tap to turn it off. Warnings keep running.
+189,फ़ोटो अंतराल: 2 सेकंड,Photo interval: 2 seconds
+190,सहेजी फ़ोटो के बीच का समय। बदलने के लिए दो बार टैप करें। अभी 2 सेकंड है।,Time between saved photos. Double tap to change it. It is 2 seconds now.
+191,फ़ोटो के साथ GPS: चालू,Save GPS with photos: on
+192,फ़ोटो के साथ GPS: बंद,Save GPS with photos: off
+193,GPS फ़ोटो के साथ नहीं सहेजा जाता। जोड़ने के लिए दो बार टैप करें।,GPS is not saved with photos. Double tap to include it.
+194,GPS फ़ोटो के साथ सहेजा जाता है। बंद करने के लिए दो बार टैप करें।,GPS is saved with photos. Double tap to turn GPS off.
+195,स्थान की अनुमति नहीं मिली। GPS बंद रहेगा।,Location was not allowed. GPS stays off.
+196,"2 फ़ोटो, 1 MB","2 photos, 1 MB"
+197,प्रशिक्षण फ़ोटो निर्यात करें,Export training photos
+198,"इस संग्रह की ज़िप बनाएँ और साझा करने की शीट खोलें। जब तक आप जगह न चुनें, कुछ अपलोड नहीं होता।",Zip this collection and open the share sheet. Nothing is uploaded until you choose where to send it.
+199,निर्यात करने के लिए कोई प्रशिक्षण फ़ोटो नहीं है।,There are no training photos to export.
+200,फ़ोटो की ज़िप नहीं बन सकी।,The photos could not be zipped.
+201,ज़िप तैयार हो रही है।,Preparing the zip.
+202,फ़ोटो संग्रह रुका। फ़ोन गर्म है।,Photo collection paused. The phone is hot.
+203,फ़ोटो फिर से इकट्ठा हो रही हैं।,Collecting photos again.
+204,प्रशिक्षण फ़ोटो इकट्ठा हो रही हैं। चेतावनी चालू है।,Collecting training photos. Warnings stay on.
+205,फ़ोटो संग्रह बंद। चेतावनी चालू है।,Stopped collecting photos. Warnings stay on.
+206,प्रशिक्षण फ़ोटो पहले से इकट्ठा हो रही हैं।,Already collecting training photos.
+207,प्रशिक्षण फ़ोटो पहले से बंद हैं।,Training photos are already off.
+208,छूटी हुई के रूप में चिह्नित।,Marked as missed.
+209,"प्रशिक्षण फ़ोटो बंद हैं, इसलिए कुछ सहेजा नहीं गया।","Collect training photos is off, so nothing was saved."
+210,नोट किया।,Noted.
+211,पूरी फ़ोटो इसी फ़ोन पर रहती हैं। चेतावनी चलती रहती है। कुछ अपलोड नहीं होता। Export दबाने पर ही ज़िप साझा होती है।,Full photos stay on this phone. Warnings keep running. Nothing is uploaded. Export shares a zip only when you tap Export.

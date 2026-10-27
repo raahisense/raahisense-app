@@ -15,6 +15,9 @@ final class GuideSession: ObservableObject {
     @Published var cameraAllowed = false
     @Published var capturing = false
     @Published var showAbout = false
+    @Published var collectPhotos = 0
+    @Published var collectBytes: Int64 = 0
+    @Published var shareItem: ShareItem?
 
     let speech = SpeechEngine()
     private let camera = CameraEngine()
@@ -52,6 +55,12 @@ final class GuideSession: ObservableObject {
     private let busy = BusyFlag()
     private var sceneInForeground = true
     private var earRunning = false
+    private var quietUntilMs: Int64 = 0
+    private var unmuteToken = 0
+    private var correctionUntilMs: Int64 = 0
+    private var correctionToken = 0
+    private let warningLock = NSLock()
+    private var lastSpokenWarning: SpokenWarning?
     private var prepared = false
     private let settingsLock = NSLock()
     private var settingsSnapshot = GuideSettings()
@@ -59,6 +68,16 @@ final class GuideSession: ObservableObject {
     private let guidingFlag = BusyFlag()
     private let captureFlag = BusyFlag()
     private let foregroundFlag = BusyFlag(true)
+    private let collectScheduler = CollectScheduler()
+    private let collectQueue = DispatchQueue(label: "app.raahisense.collect", qos: .utility)
+    private let locator = CollectLocator()
+    private var collectBusy = false
+    private var collectHot = false
+    private var collectSequence = 0
+    private var latestBoxes: [DetectionBox] = []
+    private var latestField: DepthField?
+    private var latestScene = SceneLight(meanLuma: .nan)
+    private var collectTimer: DispatchSourceTimer?
 
     func prepare() {
         guard !prepared else { return }
@@ -74,8 +93,10 @@ final class GuideSession: ObservableObject {
         camera.onFailed = { [weak self] in
             DispatchQueue.main.async { self?.speakKey("status_camera_error", flush: true) }
         }
-        ear.onTranscript = { [weak self] text, isFinal in
-            DispatchQueue.main.async { self?.handleTranscript(text, isFinal: isFinal) }
+        ear.onTranscript = { [weak self] text, isFinal, languageLane in
+            DispatchQueue.main.async {
+                self?.handleTranscript(text, isFinal: isFinal, languageLane: languageLane)
+            }
         }
         ear.onFailure = { [weak self] key in
             DispatchQueue.main.async { self?.speakKey(key, flush: true) }
@@ -87,26 +108,53 @@ final class GuideSession: ObservableObject {
         if !speech.voiceAvailable("en") {
             speakKey("status_tts_error", flush: false)
         }
+        GuideCommandCenter.shared.bind(self)
+        locator.onDenied = { [weak self] in
+            guard let self else { return }
+            self.mutateSettings { $0.collectGps = false }
+            self.speakKey("collect_gps_denied", flush: true)
+        }
+        refreshCollectUsage()
     }
 
     func setInForeground(_ foreground: Bool) {
         sceneInForeground = foreground
         foregroundFlag.set(foreground)
         if !foreground && guiding {
+            camera.setCollecting(false)
             camera.stop()
             speakKey("ios_limit_locked", flush: false)
         } else if foreground && guiding {
             camera.start()
+            camera.setCollecting(settings.collectEnabled)
             speakKey("status_listening", flush: false)
         }
         UIApplication.shared.isIdleTimerDisabled = guiding && foreground
     }
 
     func bigButton() {
+        beginGuidance(toggleOffIfRunning: true)
+    }
+
+    /// Siri "Start RaahiSense". Starts warnings, and does not turn them off if they are already on.
+    func startFromAssistant() {
+        prepare()
+        beginGuidance(toggleOffIfRunning: false)
+    }
+
+    private func beginGuidance(toggleOffIfRunning: Bool) {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
             cameraAllowed = true
-            guiding ? stopGuide() : startGuide()
+            if guiding {
+                if toggleOffIfRunning {
+                    stopGuide()
+                } else {
+                    speakKey("confirm_started_already", flush: true)
+                }
+            } else {
+                startGuide()
+            }
         case .notDetermined:
             speakKey("prompt_allow_camera", flush: true)
             AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
@@ -134,6 +182,7 @@ final class GuideSession: ObservableObject {
             speakKey("status_voice_off", flush: true)
             return
         }
+        startMotion()
         ensureEar {
             self.beginCaptureWindow()
         }
@@ -161,7 +210,7 @@ final class GuideSession: ObservableObject {
     func commitWake(_ raw: String) {
         let proposed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
         if CommandLexicon.normalize(proposed) == CommandLexicon.normalize(settings.wakePhrase) { return }
-        guard WakeVocab.allows(proposed) else {
+        guard WakeVocab.allows(proposed, languageTag: settings.languageTag) else {
             speakKey("wake_phrase_rejected", flush: true)
             return
         }
@@ -249,6 +298,7 @@ final class GuideSession: ObservableObject {
         toldFrameError = false
         UIApplication.shared.isIdleTimerDisabled = sceneInForeground
         camera.start()
+        syncCollectRuntime()
         pipeline.async { [weak self] in
             guard let self else { return }
             self.throttleMarkReset()
@@ -266,7 +316,43 @@ final class GuideSession: ObservableObject {
             }
         }
         speakKey("status_started", flush: true)
-        if settings.voiceEnabled { beginSpottingIfAllowed() }
+        if settings.voiceEnabled {
+            startMotion()
+            beginSpottingIfAllowed()
+        }
+    }
+
+    /// Stops detection, the camera, speech recognition, and keeps the screen able to sleep.
+    /// iOS will not let an app remove itself, so the screen stays open and Start works again.
+    func stopEverything() {
+        guiding = false
+        guidingFlag.set(false)
+        UIApplication.shared.isIdleTimerDisabled = false
+        camera.setTorch(on: false)
+        camera.setCollecting(false)
+        camera.release()
+        stopCollectWork()
+        ear.stop()
+        earRunning = false
+        capturing = false
+        phaseCapturing = false
+        captureFlag.set(false)
+        captureToken += 1
+        stopMotion()
+        pipeline.async { [weak self] in
+            guard let self else { return }
+            self.models = nil
+            self.modelFailed = false
+            self.depthTracker.reset()
+            self.latestDepth = []
+            self.lowLight.reset()
+            self.scoreThreshold = WarningLogic.scoreThreshold
+        }
+        let goodbye = phrase("confirm_app_stopped")
+        statusText = goodbye
+        speak(goodbye, flush: true) {
+            try? AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
+        }
     }
 
     private func stopGuide() {
@@ -274,7 +360,9 @@ final class GuideSession: ObservableObject {
         guidingFlag.set(false)
         UIApplication.shared.isIdleTimerDisabled = false
         camera.setTorch(on: false)
+        camera.setCollecting(false)
         camera.stop()
+        stopCollectWork()
         pipeline.async { [weak self] in
             self?.depthTracker.reset()
             self?.latestDepth = []
@@ -320,6 +408,8 @@ final class GuideSession: ObservableObject {
         do {
             let boxes = try models.detect(frame.image, scoreThreshold: scoreThreshold)
             frameErrors = 0
+            latestBoxes = boxes
+            latestScene = frame.scene
             scheduleDepth(frame.image, boxes: boxes, now: now)
             let ranked = rank(boxes)
             storeRanked(ranked)
@@ -334,7 +424,12 @@ final class GuideSession: ObservableObject {
             let text = PhraseBook.warning(choice, language: language)
             guard !text.isEmpty else { return }
             lastWarningPhrase = text
+            if current.collectEnabled {
+                collectScheduler.onWarning()
+                pumpCollect()
+            }
             let urgent = choice.urgent && current.vibrationEnabled
+            let warningBoxes = boxes
             busy.set(true)
             DispatchQueue.main.async { [weak self] in
                 guard let self, self.guidingFlag.get(), !self.captureFlag.get() else {
@@ -343,7 +438,14 @@ final class GuideSession: ObservableObject {
                 }
                 if urgent { self.haptics.pulseUrgent() }
                 self.statusText = text
-                self.speak(text, flush: true)
+                self.storeSpokenWarning(
+                    CollectCapture.spokenWarning(
+                        warning: choice,
+                        boxes: warningBoxes,
+                        spokenAtIso: CollectCapture.isoTimestamp(epochMs: Self.epochMs())
+                    )
+                )
+                self.speak(text, flush: true, opensCorrection: true)
             }
         } catch {
             frameErrors += 1
@@ -385,6 +487,7 @@ final class GuideSession: ObservableObject {
                         scoreThreshold: threshold
                     )
                     self.latestDepth = warnings
+                    self.latestField = field
                     self.storeMedian(DepthWarnings.aheadMedian(field))
                 }
             } catch {
@@ -407,7 +510,11 @@ final class GuideSession: ObservableObject {
                         return
                     }
                     if !self.earRunning {
-                        self.ear.start(phrases: self.spottingPhrases())
+                        self.ear.start(
+                            english: self.englishPhrases(correction: false),
+                            language: self.languagePhrases(),
+                            languageTag: self.settings.languageTag
+                        )
                         self.earRunning = true
                     } else {
                         self.refreshEarPhrases()
@@ -425,7 +532,11 @@ final class GuideSession: ObservableObject {
         guard speechStatus == .authorized, mic == .granted else { return }
         guard ear.onDeviceSupported else { return }
         if !earRunning {
-            ear.start(phrases: spottingPhrases())
+            ear.start(
+                english: englishPhrases(correction: false),
+                language: languagePhrases(),
+                languageTag: settings.languageTag
+            )
             earRunning = true
         }
     }
@@ -438,7 +549,11 @@ final class GuideSession: ObservableObject {
         captureFlag.set(true)
         lastHeard = ""
         ear.setDucked(true)
-        ear.updatePhrases(commandPhrases())
+        ear.updatePhrases(
+            english: englishPhrases(correction: false),
+            language: languagePhrases(),
+            languageTag: settings.languageTag
+        )
         speakKey("wake_ack", flush: true)
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
             guard let self, self.captureToken == token else { return }
@@ -455,11 +570,28 @@ final class GuideSession: ObservableObject {
         lastHeard = ""
         ear.setDucked(false)
         if settings.voiceEnabled && earRunning {
-            ear.updatePhrases(spottingPhrases())
+            ear.updatePhrases(
+                english: englishPhrases(correction: false),
+                language: languagePhrases(),
+                languageTag: settings.languageTag
+            )
         }
     }
 
-    private func handleTranscript(_ text: String, isFinal: Bool) {
+    private func handleTranscript(_ text: String, isFinal: Bool, languageLane: Bool) {
+        let now = Self.nowMs()
+        let speaking = speech.speaking
+        let correctionOpen = RecognitionGate.acceptsCorrection(
+            speechActive: speaking,
+            nowMs: now,
+            correctionUntilMs: correctionUntilMs
+        )
+        let gateOpen = RecognitionGate.accepts(
+            speechActive: speaking,
+            nowMs: now,
+            quietUntilMs: quietUntilMs
+        )
+        if !gateOpen && !correctionOpen { return }
         let normalized = CommandLexicon.normalize(text)
         if normalized.isEmpty || normalized == lastHeard && !isFinal { return }
         lastHeard = normalized
@@ -467,8 +599,12 @@ final class GuideSession: ObservableObject {
             text,
             lexicon: currentLexicon(),
             wakePhrase: settings.wakePhrase,
-            requireWake: !phaseCapturing
+            requireWake: !phaseCapturing,
+            allowBareCorrection: correctionOpen && !phaseCapturing && !languageLane,
+            extraWakePhrases: languageLane ? SpokenEar.nativeWakes(settings.languageTag) : []
         )
+        let correctionAction = action == .wrong || action == .missed
+        if !gateOpen && !(correctionOpen && correctionAction) { return }
         switch action {
         case .ignore:
             break
@@ -502,10 +638,18 @@ final class GuideSession: ObservableObject {
                 bigButton()
             }
         case .stop:
+            stopEverything()
+        case .pause:
             if guiding {
                 stopGuide()
             } else {
                 speakKey("confirm_stopped_already", flush: true)
+            }
+        case .resume:
+            if guiding {
+                speakKey("confirm_started_already", flush: true)
+            } else {
+                bigButton()
             }
         case .whatIsAhead:
             speakAhead()
@@ -546,6 +690,14 @@ final class GuideSession: ObservableObject {
             refreshEarPhrases()
         case .help:
             speak(phrase("help_commands", settings.wakePhrase), flush: true)
+        case .startCollecting:
+            setCollectingFromVoice(on: true)
+        case .stopCollecting:
+            setCollectingFromVoice(on: false)
+        case .missed:
+            noteMissed()
+        case .wrong:
+            noteWrong()
         }
     }
 
@@ -567,6 +719,8 @@ final class GuideSession: ObservableObject {
         let extra = CommandLexicon(phrases: [
             .start: phrases("cmd_start"),
             .stop: phrases("cmd_stop"),
+            .pause: phrases("cmd_pause"),
+            .resume: phrases("cmd_resume"),
             .whatIsAhead: phrases("cmd_ahead"),
             .repeatLast: phrases("cmd_repeat"),
             .louder: phrases("cmd_louder"),
@@ -575,28 +729,70 @@ final class GuideSession: ObservableObject {
             .slower: phrases("cmd_slower"),
             .changeLanguage: phrases("cmd_language"),
             .help: phrases("cmd_help"),
+            .startCollecting: phrases("cmd_collect_start"),
+            .stopCollecting: phrases("cmd_collect_stop"),
+            .missed: phrases("cmd_missed"),
+            .wrong: phrases("cmd_wrong"),
         ])
         return CommandLexicon.english.withExtra(extra.phrases)
     }
 
-    private func spottingPhrases() -> [String] {
+    private func englishPhrases(correction: Bool) -> [String] {
         let wake = CommandLexicon.normalize(settings.wakePhrase)
+        let lexicon = CommandLexicon.english
+        if phaseCapturing {
+            return VoiceCommand.allCases.flatMap { lexicon.phrases[$0] ?? [] }
+        }
         var list = [wake]
         for command in VoiceCommand.allCases {
-            for phrase in currentLexicon().phrases[command] ?? [] {
+            for phrase in lexicon.phrases[command] ?? [] {
+                list.append("\(wake) \(phrase)")
+            }
+        }
+        if correction {
+            for command in [VoiceCommand.wrong, VoiceCommand.missed] {
+                list.append(contentsOf: lexicon.phrases[command] ?? [])
+            }
+        }
+        return list
+    }
+
+    private func languagePhrases() -> [String] {
+        let tag = settings.languageTag
+        if tag == "en" { return [] }
+        let everyday: [VoiceCommand] = [
+            .start, .pause, .resume, .whatIsAhead, .repeatLast,
+            .louder, .quieter, .faster, .slower, .changeLanguage, .help,
+        ]
+        let english = CommandLexicon.english
+        var localized: [String] = []
+        for command in everyday {
+            let phrases = currentLexicon().phrases[command] ?? []
+            let known = Set(english.phrases[command] ?? [])
+            localized.append(contentsOf: phrases.filter { !known.contains($0) })
+        }
+        var wakes = SpokenEar.nativeWakes(tag)
+        let saved = CommandLexicon.normalize(settings.wakePhrase)
+        if !wakes.contains(saved) { wakes.append(saved) }
+        if phaseCapturing {
+            return wakes + localized
+        }
+        var list = wakes
+        for wake in wakes {
+            for phrase in localized {
                 list.append("\(wake) \(phrase)")
             }
         }
         return list
     }
 
-    private func commandPhrases() -> [String] {
-        VoiceCommand.allCases.flatMap { currentLexicon().phrases[$0] ?? [] }
-    }
-
     private func refreshEarPhrases() {
         guard earRunning else { return }
-        ear.updatePhrases(phaseCapturing ? commandPhrases() : spottingPhrases())
+        ear.updatePhrases(
+            english: englishPhrases(correction: false),
+            language: languagePhrases(),
+            languageTag: settings.languageTag
+        )
     }
 
     private func startMotion() {
@@ -629,6 +825,8 @@ final class GuideSession: ObservableObject {
         case "bn": key = "voice_missing_bn"
         case "sw": key = "voice_missing_sw"
         case "es": key = "voice_missing_es"
+        case "kn": key = "voice_missing_kn"
+        case "te": key = "voice_missing_te"
         default: key = nil
         }
         if let key, !speech.voiceAvailable(tag) {
@@ -691,11 +889,12 @@ final class GuideSession: ObservableObject {
         speak(text, flush: flush)
     }
 
-    private func speak(_ text: String, flush: Bool, done: (() -> Void)? = nil) {
+    private func speak(_ text: String, flush: Bool, opensCorrection: Bool = false, done: (() -> Void)? = nil) {
         guard !text.isEmpty else {
             done?()
             return
         }
+        beginSpeechMute()
         busy.set(true)
         let current = readSettings()
         speech.speak(
@@ -705,14 +904,386 @@ final class GuideSession: ObservableObject {
             volume: current.speechVolume,
             language: current.languageTag
         ) { [weak self] in
-            self?.busy.set(false)
-            done?()
+            DispatchQueue.main.async {
+                guard let self else { return }
+                self.busy.set(false)
+                self.endSpeechMute(opensCorrection: opensCorrection)
+                done?()
+            }
         }
+    }
+
+    private func beginSpeechMute() {
+        unmuteToken += 1
+        quietUntilMs = Int64.max
+        ear.setMuted(true)
+    }
+
+    /// After a warning, unmute at once so "wrong" or "missed" can be heard.
+    /// Other commands still wait out the tail. Other speech keeps the tail muted.
+    private func endSpeechMute(opensCorrection: Bool) {
+        unmuteToken += 1
+        let token = unmuteToken
+        let ended = Self.nowMs()
+        if opensCorrection {
+            correctionUntilMs = RecognitionGate.correctionUntil(warningEndedAtMs: ended)
+            quietUntilMs = RecognitionGate.quietUntil(speechEndedAtMs: ended)
+            correctionToken += 1
+            let correction = correctionToken
+            if earRunning {
+                let phrases = listeningPhrases(correction: true)
+                ear.updatePhrases(
+                    english: phrases.english,
+                    language: phrases.language,
+                    languageTag: settings.languageTag
+                )
+                ear.setMuted(false)
+            }
+            let window = RecognitionGate.correctionWindowMs
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(Int(window))) { [weak self] in
+                guard let self, self.correctionToken == correction, self.unmuteToken == token else { return }
+                self.correctionUntilMs = 0
+                self.restoreListeningPhrases()
+            }
+            return
+        }
+        correctionToken += 1
+        correctionUntilMs = 0
+        restoreListeningPhrases()
+        quietUntilMs = RecognitionGate.quietUntil(speechEndedAtMs: ended)
+        let tail = RecognitionGate.tailMs
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(Int(tail))) { [weak self] in
+            guard let self, self.unmuteToken == token else { return }
+            self.quietUntilMs = Self.nowMs()
+            self.ear.setMuted(false)
+        }
+    }
+
+    private func listeningPhrases(correction: Bool) -> (english: [String], language: [String]) {
+        (englishPhrases(correction: correction), languagePhrases())
+    }
+
+    private func restoreListeningPhrases() {
+        guard earRunning else { return }
+        let phrases = listeningPhrases(correction: false)
+        ear.updatePhrases(
+            english: phrases.english,
+            language: phrases.language,
+            languageTag: settings.languageTag
+        )
+    }
+
+    private func storeSpokenWarning(_ warning: SpokenWarning) {
+        warningLock.lock()
+        lastSpokenWarning = warning
+        warningLock.unlock()
+    }
+
+    private func readSpokenWarning() -> SpokenWarning? {
+        warningLock.lock()
+        defer { warningLock.unlock() }
+        return lastSpokenWarning
+    }
+
+    func toggleCollect() {
+        let turningOn = !settings.collectEnabled
+        mutateSettings { $0.collectEnabled = turningOn }
+        syncCollectRuntime()
+        speakKey(turningOn ? "collect_on" : "collect_off", flush: true)
+        if turningOn && !guiding { bigButton() }
+    }
+
+    func cycleCollectInterval() {
+        let next = settings.nextCollectInterval()
+        mutateSettings { $0.collectIntervalMs = next.collectIntervalMs }
+        let label = CollectCapture.intervalLabel(next.collectIntervalMs)
+        speak(phrase("collect_interval", label), flush: true)
+    }
+
+    func toggleCollectGps() {
+        if settings.collectGps {
+            mutateSettings { $0.collectGps = false }
+            syncCollectRuntime()
+            speakKey("collect_gps_off", flush: true)
+        } else {
+            mutateSettings { $0.collectGps = true }
+            syncCollectRuntime()
+            speakKey("collect_gps_on", flush: true)
+        }
+    }
+
+    func exportCollect() {
+        speakKey("collect_export_working", flush: false)
+        collectQueue.async { [weak self] in
+            guard let self else { return }
+            let zip = self.makeExportZip()
+            DispatchQueue.main.async {
+                guard let zip else {
+                    self.speakKey("collect_export_empty", flush: true)
+                    return
+                }
+                self.shareItem = ShareItem(url: zip)
+            }
+        }
+    }
+
+    func refreshCollectUsage() {
+        collectQueue.async { [weak self] in
+            guard let self else { return }
+            let usage = self.scanUsage()
+            DispatchQueue.main.async {
+                self.collectPhotos = usage.photos
+                self.collectBytes = usage.bytes
+            }
+        }
+    }
+
+    private func setCollectingFromVoice(on: Bool) {
+        if settings.collectEnabled == on {
+            speakKey(on ? "confirm_collect_already_on" : "confirm_collect_already_off", flush: true)
+            if on && !guiding { bigButton() }
+            return
+        }
+        mutateSettings { $0.collectEnabled = on }
+        syncCollectRuntime()
+        speakKey(on ? "confirm_collect_on" : "confirm_collect_off", flush: true)
+        if on && !guiding { bigButton() }
+    }
+
+    private func noteMissed() {
+        guard settings.collectEnabled else {
+            speakKey("confirm_missed_off", flush: true)
+            return
+        }
+        if !guiding { bigButton() }
+        pipeline.async { [weak self] in
+            self?.collectScheduler.onMissed()
+            self?.pumpCollect()
+        }
+        speakKey("confirm_noted", flush: true)
+    }
+
+    private func noteWrong() {
+        guard settings.collectEnabled else {
+            speakKey("confirm_missed_off", flush: true)
+            return
+        }
+        if !guiding { bigButton() }
+        pipeline.async { [weak self] in
+            self?.collectScheduler.onWrong()
+            self?.pumpCollect()
+        }
+        speakKey("confirm_noted", flush: true)
+    }
+
+    private func syncCollectRuntime() {
+        let current = readSettings()
+        let active = guiding && current.collectEnabled
+        pipeline.async { [weak self] in
+            self?.collectScheduler.setEnabled(current.collectEnabled)
+            if active { self?.pumpCollect() }
+        }
+        camera.setCollecting(active)
+        locator.setActive(active && current.collectGps)
+        if active {
+            startCollectTimer()
+        } else {
+            stopCollectWork()
+        }
+        refreshCollectUsage()
+    }
+
+    private func startCollectTimer() {
+        if collectTimer != nil { return }
+        let timer = DispatchSource.makeTimerSource(queue: pipeline)
+        timer.schedule(deadline: .now() + .milliseconds(200), repeating: .milliseconds(200))
+        timer.setEventHandler { [weak self] in
+            self?.pumpCollect()
+        }
+        collectTimer = timer
+        timer.resume()
+    }
+
+    private func stopCollectWork() {
+        collectTimer?.cancel()
+        collectTimer = nil
+        collectHot = false
+        locator.setActive(false)
+        pipeline.async { [weak self] in
+            self?.collectBusy = false
+        }
+    }
+
+    private func pumpCollect() {
+        let current = readSettings()
+        guard current.collectEnabled, guidingFlag.get(), foregroundFlag.get() else { return }
+        let hot = Self.phoneIsHot()
+        noteHeat(hot)
+        guard let event = collectScheduler.poll(
+            nowMs: Self.nowMs(),
+            intervalMs: current.collectIntervalMs,
+            hot: hot,
+            busy: collectBusy
+        ) else { return }
+        collectBusy = true
+        let snapshot = currentSnapshot(event: event, settings: current)
+        camera.takePhoto { [weak self] data, width, height in
+            guard let self else { return }
+            self.collectQueue.async {
+                if let data, !data.isEmpty {
+                    self.writeCapture(data, width: width, height: height, snapshot: snapshot)
+                }
+                self.pipeline.async {
+                    self.collectScheduler.onCaptured(nowMs: Self.nowMs())
+                    self.collectBusy = false
+                    self.pumpCollect()
+                    self.refreshCollectUsage()
+                }
+            }
+        }
+    }
+
+    private func noteHeat(_ hot: Bool) {
+        if hot == collectHot { return }
+        collectHot = hot
+        let key = hot ? "collect_paused_hot" : "collect_resumed"
+        DispatchQueue.main.async { [weak self] in
+            guard let self, self.guiding, self.settings.collectEnabled else { return }
+            self.speakKey(key, flush: false)
+        }
+    }
+
+    private func currentSnapshot(event: CollectEvent, settings: GuideSettings) -> CollectSnapshot {
+        let gps = settings.collectGps ? locator.currentReading() : nil
+        return CollectSnapshot(
+            event: event,
+            requestedAtMs: Self.epochMs(),
+            detections: latestBoxes,
+            depth: CollectCapture.summarizeDepth(latestField),
+            lighting: CollectCapture.lightingOf(latestScene),
+            gpsEnabled: settings.collectGps,
+            gps: gps,
+            spokenWarning: event == .wrong ? readSpokenWarning() : nil
+        )
+    }
+
+    private func writeCapture(_ data: Data, width: Int, height: Int, snapshot: CollectSnapshot) {
+        let folder = sessionFolder(snapshot.requestedAtMs)
+        try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        collectSequence += 1
+        let stem = CollectCapture.fileStem(
+            epochMs: snapshot.requestedAtMs,
+            timeZone: .current,
+            event: snapshot.event,
+            sequence: collectSequence
+        )
+        let jpg = folder.appendingPathComponent("\(stem).jpg")
+        let json = folder.appendingPathComponent("\(stem).json")
+        do {
+            try data.write(to: jpg, options: .atomic)
+            let body = CollectCapture.sidecarJson(
+                timestampIso: CollectCapture.isoTimestamp(epochMs: snapshot.requestedAtMs),
+                event: snapshot.event,
+                detections: snapshot.detections,
+                depth: snapshot.depth,
+                lighting: snapshot.lighting,
+                gpsEnabled: snapshot.gpsEnabled,
+                gps: snapshot.gps,
+                width: width > 0 ? width : nil,
+                height: height > 0 ? height : nil,
+                fullResolution: true,
+                spokenWarning: snapshot.spokenWarning,
+                includeSpokenWarning: snapshot.event == .wrong
+            )
+            try body.write(to: json, atomically: true, encoding: .utf8)
+        } catch {
+            try? FileManager.default.removeItem(at: jpg)
+            try? FileManager.default.removeItem(at: json)
+        }
+    }
+
+    private func sessionFolder(_ epochMs: Int64) -> URL {
+        collectRoot().appendingPathComponent(CollectCapture.sessionDate(epochMs: epochMs), isDirectory: true)
+    }
+
+    private func collectRoot() -> URL {
+        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        return docs.appendingPathComponent(CollectCapture.folder, isDirectory: true)
+    }
+
+    private func scanUsage() -> (photos: Int, bytes: Int64) {
+        let root = collectRoot()
+        guard let enumerator = FileManager.default.enumerator(at: root, includingPropertiesForKeys: [.fileSizeKey]) else {
+            return (0, 0)
+        }
+        var photos = 0
+        var bytes: Int64 = 0
+        for case let url as URL in enumerator {
+            let values = try? url.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey])
+            guard values?.isRegularFile == true else { continue }
+            bytes += Int64(values?.fileSize ?? 0)
+            if url.pathExtension.lowercased() == "jpg" { photos += 1 }
+        }
+        return (photos, bytes)
+    }
+
+    /// TODO: Blur faces before any third-party sharing. This only writes a zip and opens the share sheet.
+    private func makeExportZip() -> URL? {
+        let root = collectRoot()
+        let sessions = (try? FileManager.default.contentsOfDirectory(at: root, includingPropertiesForKeys: nil))?
+            .filter { CollectCapture.isSessionDate($0.lastPathComponent) }
+            .sorted { $0.lastPathComponent < $1.lastPathComponent }
+        guard let session = sessions?.last else { return nil }
+        let files = (try? FileManager.default.contentsOfDirectory(at: session, includingPropertiesForKeys: nil)) ?? []
+        var payload: [(name: String, data: Data)] = []
+        for file in files {
+            let ext = file.pathExtension.lowercased()
+            guard ext == "jpg" || ext == "json", let data = try? Data(contentsOf: file) else { continue }
+            payload.append((name: "\(session.lastPathComponent)/\(file.lastPathComponent)", data: data))
+        }
+        guard payload.contains(where: { $0.name.hasSuffix(".jpg") }) else { return nil }
+        let zip = CollectZip.store(files: payload)
+        let export = root.deletingLastPathComponent().appendingPathComponent("export", isDirectory: true)
+        try? FileManager.default.createDirectory(at: export, withIntermediateDirectories: true)
+        let url = export.appendingPathComponent("RaahiSense-collect-\(session.lastPathComponent).zip")
+        do {
+            try zip.write(to: url, options: .atomic)
+            return url
+        } catch {
+            return nil
+        }
+    }
+
+    private static func phoneIsHot() -> Bool {
+        switch ProcessInfo.processInfo.thermalState {
+        case .serious, .critical: return true
+        default: return false
+        }
+    }
+
+    private static func epochMs() -> Int64 {
+        Int64(Date().timeIntervalSince1970 * 1000)
     }
 
     private static func nowMs() -> Int64 {
         Int64(ProcessInfo.processInfo.systemUptime * 1000)
     }
+}
+
+struct ShareItem: Identifiable {
+    let id = UUID()
+    let url: URL
+}
+
+struct CollectSnapshot {
+    var event: CollectEvent
+    var requestedAtMs: Int64
+    var detections: [DetectionBox]
+    var depth: DepthSummary
+    var lighting: LightingEstimate
+    var gpsEnabled: Bool
+    var gps: GpsReading?
+    var spokenWarning: SpokenWarning?
 }
 
 private final class BusyFlag {

@@ -138,13 +138,170 @@ final class LogicTests: XCTestCase {
         XCTAssertEqual(found[0].label, "person")
     }
 
+    func testCollectPhotosStayOffUntilAskedAndDoNotStealStop() {
+        XCTAssertEqual(CollectCapture.defaultIntervalMs, 1_500)
+        XCTAssertEqual(CollectCapture.jpegQuality, 90)
+        XCTAssertEqual(CollectCapture.clampInterval(1), 500)
+        XCTAssertEqual(CollectCapture.nextIntervalMs(1_500), 3_000)
+        XCTAssertEqual(CollectCapture.intervalLabel(1_500), "1.5")
+        XCTAssertFalse(CollectCapture.isHot(thermalStatus: 2, batteryTenthsC: nil))
+        XCTAssertTrue(CollectCapture.isHot(thermalStatus: 3, batteryTenthsC: nil))
+        let scheduler = CollectScheduler()
+        XCTAssertNil(scheduler.poll(nowMs: 10_000, intervalMs: 1_500, hot: false, busy: false))
+        scheduler.setEnabled(true)
+        XCTAssertEqual(scheduler.poll(nowMs: 10_000, intervalMs: 1_500, hot: false, busy: false), .periodic)
+        scheduler.onCaptured(nowMs: 10_000)
+        scheduler.onWarning()
+        XCTAssertEqual(scheduler.poll(nowMs: 11_000, intervalMs: 1_500, hot: false, busy: false), .warning)
+        XCTAssertNil(scheduler.poll(nowMs: 11_100, intervalMs: 1_500, hot: true, busy: false))
+        XCTAssertEqual(scheduler.poll(nowMs: 11_200, intervalMs: 1_500, hot: false, busy: false), .warning)
+        XCTAssertEqual(CommandParser.parse("start collecting"), .startCollecting)
+        XCTAssertEqual(CommandParser.parse("stop collecting"), .stopCollecting)
+        XCTAssertEqual(CommandParser.parse("missed"), .missed)
+        XCTAssertEqual(CommandParser.parse("wrong"), .wrong)
+        XCTAssertEqual(CommandParser.parse("false alarm"), .wrong)
+        XCTAssertEqual(CommandParser.parse("wrong warning"), .wrong)
+        XCTAssertEqual(CommandParser.parse("stop"), .stop)
+        XCTAssertEqual(CommandParser.parse("start"), .start)
+        XCTAssertEqual(VoiceInterpreter.interpret("hey guide start collecting", requireWake: true), .startCollecting)
+        let lighting = CollectCapture.lightingOf(SceneLight(meanLuma: 0.1, lux: 4, iso: 800, exposureTimeNs: 50))
+        XCTAssertEqual(lighting.estimate, "dark")
+        let json = CollectCapture.sidecarJson(
+            timestampIso: "2026-10-25T12:00:00.000+00:00",
+            event: .missed,
+            detections: [DetectionBox(label: "person", score: 0.82, left: 0.1, top: 0.2, right: 0.4, bottom: 0.9)],
+            depth: DepthSummary(aheadMedian: nil, corridorMin: nil, corridorMax: nil, finiteSamples: 0),
+            lighting: lighting,
+            gpsEnabled: false,
+            gps: GpsReading(latitude: 1, longitude: 2, accuracyMeters: 3, timeIso: "t"),
+            width: 4000,
+            height: 3000,
+            fullResolution: true
+        )
+        XCTAssertTrue(json.contains("\"event\": \"missed\""))
+        XCTAssertTrue(json.contains("\"gps\": null"))
+        XCTAssertTrue(json.contains("\"label\": \"person\""))
+        XCTAssertFalse(json.contains("spokenWarning"))
+        XCTAssertTrue(json.contains("blur faces"))
+        let spokenBox = DetectionBox(label: "person", score: 0.91, left: 0.05, top: 0.20, right: 0.40, bottom: 0.95)
+        let other = DetectionBox(label: "person", score: 0.80, left: 0.40, top: 0.40, right: 0.55, bottom: 0.60)
+        let matched = WarningLogic.fromBox(spokenBox)
+        XCTAssertEqual(matched?.position, .left)
+        XCTAssertEqual(matched?.closeness, .veryClose)
+        let spoken = CollectCapture.spokenWarning(
+            warning: matched!,
+            boxes: [other, spokenBox],
+            spokenAtIso: "2026-10-25T12:00:01.000+00:00"
+        )
+        XCTAssertEqual(spoken.confidence ?? -1, 0.91 as Float)
+        XCTAssertEqual(spoken.left ?? -1, 0.05 as Float)
+        let wall = ObstacleWarning(label: "wall", position: .ahead, closeness: .veryClose, priority: 1, urgent: true)
+        let depthOnly = CollectCapture.spokenWarning(warning: wall, boxes: [spokenBox], spokenAtIso: "t")
+        XCTAssertEqual(depthOnly.label, "wall")
+        XCTAssertNil(depthOnly.confidence)
+        XCTAssertFalse(depthOnly.hasBox())
+        scheduler.onWrong()
+        XCTAssertEqual(scheduler.poll(nowMs: 12_000, intervalMs: 1_500, hot: false, busy: false), .wrong)
+        XCTAssertNil(scheduler.poll(nowMs: 12_100, intervalMs: 1_500, hot: true, busy: false))
+        XCTAssertEqual(scheduler.poll(nowMs: 12_200, intervalMs: 1_500, hot: false, busy: false), .wrong)
+        let wrongJson = CollectCapture.sidecarJson(
+            timestampIso: "2026-10-25T12:00:03.000+00:00",
+            event: .wrong,
+            detections: [spokenBox],
+            depth: DepthSummary(aheadMedian: nil, corridorMin: nil, corridorMax: nil, finiteSamples: 0),
+            lighting: lighting,
+            gpsEnabled: false,
+            gps: GpsReading(latitude: 12.9716, longitude: 77.5946, accuracyMeters: 8, timeIso: "t"),
+            width: 4000,
+            height: 3000,
+            fullResolution: true,
+            spokenWarning: spoken,
+            includeSpokenWarning: true
+        )
+        XCTAssertTrue(wrongJson.contains("\"event\": \"wrong\""))
+        XCTAssertTrue(wrongJson.contains("\"confidence\": 0.9100"))
+        XCTAssertTrue(wrongJson.contains("\"spokenAt\": \"2026-10-25T12:00:01.000+00:00\""))
+        XCTAssertTrue(wrongJson.contains("\"gps\": null"))
+        XCTAssertFalse(wrongJson.contains("77.5946"))
+        let missing = CollectCapture.sidecarJson(
+            timestampIso: "2026-10-25T12:00:03.000+00:00",
+            event: .wrong,
+            detections: [],
+            depth: DepthSummary(aheadMedian: nil, corridorMin: nil, corridorMax: nil, finiteSamples: 0),
+            lighting: lighting,
+            gpsEnabled: false,
+            gps: nil,
+            width: nil,
+            height: nil,
+            fullResolution: true,
+            spokenWarning: nil,
+            includeSpokenWarning: true
+        )
+        XCTAssertTrue(missing.contains("\"spokenWarning\": null"))
+        XCTAssertEqual(CollectCapture.folder, "RaahiSense/collect")
+        let zip = CollectZip.store(files: [("2026-10-25/a.jpg", Data([1, 2, 3]))])
+        XCTAssertEqual(zip.first, 0x50)
+        XCTAssertEqual(zip.dropFirst().first, 0x4B)
+        var settings = GuideSettings(collectEnabled: true, collectIntervalMs: 50, collectGps: true)
+        settings = settings.normalized()
+        XCTAssertEqual(settings.collectIntervalMs, CollectCapture.minIntervalMs)
+        XCTAssertFalse(GuideSettings().collectEnabled)
+        XCTAssertFalse(GuideSettings().collectGps)
+    }
+
     func testWakeWordAndCommands() {
         XCTAssertEqual(VoiceInterpreter.interpret("hey guide", requireWake: true), .wakeOnly)
         XCTAssertEqual(VoiceInterpreter.interpret("hey guide what is ahead", requireWake: true), .whatIsAhead)
         XCTAssertEqual(VoiceInterpreter.interpret("stop", requireWake: true), .ignore)
         XCTAssertEqual(VoiceInterpreter.interpret("stop", requireWake: false), .stop)
+        XCTAssertEqual(VoiceInterpreter.interpret("stop app", requireWake: false), .stop)
+        XCTAssertEqual(VoiceInterpreter.interpret("exit", requireWake: false), .stop)
+        XCTAssertEqual(VoiceInterpreter.interpret("close", requireWake: false), .stop)
+        XCTAssertEqual(VoiceInterpreter.interpret("pause", requireWake: false), .pause)
+        XCTAssertEqual(VoiceInterpreter.interpret("resume", requireWake: false), .resume)
+        XCTAssertEqual(CommandParser.parse("very close stop sign ahead"), .stop)
+        XCTAssertNil(CommandParser.parse("RaahiSense stopped"))
+        XCTAssertFalse(RecognitionGate.accepts(speechActive: true, nowMs: 1_000, quietUntilMs: 0))
+        XCTAssertFalse(RecognitionGate.accepts(speechActive: false, nowMs: 1_000, quietUntilMs: 1_400))
+        XCTAssertTrue(RecognitionGate.accepts(speechActive: false, nowMs: 1_400, quietUntilMs: 1_400))
+        XCTAssertEqual(RecognitionGate.tailMs, 400)
+        XCTAssertEqual(RecognitionGate.correctionWindowMs, 2_500)
+        XCTAssertEqual(RecognitionGate.correctionUntil(warningEndedAtMs: 1_000), 3_500)
+        XCTAssertFalse(RecognitionGate.acceptsCorrection(speechActive: true, nowMs: 1_000, correctionUntilMs: 3_500))
+        XCTAssertTrue(RecognitionGate.acceptsCorrection(speechActive: false, nowMs: 1_200, correctionUntilMs: 3_500))
+        XCTAssertFalse(RecognitionGate.accepts(speechActive: false, nowMs: 1_200, quietUntilMs: 1_400))
+        XCTAssertFalse(RecognitionGate.acceptsCorrection(speechActive: false, nowMs: 3_501, correctionUntilMs: 3_500))
+        XCTAssertEqual(VoiceInterpreter.interpret("wrong", requireWake: true), .ignore)
+        XCTAssertEqual(VoiceInterpreter.interpret("wrong", requireWake: true, allowBareCorrection: true), .wrong)
+        XCTAssertEqual(VoiceInterpreter.interpret("false alarm", requireWake: true, allowBareCorrection: true), .wrong)
+        XCTAssertEqual(VoiceInterpreter.interpret("missed", requireWake: true, allowBareCorrection: true), .missed)
+        XCTAssertEqual(VoiceInterpreter.interpret("stop", requireWake: true, allowBareCorrection: true), .ignore)
+        XCTAssertEqual(VoiceInterpreter.interpret("hey guide wrong", requireWake: true), .wrong)
         XCTAssertEqual(CommandParser.parse("please speak louder"), .louder)
         XCTAssertEqual(VoiceInterpreter.interpret("the weather", requireWake: false), .unknown)
+        let hindi = CommandLexicon.english.withExtra([
+            .start: ["शुरू", "शुरू करो"],
+            .pause: ["विराम"],
+        ])
+        XCTAssertEqual(CommandParser.parse("शुरू करो", lexicon: hindi), .start)
+        XCTAssertEqual(CommandParser.parse("stop", lexicon: hindi), .stop)
+        XCTAssertNil(CommandParser.parse("रुको", lexicon: hindi))
+        XCTAssertEqual(
+            VoiceInterpreter.interpret(
+                "हे गाइड शुरू",
+                lexicon: hindi,
+                wakePhrase: "hey guide",
+                requireWake: true,
+                extraWakePhrases: SpokenEar.nativeWakes("hi")
+            ),
+            .start
+        )
+        XCTAssertEqual(EarChoice.prefer(language: .start, english: .stop), .stop)
+        XCTAssertEqual(EarChoice.prefer(language: .start, english: .unknown), .start)
+        XCTAssertTrue(SpokenEar.hasCommandModel("es"))
+        XCTAssertFalse(SpokenEar.hasCommandModel("kn"))
+        XCTAssertFalse(SpokenEar.hasCommandModel("te"))
+        XCTAssertEqual(GuideSettings.languageTags, ["en", "hi", "es", "kn", "te", "ta", "bn", "sw"])
     }
 
     func testRotateDepth() {

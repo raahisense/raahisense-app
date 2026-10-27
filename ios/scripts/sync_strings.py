@@ -20,6 +20,8 @@ LOCALES = {
     "values-bn": "bn.lproj",
     "values-sw": "sw.lproj",
     "values-es": "es.lproj",
+    "values-kn": "kn.lproj",
+    "values-te": "te.lproj",
 }
 ENTRY = re.compile(r'<string\s+name="([^"]+)"[^>]*>(.*?)</string>', re.DOTALL)
 
@@ -35,11 +37,11 @@ IOS_EXTRAS = {
     "ios_screen_stays_on": "The screen stays on while guiding so the camera can keep working. Locking the screen stops the camera.",
     "ios_limit_locked": "The camera stopped because the screen locked or RaahiSense left the screen. Open RaahiSense again. On iPhone the camera cannot keep running with the screen locked.",
     "ios_limit_light": "This iPhone has no light sensor the app can read. Darkness is judged from the camera picture, and from ISO and exposure time when the camera provides them.",
-    "ios_limit_wake": "Hey Guide uses the iPhone on-device English speech recognizer. It is not the Android Vosk model. The Vosk iOS library is not public. If on-device recognition is not installed, warnings still work, and you can use the large Listen button after recognition is turned on.",
+    "ios_limit_wake": "Hey Guide uses the iPhone on-device speech recognizer, not the Android Vosk model. The Vosk iOS library is not public. Hindi and Spanish everyday commands work when that language's on-device recognizer is installed. Otherwise the ear stays English. Stop, start collecting, stop collecting, missed, and wrong stay English. If on-device recognition is not installed, warnings still work, and you can use the large Listen button after recognition is turned on.",
     "ios_limit_volume": "Holding a volume key does not start listening on iPhone. Say Hey Guide, tap Listen, double-tap this screen when VoiceOver is off, or shake the phone hard twice.",
     "ios_about_models": "The obstacle model and the depth model are the same files as the Android app. They run on the phone with TensorFlow Lite. They are not converted to Core ML, so the warnings stay the same. Nothing is uploaded.",
     "ios_prepared": "Prepared for Dr. Chindanoor Rajesh.",
-    "status_speech_unavailable": "On-device English speech recognition is not available on this iPhone. Turn it on in Settings while the phone is online once. Until then, use the buttons. Obstacle warnings still work without the microphone.",
+    "status_speech_unavailable": "On-device speech recognition is not available on this iPhone. Turn it on in Settings while the phone is online once. Until then, use the buttons. Obstacle warnings still work without the microphone.",
 }
 
 
@@ -53,6 +55,7 @@ def unescape(value: str) -> str:
         .replace("&lt;", "<")
         .replace("&gt;", ">")
         .replace("%1$s", "%@")
+        .replace("%2$s", "%@")
         .strip()
     )
 

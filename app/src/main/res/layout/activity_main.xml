@@ -60,6 +60,23 @@
             android:textStyle="bold"
             app:backgroundTint="@null" />
 
+        <Button
+            android:id="@+id/stopApp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/btn_running"
+            android:contentDescription="@string/cd_quit"
+            android:filterTouchesWhenObscured="true"
+            android:minHeight="80dp"
+            android:padding="12dp"
+            android:text="@string/action_quit"
+            android:textAllCaps="false"
+            android:textColor="@color/black"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            app:backgroundTint="@null" />
+
         <TextView
             style="@style/GuideText"
             android:paddingBottom="8dp"
@@ -105,6 +122,21 @@
                 android:text="@string/lang_hi" />
 
             <RadioButton
+                android:id="@+id/langEs"
+                style="@style/GuideRadio"
+                android:text="@string/lang_es" />
+
+            <RadioButton
+                android:id="@+id/langKn"
+                style="@style/GuideRadio"
+                android:text="@string/lang_kn" />
+
+            <RadioButton
+                android:id="@+id/langTe"
+                style="@style/GuideRadio"
+                android:text="@string/lang_te" />
+
+            <RadioButton
                 android:id="@+id/langTa"
                 style="@style/GuideRadio"
                 android:text="@string/lang_ta" />
@@ -118,11 +150,6 @@
                 android:id="@+id/langSw"
                 style="@style/GuideRadio"
                 android:text="@string/lang_sw" />
-
-            <RadioButton
-                android:id="@+id/langEs"
-                style="@style/GuideRadio"
-                android:text="@string/lang_es" />
         </RadioGroup>
 
         <TextView
@@ -198,6 +225,44 @@
             android:id="@+id/voiceCommands"
             style="@style/GuideRow"
             android:text="@string/wake_on"
+            app:backgroundTint="@null" />
+
+        <Button
+            android:id="@+id/collectPhotos"
+            style="@style/GuideRow"
+            android:text="@string/collect_off"
+            app:backgroundTint="@null" />
+
+        <Button
+            android:id="@+id/collectInterval"
+            style="@style/GuideRow"
+            android:text="@string/collect_interval"
+            app:backgroundTint="@null" />
+
+        <Button
+            android:id="@+id/collectGps"
+            style="@style/GuideRow"
+            android:text="@string/collect_gps_off"
+            app:backgroundTint="@null" />
+
+        <TextView
+            android:id="@+id/collectUsage"
+            style="@style/GuideText"
+            android:paddingBottom="4dp"
+            android:text="@string/collect_usage"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/collectNote"
+            style="@style/GuideText"
+            android:paddingBottom="8dp"
+            android:text="@string/collect_note"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/collectExport"
+            style="@style/GuideRow"
+            android:text="@string/collect_export"
             app:backgroundTint="@null" />
 
         <TextView

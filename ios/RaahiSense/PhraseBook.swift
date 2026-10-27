@@ -81,5 +81,12 @@ enum PhraseBook {
         "refrigerator": "obj_refrigerator",
         "tv": "obj_tv",
         "door": "obj_door",
+        "wall": "obj_wall",
+        "shoe": "obj_shoe",
+        "bag": "obj_bag",
+        "toy": "obj_toy",
+        "bin": "obj_bin",
+        "appliance": "obj_appliance",
+        "cabinet": "obj_cabinet",
     ]
 }

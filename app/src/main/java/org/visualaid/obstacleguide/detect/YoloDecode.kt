@@ -8,8 +8,9 @@ import kotlin.math.min
  * Turns a small YOLO head into normalized boxes.
  * No TensorFlow types live here, so unit tests can feed a plain array.
  *
- * Class order matches training/convert_obstacles.py.
- * Walking classes come first. Indoor classes from COCO, then door, are appended.
+ * Class order matches training/class_map.py.
+ * Walking classes come first. Indoor classes, then door, wall, shoe, bag,
+ * toy, bin, appliance, and cabinet, are appended.
  * speed_bump and low_branch are not included.
  */
 object YoloDecode {
@@ -43,6 +44,13 @@ object YoloDecode {
         "refrigerator",
         "tv",
         "door",
+        "wall",
+        "shoe",
+        "bag",
+        "toy",
+        "bin",
+        "appliance",
+        "cabinet",
     )
 
     data class Letterbox(

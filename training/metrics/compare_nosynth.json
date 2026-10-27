@@ -1,0 +1,1640 @@
+{
+  "test_images": 2400,
+  "shared_classes_with_ground_truth": [
+    "person",
+    "bicycle",
+    "motorcycle",
+    "car",
+    "bus",
+    "truck",
+    "cow",
+    "dog",
+    "auto_rickshaw",
+    "cycle_rickshaw",
+    "handcart",
+    "pothole",
+    "manhole_open_drain",
+    "curb",
+    "stairs",
+    "pole_bollard",
+    "barrier",
+    "street_furniture",
+    "tree",
+    "cat",
+    "chair",
+    "couch",
+    "dining table",
+    "bed",
+    "toilet",
+    "potted plant",
+    "refrigerator",
+    "tv",
+    "door"
+  ],
+  "baseline": {
+    "file": "/workspace/training/runs/obstacles_v1_baseline.tflite",
+    "bytes": 3050625,
+    "normal": {
+      "map50": 0.2643619053461705,
+      "map50_95": 0.15251653213750024,
+      "per_class_map50": [
+        {
+          "class": "person",
+          "map50": 0.3532391432245018
+        },
+        {
+          "class": "bicycle",
+          "map50": 0.11247707902119666
+        },
+        {
+          "class": "motorcycle",
+          "map50": 0.32328177414611514
+        },
+        {
+          "class": "car",
+          "map50": 0.45154300318933205
+        },
+        {
+          "class": "bus",
+          "map50": 0.028296813881207996
+        },
+        {
+          "class": "truck",
+          "map50": 0.24183006730788764
+        },
+        {
+          "class": "cow",
+          "map50": 0.3454887814575237
+        },
+        {
+          "class": "dog",
+          "map50": 0.10738517950748099
+        },
+        {
+          "class": "auto_rickshaw",
+          "map50": 0.43298455213848863
+        },
+        {
+          "class": "cycle_rickshaw",
+          "map50": 0.36673506686610857
+        },
+        {
+          "class": "handcart",
+          "map50": 0.3680724081737532
+        },
+        {
+          "class": "pothole",
+          "map50": 0.4664908962741622
+        },
+        {
+          "class": "manhole_open_drain",
+          "map50": 0.006529773700290824
+        },
+        {
+          "class": "curb",
+          "map50": 0.07777777777777778
+        },
+        {
+          "class": "stairs",
+          "map50": 0.593135358228824
+        },
+        {
+          "class": "pole_bollard",
+          "map50": 0.11902259346606908
+        },
+        {
+          "class": "barrier",
+          "map50": 0.48145130459703733
+        },
+        {
+          "class": "street_furniture",
+          "map50": 0.0011276913842775851
+        },
+        {
+          "class": "tree",
+          "map50": 0.05970154207859124
+        },
+        {
+          "class": "cat",
+          "map50": 0.35487424617557806
+        },
+        {
+          "class": "chair",
+          "map50": 0.1583323408709394
+        },
+        {
+          "class": "couch",
+          "map50": 0.26902605786337863
+        },
+        {
+          "class": "dining table",
+          "map50": 0.1402513908369668
+        },
+        {
+          "class": "bed",
+          "map50": 0.4561589810933587
+        },
+        {
+          "class": "toilet",
+          "map50": 0.3621954283239488
+        },
+        {
+          "class": "potted plant",
+          "map50": 0.09447223740499162
+        },
+        {
+          "class": "refrigerator",
+          "map50": 0.37965782117990565
+        },
+        {
+          "class": "tv",
+          "map50": 0.31352780555148463
+        },
+        {
+          "class": "door",
+          "map50": 0.20142813931776618
+        }
+      ],
+      "per_class_map50_95": [
+        {
+          "class": "person",
+          "map50_95": 0.18247347415781962
+        },
+        {
+          "class": "bicycle",
+          "map50_95": 0.059865657834306286
+        },
+        {
+          "class": "motorcycle",
+          "map50_95": 0.14714026492627927
+        },
+        {
+          "class": "car",
+          "map50_95": 0.25246426189026305
+        },
+        {
+          "class": "bus",
+          "map50_95": 0.019076383452811953
+        },
+        {
+          "class": "truck",
+          "map50_95": 0.17222769136472538
+        },
+        {
+          "class": "cow",
+          "map50_95": 0.17664640258542913
+        },
+        {
+          "class": "dog",
+          "map50_95": 0.07216460881977421
+        },
+        {
+          "class": "auto_rickshaw",
+          "map50_95": 0.24997534747429567
+        },
+        {
+          "class": "cycle_rickshaw",
+          "map50_95": 0.256756602586842
+        },
+        {
+          "class": "handcart",
+          "map50_95": 0.20042054503189238
+        },
+        {
+          "class": "pothole",
+          "map50_95": 0.17741142595648535
+        },
+        {
+          "class": "manhole_open_drain",
+          "map50_95": 0.003945384076001509
+        },
+        {
+          "class": "curb",
+          "map50_95": 0.03287356321839081
+        },
+        {
+          "class": "stairs",
+          "map50_95": 0.40296095753850586
+        },
+        {
+          "class": "pole_bollard",
+          "map50_95": 0.05139452840790466
+        },
+        {
+          "class": "barrier",
+          "map50_95": 0.2789271093812075
+        },
+        {
+          "class": "street_furniture",
+          "map50_95": 0.0007360052862581954
+        },
+        {
+          "class": "tree",
+          "map50_95": 0.028113630568041316
+        },
+        {
+          "class": "cat",
+          "map50_95": 0.2876530115149199
+        },
+        {
+          "class": "chair",
+          "map50_95": 0.07293055757934173
+        },
+        {
+          "class": "couch",
+          "map50_95": 0.16988532006977738
+        },
+        {
+          "class": "dining table",
+          "map50_95": 0.06384600281924559
+        },
+        {
+          "class": "bed",
+          "map50_95": 0.27269014560744154
+        },
+        {
+          "class": "toilet",
+          "map50_95": 0.13649217309549938
+        },
+        {
+          "class": "potted plant",
+          "map50_95": 0.04874030794261211
+        },
+        {
+          "class": "refrigerator",
+          "map50_95": 0.28752405363968137
+        },
+        {
+          "class": "tv",
+          "map50_95": 0.2135135463099616
+        },
+        {
+          "class": "door",
+          "map50_95": 0.10413046885179174
+        }
+      ]
+    },
+    "lowlight": {
+      "map50": 0.09548192880711352,
+      "map50_95": 0.05458408123015772,
+      "per_class_map50": [
+        {
+          "class": "person",
+          "map50": 0.1777830590755145
+        },
+        {
+          "class": "bicycle",
+          "map50": 0.040123456790123455
+        },
+        {
+          "class": "motorcycle",
+          "map50": 0.016319470526326405
+        },
+        {
+          "class": "car",
+          "map50": 0.12564939246688664
+        },
+        {
+          "class": "bus",
+          "map50": 0.02803698582495975
+        },
+        {
+          "class": "truck",
+          "map50": 0.0
+        },
+        {
+          "class": "cow",
+          "map50": 0.08002158672145751
+        },
+        {
+          "class": "dog",
+          "map50": 0.06769230769230769
+        },
+        {
+          "class": "auto_rickshaw",
+          "map50": 0.0895869990838464
+        },
+        {
+          "class": "cycle_rickshaw",
+          "map50": 0.14516751649238038
+        },
+        {
+          "class": "handcart",
+          "map50": 0.10452695219342709
+        },
+        {
+          "class": "pothole",
+          "map50": 0.05222262900739897
+        },
+        {
+          "class": "manhole_open_drain",
+          "map50": 0.0012939244663382594
+        },
+        {
+          "class": "curb",
+          "map50": 0.0
+        },
+        {
+          "class": "stairs",
+          "map50": 0.33998647961991907
+        },
+        {
+          "class": "pole_bollard",
+          "map50": 0.039101332221827066
+        },
+        {
+          "class": "barrier",
+          "map50": 0.45525630152759067
+        },
+        {
+          "class": "street_furniture",
+          "map50": 6.640106241699867e-05
+        },
+        {
+          "class": "tree",
+          "map50": 0.007279858070733749
+        },
+        {
+          "class": "cat",
+          "map50": 0.012388262330543121
+        },
+        {
+          "class": "chair",
+          "map50": 0.03894669842317035
+        },
+        {
+          "class": "couch",
+          "map50": 0.03603066430975312
+        },
+        {
+          "class": "dining table",
+          "map50": 0.028615761093040683
+        },
+        {
+          "class": "bed",
+          "map50": 0.1174642827563644
+        },
+        {
+          "class": "toilet",
+          "map50": 0.30146757685409514
+        },
+        {
+          "class": "potted plant",
+          "map50": 0.018728240480712012
+        },
+        {
+          "class": "refrigerator",
+          "map50": 0.20912568818265823
+        },
+        {
+          "class": "tv",
+          "map50": 0.12859870115942656
+        },
+        {
+          "class": "door",
+          "map50": 0.10749540697307378
+        }
+      ],
+      "per_class_map50_95": [
+        {
+          "class": "person",
+          "map50_95": 0.08736853930606144
+        },
+        {
+          "class": "bicycle",
+          "map50_95": 0.031018518518518518
+        },
+        {
+          "class": "motorcycle",
+          "map50_95": 0.00881626762268514
+        },
+        {
+          "class": "car",
+          "map50_95": 0.058570531815739665
+        },
+        {
+          "class": "bus",
+          "map50_95": 0.022244870875636393
+        },
+        {
+          "class": "truck",
+          "map50_95": 0.0
+        },
+        {
+          "class": "cow",
+          "map50_95": 0.04287833403003957
+        },
+        {
+          "class": "dog",
+          "map50_95": 0.04717948717948718
+        },
+        {
+          "class": "auto_rickshaw",
+          "map50_95": 0.05329782466315486
+        },
+        {
+          "class": "cycle_rickshaw",
+          "map50_95": 0.08688542753878507
+        },
+        {
+          "class": "handcart",
+          "map50_95": 0.049935416968329774
+        },
+        {
+          "class": "pothole",
+          "map50_95": 0.028355134924249216
+        },
+        {
+          "class": "manhole_open_drain",
+          "map50_95": 0.0005814636615422149
+        },
+        {
+          "class": "curb",
+          "map50_95": 0.0
+        },
+        {
+          "class": "stairs",
+          "map50_95": 0.21338412226700626
+        },
+        {
+          "class": "pole_bollard",
+          "map50_95": 0.015715199600840554
+        },
+        {
+          "class": "barrier",
+          "map50_95": 0.27569782381323743
+        },
+        {
+          "class": "street_furniture",
+          "map50_95": 3.1540504648074366e-05
+        },
+        {
+          "class": "tree",
+          "map50_95": 0.0038576373560026732
+        },
+        {
+          "class": "cat",
+          "map50_95": 0.009003887006125493
+        },
+        {
+          "class": "chair",
+          "map50_95": 0.01627593856065056
+        },
+        {
+          "class": "couch",
+          "map50_95": 0.017216063480714104
+        },
+        {
+          "class": "dining table",
+          "map50_95": 0.012579473287986882
+        },
+        {
+          "class": "bed",
+          "map50_95": 0.06553654052984932
+        },
+        {
+          "class": "toilet",
+          "map50_95": 0.1230738363332573
+        },
+        {
+          "class": "potted plant",
+          "map50_95": 0.010985196744431434
+        },
+        {
+          "class": "refrigerator",
+          "map50_95": 0.16175825886022532
+        },
+        {
+          "class": "tv",
+          "map50_95": 0.08578439633871618
+        },
+        {
+          "class": "door",
+          "map50_95": 0.05490662388665305
+        }
+      ]
+    },
+    "shared_map50_95": 0.15251653213750024,
+    "shared_lowlight_map50_95": 0.05458408123015772
+  },
+  "candidate": {
+    "file": "/workspace/training/metrics/obstacles_v2_nosynth_int8.tflite",
+    "bytes": 3052924,
+    "normal": {
+      "map50": 0.33973476851149775,
+      "map50_95": 0.19462906198734634,
+      "per_class_map50": [
+        {
+          "class": "person",
+          "map50": 0.4260275309249118
+        },
+        {
+          "class": "bicycle",
+          "map50": 0.35117422108273105
+        },
+        {
+          "class": "motorcycle",
+          "map50": 0.29402584830967016
+        },
+        {
+          "class": "car",
+          "map50": 0.4648289077266007
+        },
+        {
+          "class": "bus",
+          "map50": 0.04917081182155439
+        },
+        {
+          "class": "truck",
+          "map50": 0.08238562109039628
+        },
+        {
+          "class": "cow",
+          "map50": 0.4649946150687257
+        },
+        {
+          "class": "dog",
+          "map50": 0.10868660325182065
+        },
+        {
+          "class": "auto_rickshaw",
+          "map50": 0.4747316892420091
+        },
+        {
+          "class": "cycle_rickshaw",
+          "map50": 0.510607747706621
+        },
+        {
+          "class": "handcart",
+          "map50": 0.29763328107497666
+        },
+        {
+          "class": "pothole",
+          "map50": 0.5929904085132902
+        },
+        {
+          "class": "manhole_open_drain",
+          "map50": 0.21416607864976783
+        },
+        {
+          "class": "curb",
+          "map50": 0.006211180124223602
+        },
+        {
+          "class": "stairs",
+          "map50": 0.6096703083718074
+        },
+        {
+          "class": "pole_bollard",
+          "map50": 0.10909138922366947
+        },
+        {
+          "class": "barrier",
+          "map50": 0.4341422706386226
+        },
+        {
+          "class": "street_furniture",
+          "map50": 0.08225640589279651
+        },
+        {
+          "class": "tree",
+          "map50": 0.16339387303962438
+        },
+        {
+          "class": "cat",
+          "map50": 0.36854174051754696
+        },
+        {
+          "class": "chair",
+          "map50": 0.38514310500469845
+        },
+        {
+          "class": "couch",
+          "map50": 0.3929623540385251
+        },
+        {
+          "class": "dining table",
+          "map50": 0.26199079583548907
+        },
+        {
+          "class": "bed",
+          "map50": 0.5685724265654327
+        },
+        {
+          "class": "toilet",
+          "map50": 0.3880682736184102
+        },
+        {
+          "class": "potted plant",
+          "map50": 0.395652901864146
+        },
+        {
+          "class": "refrigerator",
+          "map50": 0.5954168667762864
+        },
+        {
+          "class": "tv",
+          "map50": 0.5334077293992788
+        },
+        {
+          "class": "door",
+          "map50": 0.2537698569606873
+        },
+        {
+          "class": "wall",
+          "map50": 0.22898395460899587
+        },
+        {
+          "class": "shoe",
+          "map50": 0.12735575423972087
+        },
+        {
+          "class": "bag",
+          "map50": 0.48665805404097845
+        },
+        {
+          "class": "toy",
+          "map50": 0.27147041678073863
+        },
+        {
+          "class": "bin",
+          "map50": 0.5820296841715812
+        },
+        {
+          "class": "appliance",
+          "map50": 0.31882499193779573
+        },
+        {
+          "class": "cabinet",
+          "map50": 0.33541396829978626
+        }
+      ],
+      "per_class_map50_95": [
+        {
+          "class": "person",
+          "map50_95": 0.22424862745912866
+        },
+        {
+          "class": "bicycle",
+          "map50_95": 0.16207903432903997
+        },
+        {
+          "class": "motorcycle",
+          "map50_95": 0.1313977055770361
+        },
+        {
+          "class": "car",
+          "map50_95": 0.2616723149614794
+        },
+        {
+          "class": "bus",
+          "map50_95": 0.030962331187233284
+        },
+        {
+          "class": "truck",
+          "map50_95": 0.059788397494654644
+        },
+        {
+          "class": "cow",
+          "map50_95": 0.30295654608895717
+        },
+        {
+          "class": "dog",
+          "map50_95": 0.050370712805654104
+        },
+        {
+          "class": "auto_rickshaw",
+          "map50_95": 0.27301555642523406
+        },
+        {
+          "class": "cycle_rickshaw",
+          "map50_95": 0.2961595906422726
+        },
+        {
+          "class": "handcart",
+          "map50_95": 0.11763439626484448
+        },
+        {
+          "class": "pothole",
+          "map50_95": 0.2682777778106309
+        },
+        {
+          "class": "manhole_open_drain",
+          "map50_95": 0.1296054610594673
+        },
+        {
+          "class": "curb",
+          "map50_95": 0.0024844720496894407
+        },
+        {
+          "class": "stairs",
+          "map50_95": 0.3987717302514066
+        },
+        {
+          "class": "pole_bollard",
+          "map50_95": 0.04783325850506328
+        },
+        {
+          "class": "barrier",
+          "map50_95": 0.25393382525175173
+        },
+        {
+          "class": "street_furniture",
+          "map50_95": 0.041621248542020664
+        },
+        {
+          "class": "tree",
+          "map50_95": 0.07046597550680911
+        },
+        {
+          "class": "cat",
+          "map50_95": 0.24270628651798698
+        },
+        {
+          "class": "chair",
+          "map50_95": 0.2169428095551567
+        },
+        {
+          "class": "couch",
+          "map50_95": 0.2477872949634615
+        },
+        {
+          "class": "dining table",
+          "map50_95": 0.12946496023969772
+        },
+        {
+          "class": "bed",
+          "map50_95": 0.35747165616939947
+        },
+        {
+          "class": "toilet",
+          "map50_95": 0.22694180603721947
+        },
+        {
+          "class": "potted plant",
+          "map50_95": 0.21977807147000075
+        },
+        {
+          "class": "refrigerator",
+          "map50_95": 0.45753043367687746
+        },
+        {
+          "class": "tv",
+          "map50_95": 0.3584884020105289
+        },
+        {
+          "class": "door",
+          "map50_95": 0.1295812933673562
+        },
+        {
+          "class": "wall",
+          "map50_95": 0.130200545679812
+        },
+        {
+          "class": "shoe",
+          "map50_95": 0.04409370035319446
+        },
+        {
+          "class": "bag",
+          "map50_95": 0.24091309607318548
+        },
+        {
+          "class": "toy",
+          "map50_95": 0.14949827030091517
+        },
+        {
+          "class": "bin",
+          "map50_95": 0.3674793423401033
+        },
+        {
+          "class": "appliance",
+          "map50_95": 0.16754259830934942
+        },
+        {
+          "class": "cabinet",
+          "map50_95": 0.19694670226784933
+        }
+      ]
+    },
+    "lowlight": {
+      "map50": 0.2518929259101495,
+      "map50_95": 0.14287399340250354,
+      "per_class_map50": [
+        {
+          "class": "person",
+          "map50": 0.33625434731897874
+        },
+        {
+          "class": "bicycle",
+          "map50": 0.17904223498159283
+        },
+        {
+          "class": "motorcycle",
+          "map50": 0.07140709682854646
+        },
+        {
+          "class": "car",
+          "map50": 0.30325207501559115
+        },
+        {
+          "class": "bus",
+          "map50": 0.03288069739861904
+        },
+        {
+          "class": "truck",
+          "map50": 0.022630231358679635
+        },
+        {
+          "class": "cow",
+          "map50": 0.3741258741258741
+        },
+        {
+          "class": "dog",
+          "map50": 0.1694251967025332
+        },
+        {
+          "class": "auto_rickshaw",
+          "map50": 0.29296909290966533
+        },
+        {
+          "class": "cycle_rickshaw",
+          "map50": 0.4441429729430862
+        },
+        {
+          "class": "handcart",
+          "map50": 0.24633163925170848
+        },
+        {
+          "class": "pothole",
+          "map50": 0.42988044461822744
+        },
+        {
+          "class": "manhole_open_drain",
+          "map50": 0.2511645842005432
+        },
+        {
+          "class": "curb",
+          "map50": 0.01020408163265306
+        },
+        {
+          "class": "stairs",
+          "map50": 0.5469228502499883
+        },
+        {
+          "class": "pole_bollard",
+          "map50": 0.07718236957811156
+        },
+        {
+          "class": "barrier",
+          "map50": 0.4029965362041823
+        },
+        {
+          "class": "street_furniture",
+          "map50": 0.05043222358118643
+        },
+        {
+          "class": "tree",
+          "map50": 0.09077030430214435
+        },
+        {
+          "class": "cat",
+          "map50": 0.15907485875706212
+        },
+        {
+          "class": "chair",
+          "map50": 0.27079474081248744
+        },
+        {
+          "class": "couch",
+          "map50": 0.2120196494568388
+        },
+        {
+          "class": "dining table",
+          "map50": 0.2058576894603682
+        },
+        {
+          "class": "bed",
+          "map50": 0.46577639336653315
+        },
+        {
+          "class": "toilet",
+          "map50": 0.29223297761427214
+        },
+        {
+          "class": "potted plant",
+          "map50": 0.3120778590850185
+        },
+        {
+          "class": "refrigerator",
+          "map50": 0.5851705703578347
+        },
+        {
+          "class": "tv",
+          "map50": 0.36853071751643207
+        },
+        {
+          "class": "door",
+          "map50": 0.1608171948191629
+        },
+        {
+          "class": "wall",
+          "map50": 0.19937544522427156
+        },
+        {
+          "class": "shoe",
+          "map50": 0.07179029134211802
+        },
+        {
+          "class": "bag",
+          "map50": 0.2775503123745723
+        },
+        {
+          "class": "toy",
+          "map50": 0.2566963054951832
+        },
+        {
+          "class": "bin",
+          "map50": 0.4346164811417485
+        },
+        {
+          "class": "appliance",
+          "map50": 0.2277317529443477
+        },
+        {
+          "class": "cabinet",
+          "map50": 0.236017239795219
+        }
+      ],
+      "per_class_map50_95": [
+        {
+          "class": "person",
+          "map50_95": 0.1726056415548356
+        },
+        {
+          "class": "bicycle",
+          "map50_95": 0.09914299028017526
+        },
+        {
+          "class": "motorcycle",
+          "map50_95": 0.025275415230932442
+        },
+        {
+          "class": "car",
+          "map50_95": 0.1644083706230946
+        },
+        {
+          "class": "bus",
+          "map50_95": 0.021807824880900734
+        },
+        {
+          "class": "truck",
+          "map50_95": 0.015483302018862366
+        },
+        {
+          "class": "cow",
+          "map50_95": 0.2185962185962186
+        },
+        {
+          "class": "dog",
+          "map50_95": 0.12789608097196403
+        },
+        {
+          "class": "auto_rickshaw",
+          "map50_95": 0.15677451287268965
+        },
+        {
+          "class": "cycle_rickshaw",
+          "map50_95": 0.24455269649207093
+        },
+        {
+          "class": "handcart",
+          "map50_95": 0.10541285045980522
+        },
+        {
+          "class": "pothole",
+          "map50_95": 0.1876413657808146
+        },
+        {
+          "class": "manhole_open_drain",
+          "map50_95": 0.15234243984664222
+        },
+        {
+          "class": "curb",
+          "map50_95": 0.004081632653061224
+        },
+        {
+          "class": "stairs",
+          "map50_95": 0.3695523642105164
+        },
+        {
+          "class": "pole_bollard",
+          "map50_95": 0.03583559324168839
+        },
+        {
+          "class": "barrier",
+          "map50_95": 0.22282434427192088
+        },
+        {
+          "class": "street_furniture",
+          "map50_95": 0.03137064315954715
+        },
+        {
+          "class": "tree",
+          "map50_95": 0.038172616896693594
+        },
+        {
+          "class": "cat",
+          "map50_95": 0.11366525423728813
+        },
+        {
+          "class": "chair",
+          "map50_95": 0.15643124345563314
+        },
+        {
+          "class": "couch",
+          "map50_95": 0.13016927590230276
+        },
+        {
+          "class": "dining table",
+          "map50_95": 0.09426981189759662
+        },
+        {
+          "class": "bed",
+          "map50_95": 0.29032392448337424
+        },
+        {
+          "class": "toilet",
+          "map50_95": 0.16375435865431964
+        },
+        {
+          "class": "potted plant",
+          "map50_95": 0.16247813756406798
+        },
+        {
+          "class": "refrigerator",
+          "map50_95": 0.4067864235741663
+        },
+        {
+          "class": "tv",
+          "map50_95": 0.22709844305581672
+        },
+        {
+          "class": "door",
+          "map50_95": 0.07993544536330524
+        },
+        {
+          "class": "wall",
+          "map50_95": 0.11844708735657883
+        },
+        {
+          "class": "shoe",
+          "map50_95": 0.026062771900590486
+        },
+        {
+          "class": "bag",
+          "map50_95": 0.14103762007466542
+        },
+        {
+          "class": "toy",
+          "map50_95": 0.1307632627598133
+        },
+        {
+          "class": "bin",
+          "map50_95": 0.26470047412331976
+        },
+        {
+          "class": "appliance",
+          "map50_95": 0.11306689915330828
+        },
+        {
+          "class": "cabinet",
+          "map50_95": 0.1306964248915471
+        }
+      ]
+    },
+    "shared_map50_95": 0.19689558538689858,
+    "shared_lowlight_map50_95": 0.1454720421458726,
+    "wall_map50_95": 0.130200545679812,
+    "wall_lowlight_map50_95": 0.11844708735657883
+  },
+  "indoor": {
+    "classes": [
+      "chair",
+      "couch",
+      "dining table",
+      "bed",
+      "toilet",
+      "potted plant",
+      "refrigerator",
+      "tv",
+      "door",
+      "stairs",
+      "wall",
+      "shoe",
+      "bag",
+      "toy",
+      "bin",
+      "appliance",
+      "cabinet"
+    ],
+    "note": "Household classes scored on the same held-out test images, including the darkened copies. The current model has no shoe, bag, toy, bin, appliance, or cabinet outputs, so those baseline cells are empty.",
+    "normal": {
+      "baseline": [
+        {
+          "class": "chair",
+          "test_images": 258,
+          "test_boxes": 827,
+          "map50": 0.1583323408709394,
+          "map50_95": 0.07293055757934173
+        },
+        {
+          "class": "couch",
+          "test_images": 64,
+          "test_boxes": 107,
+          "map50": 0.26902605786337863,
+          "map50_95": 0.16988532006977738
+        },
+        {
+          "class": "dining table",
+          "test_images": 204,
+          "test_boxes": 371,
+          "map50": 0.1402513908369668,
+          "map50_95": 0.06384600281924559
+        },
+        {
+          "class": "bed",
+          "test_images": 79,
+          "test_boxes": 88,
+          "map50": 0.4561589810933587,
+          "map50_95": 0.27269014560744154
+        },
+        {
+          "class": "toilet",
+          "test_images": 34,
+          "test_boxes": 35,
+          "map50": 0.3621954283239488,
+          "map50_95": 0.13649217309549938
+        },
+        {
+          "class": "potted plant",
+          "test_images": 79,
+          "test_boxes": 158,
+          "map50": 0.09447223740499162,
+          "map50_95": 0.04874030794261211
+        },
+        {
+          "class": "refrigerator",
+          "test_images": 40,
+          "test_boxes": 41,
+          "map50": 0.37965782117990565,
+          "map50_95": 0.28752405363968137
+        },
+        {
+          "class": "tv",
+          "test_images": 41,
+          "test_boxes": 53,
+          "map50": 0.31352780555148463,
+          "map50_95": 0.2135135463099616
+        },
+        {
+          "class": "door",
+          "test_images": 106,
+          "test_boxes": 143,
+          "map50": 0.20142813931776618,
+          "map50_95": 0.10413046885179174
+        },
+        {
+          "class": "stairs",
+          "test_images": 214,
+          "test_boxes": 298,
+          "map50": 0.593135358228824,
+          "map50_95": 0.40296095753850586
+        },
+        {
+          "class": "wall",
+          "test_images": 250,
+          "test_boxes": 292,
+          "map50": null,
+          "map50_95": null
+        },
+        {
+          "class": "shoe",
+          "test_images": 195,
+          "test_boxes": 885,
+          "map50": null,
+          "map50_95": null
+        },
+        {
+          "class": "bag",
+          "test_images": 132,
+          "test_boxes": 203,
+          "map50": null,
+          "map50_95": null
+        },
+        {
+          "class": "toy",
+          "test_images": 87,
+          "test_boxes": 268,
+          "map50": null,
+          "map50_95": null
+        },
+        {
+          "class": "bin",
+          "test_images": 113,
+          "test_boxes": 188,
+          "map50": null,
+          "map50_95": null
+        },
+        {
+          "class": "appliance",
+          "test_images": 98,
+          "test_boxes": 209,
+          "map50": null,
+          "map50_95": null
+        },
+        {
+          "class": "cabinet",
+          "test_images": 107,
+          "test_boxes": 177,
+          "map50": null,
+          "map50_95": null
+        }
+      ],
+      "candidate": [
+        {
+          "class": "chair",
+          "test_images": 258,
+          "test_boxes": 827,
+          "map50": 0.38514310500469845,
+          "map50_95": 0.2169428095551567
+        },
+        {
+          "class": "couch",
+          "test_images": 64,
+          "test_boxes": 107,
+          "map50": 0.3929623540385251,
+          "map50_95": 0.2477872949634615
+        },
+        {
+          "class": "dining table",
+          "test_images": 204,
+          "test_boxes": 371,
+          "map50": 0.26199079583548907,
+          "map50_95": 0.12946496023969772
+        },
+        {
+          "class": "bed",
+          "test_images": 79,
+          "test_boxes": 88,
+          "map50": 0.5685724265654327,
+          "map50_95": 0.35747165616939947
+        },
+        {
+          "class": "toilet",
+          "test_images": 34,
+          "test_boxes": 35,
+          "map50": 0.3880682736184102,
+          "map50_95": 0.22694180603721947
+        },
+        {
+          "class": "potted plant",
+          "test_images": 79,
+          "test_boxes": 158,
+          "map50": 0.395652901864146,
+          "map50_95": 0.21977807147000075
+        },
+        {
+          "class": "refrigerator",
+          "test_images": 40,
+          "test_boxes": 41,
+          "map50": 0.5954168667762864,
+          "map50_95": 0.45753043367687746
+        },
+        {
+          "class": "tv",
+          "test_images": 41,
+          "test_boxes": 53,
+          "map50": 0.5334077293992788,
+          "map50_95": 0.3584884020105289
+        },
+        {
+          "class": "door",
+          "test_images": 106,
+          "test_boxes": 143,
+          "map50": 0.2537698569606873,
+          "map50_95": 0.1295812933673562
+        },
+        {
+          "class": "stairs",
+          "test_images": 214,
+          "test_boxes": 298,
+          "map50": 0.6096703083718074,
+          "map50_95": 0.3987717302514066
+        },
+        {
+          "class": "wall",
+          "test_images": 250,
+          "test_boxes": 292,
+          "map50": 0.22898395460899587,
+          "map50_95": 0.130200545679812
+        },
+        {
+          "class": "shoe",
+          "test_images": 195,
+          "test_boxes": 885,
+          "map50": 0.12735575423972087,
+          "map50_95": 0.04409370035319446
+        },
+        {
+          "class": "bag",
+          "test_images": 132,
+          "test_boxes": 203,
+          "map50": 0.48665805404097845,
+          "map50_95": 0.24091309607318548
+        },
+        {
+          "class": "toy",
+          "test_images": 87,
+          "test_boxes": 268,
+          "map50": 0.27147041678073863,
+          "map50_95": 0.14949827030091517
+        },
+        {
+          "class": "bin",
+          "test_images": 113,
+          "test_boxes": 188,
+          "map50": 0.5820296841715812,
+          "map50_95": 0.3674793423401033
+        },
+        {
+          "class": "appliance",
+          "test_images": 98,
+          "test_boxes": 209,
+          "map50": 0.31882499193779573,
+          "map50_95": 0.16754259830934942
+        },
+        {
+          "class": "cabinet",
+          "test_images": 107,
+          "test_boxes": 177,
+          "map50": 0.33541396829978626,
+          "map50_95": 0.19694670226784933
+        }
+      ]
+    },
+    "lowlight": {
+      "baseline": [
+        {
+          "class": "chair",
+          "test_images": 258,
+          "test_boxes": 827,
+          "map50": 0.03894669842317035,
+          "map50_95": 0.01627593856065056
+        },
+        {
+          "class": "couch",
+          "test_images": 64,
+          "test_boxes": 107,
+          "map50": 0.03603066430975312,
+          "map50_95": 0.017216063480714104
+        },
+        {
+          "class": "dining table",
+          "test_images": 204,
+          "test_boxes": 371,
+          "map50": 0.028615761093040683,
+          "map50_95": 0.012579473287986882
+        },
+        {
+          "class": "bed",
+          "test_images": 79,
+          "test_boxes": 88,
+          "map50": 0.1174642827563644,
+          "map50_95": 0.06553654052984932
+        },
+        {
+          "class": "toilet",
+          "test_images": 34,
+          "test_boxes": 35,
+          "map50": 0.30146757685409514,
+          "map50_95": 0.1230738363332573
+        },
+        {
+          "class": "potted plant",
+          "test_images": 79,
+          "test_boxes": 158,
+          "map50": 0.018728240480712012,
+          "map50_95": 0.010985196744431434
+        },
+        {
+          "class": "refrigerator",
+          "test_images": 40,
+          "test_boxes": 41,
+          "map50": 0.20912568818265823,
+          "map50_95": 0.16175825886022532
+        },
+        {
+          "class": "tv",
+          "test_images": 41,
+          "test_boxes": 53,
+          "map50": 0.12859870115942656,
+          "map50_95": 0.08578439633871618
+        },
+        {
+          "class": "door",
+          "test_images": 106,
+          "test_boxes": 143,
+          "map50": 0.10749540697307378,
+          "map50_95": 0.05490662388665305
+        },
+        {
+          "class": "stairs",
+          "test_images": 214,
+          "test_boxes": 298,
+          "map50": 0.33998647961991907,
+          "map50_95": 0.21338412226700626
+        },
+        {
+          "class": "wall",
+          "test_images": 250,
+          "test_boxes": 292,
+          "map50": null,
+          "map50_95": null
+        },
+        {
+          "class": "shoe",
+          "test_images": 195,
+          "test_boxes": 885,
+          "map50": null,
+          "map50_95": null
+        },
+        {
+          "class": "bag",
+          "test_images": 132,
+          "test_boxes": 203,
+          "map50": null,
+          "map50_95": null
+        },
+        {
+          "class": "toy",
+          "test_images": 87,
+          "test_boxes": 268,
+          "map50": null,
+          "map50_95": null
+        },
+        {
+          "class": "bin",
+          "test_images": 113,
+          "test_boxes": 188,
+          "map50": null,
+          "map50_95": null
+        },
+        {
+          "class": "appliance",
+          "test_images": 98,
+          "test_boxes": 209,
+          "map50": null,
+          "map50_95": null
+        },
+        {
+          "class": "cabinet",
+          "test_images": 107,
+          "test_boxes": 177,
+          "map50": null,
+          "map50_95": null
+        }
+      ],
+      "candidate": [
+        {
+          "class": "chair",
+          "test_images": 258,
+          "test_boxes": 827,
+          "map50": 0.27079474081248744,
+          "map50_95": 0.15643124345563314
+        },
+        {
+          "class": "couch",
+          "test_images": 64,
+          "test_boxes": 107,
+          "map50": 0.2120196494568388,
+          "map50_95": 0.13016927590230276
+        },
+        {
+          "class": "dining table",
+          "test_images": 204,
+          "test_boxes": 371,
+          "map50": 0.2058576894603682,
+          "map50_95": 0.09426981189759662
+        },
+        {
+          "class": "bed",
+          "test_images": 79,
+          "test_boxes": 88,
+          "map50": 0.46577639336653315,
+          "map50_95": 0.29032392448337424
+        },
+        {
+          "class": "toilet",
+          "test_images": 34,
+          "test_boxes": 35,
+          "map50": 0.29223297761427214,
+          "map50_95": 0.16375435865431964
+        },
+        {
+          "class": "potted plant",
+          "test_images": 79,
+          "test_boxes": 158,
+          "map50": 0.3120778590850185,
+          "map50_95": 0.16247813756406798
+        },
+        {
+          "class": "refrigerator",
+          "test_images": 40,
+          "test_boxes": 41,
+          "map50": 0.5851705703578347,
+          "map50_95": 0.4067864235741663
+        },
+        {
+          "class": "tv",
+          "test_images": 41,
+          "test_boxes": 53,
+          "map50": 0.36853071751643207,
+          "map50_95": 0.22709844305581672
+        },
+        {
+          "class": "door",
+          "test_images": 106,
+          "test_boxes": 143,
+          "map50": 0.1608171948191629,
+          "map50_95": 0.07993544536330524
+        },
+        {
+          "class": "stairs",
+          "test_images": 214,
+          "test_boxes": 298,
+          "map50": 0.5469228502499883,
+          "map50_95": 0.3695523642105164
+        },
+        {
+          "class": "wall",
+          "test_images": 250,
+          "test_boxes": 292,
+          "map50": 0.19937544522427156,
+          "map50_95": 0.11844708735657883
+        },
+        {
+          "class": "shoe",
+          "test_images": 195,
+          "test_boxes": 885,
+          "map50": 0.07179029134211802,
+          "map50_95": 0.026062771900590486
+        },
+        {
+          "class": "bag",
+          "test_images": 132,
+          "test_boxes": 203,
+          "map50": 0.2775503123745723,
+          "map50_95": 0.14103762007466542
+        },
+        {
+          "class": "toy",
+          "test_images": 87,
+          "test_boxes": 268,
+          "map50": 0.2566963054951832,
+          "map50_95": 0.1307632627598133
+        },
+        {
+          "class": "bin",
+          "test_images": 113,
+          "test_boxes": 188,
+          "map50": 0.4346164811417485,
+          "map50_95": 0.26470047412331976
+        },
+        {
+          "class": "appliance",
+          "test_images": 98,
+          "test_boxes": 209,
+          "map50": 0.2277317529443477,
+          "map50_95": 0.11306689915330828
+        },
+        {
+          "class": "cabinet",
+          "test_images": 107,
+          "test_boxes": 177,
+          "map50": 0.236017239795219,
+          "map50_95": 0.1306964248915471
+        }
+      ]
+    },
+    "candidate_mean_map50_95": 0.23761368900385377,
+    "candidate_lowlight_mean_map50_95": 0.17679846873064248,
+    "baseline_mean_map50_95_where_defined": 0.17727135334538585,
+    "baseline_lowlight_mean_map50_95_where_defined": 0.07615004502894904
+  },
+  "ship": true,
+  "reasons": {
+    "candidate_file_is_at_least_as_large": true,
+    "shared_map50_95_improved_by_0.005": true,
+    "lowlight_shared_map50_95_not_worse_by_more_than_0.01": true
+  }
+}

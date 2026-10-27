@@ -7,7 +7,7 @@ import org.junit.Test
 class YoloDecodeTest {
     @Test
     fun classList_dropsEmptyClassesAndKeepsOrder() {
-        assertEquals(29, YoloDecode.CLASS_NAMES.size)
+        assertEquals(36, YoloDecode.CLASS_NAMES.size)
         assertEquals("person", YoloDecode.CLASS_NAMES[0])
         assertEquals("pothole", YoloDecode.CLASS_NAMES[11])
         assertEquals("pole_bollard", YoloDecode.CLASS_NAMES[15])
@@ -16,6 +16,13 @@ class YoloDecodeTest {
         assertEquals("cat", YoloDecode.CLASS_NAMES[19])
         assertEquals("chair", YoloDecode.CLASS_NAMES[20])
         assertEquals("door", YoloDecode.CLASS_NAMES[28])
+        assertEquals("wall", YoloDecode.CLASS_NAMES[29])
+        assertEquals("shoe", YoloDecode.CLASS_NAMES[30])
+        assertEquals("bag", YoloDecode.CLASS_NAMES[31])
+        assertEquals("toy", YoloDecode.CLASS_NAMES[32])
+        assertEquals("bin", YoloDecode.CLASS_NAMES[33])
+        assertEquals("appliance", YoloDecode.CLASS_NAMES[34])
+        assertEquals("cabinet", YoloDecode.CLASS_NAMES[35])
         assertTrue("speed_bump" !in YoloDecode.CLASS_NAMES)
         assertTrue("low_branch" !in YoloDecode.CLASS_NAMES)
         assertTrue("potted plant" in YoloDecode.CLASS_NAMES)

@@ -7,7 +7,8 @@ public enum YoloDecode {
         "auto_rickshaw", "cycle_rickshaw", "handcart", "pothole", "manhole_open_drain",
         "curb", "stairs", "pole_bollard", "barrier", "street_furniture", "tree",
         "cat", "chair", "couch", "dining table", "bed", "toilet", "potted plant",
-        "refrigerator", "tv", "door",
+        "refrigerator", "tv", "door", "wall",
+        "shoe", "bag", "toy", "bin", "appliance", "cabinet",
     ]
 
     public struct Letterbox {

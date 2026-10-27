@@ -109,10 +109,13 @@ final class LogicTests: XCTestCase {
     }
 
     func testYoloClassOrderAndDecode() {
-        XCTAssertEqual(YoloDecode.classNames.count, 29)
+        XCTAssertEqual(YoloDecode.classNames.count, 36)
         XCTAssertEqual(YoloDecode.classNames[0], "person")
         XCTAssertEqual(YoloDecode.classNames[11], "pothole")
         XCTAssertEqual(YoloDecode.classNames[28], "door")
+        XCTAssertEqual(YoloDecode.classNames[29], "wall")
+        XCTAssertEqual(YoloDecode.classNames[30], "shoe")
+        XCTAssertEqual(YoloDecode.classNames[35], "cabinet")
         XCTAssertFalse(YoloDecode.classNames.contains("speed_bump"))
         let classes = YoloDecode.classNames.count
         let anchors = 2

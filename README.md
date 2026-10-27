@@ -205,17 +205,15 @@ The screen can lock because the work runs in a foreground service. The service t
 
 ### Model
 
-Detector file: `app/src/main/assets/obstacles_v1.tflite` (3,050,625 bytes). It is a YOLO11n head, input 320, int8 weights, run by `org.tensorflow:tensorflow-lite` (two CPU threads) and decoded in `detect/YoloDecode.kt`. No network call is made. On this Intel Xeon, Python TFLite with two threads took about 3.3 ms per invoke. That is not a Helio G99 measurement.
+Detector file: `app/src/main/assets/obstacles_v1.tflite` (3,052,928 bytes). It is a YOLO11n head, input 320, int8 weights, float32 input and output `[1, 40, 2100]`, run by `org.tensorflow:tensorflow-lite` (two CPU threads) and decoded in `detect/YoloDecode.kt`. No network call is made. There was no GPU on the machine that trained it. The run started from `yolo11n.pt`, because the previous int8 file cannot be a training checkpoint.
 
-Held-out scores after 4 epochs on this CPU (the trainer reported 3.23 hours). Validation mAP50 0.571, mAP50-95 0.400. Test mAP50 0.559, mAP50-95 0.395. Indoor test mAP50-95: person 0.38, dog 0.40, cat 0.51, chair 0.14, couch 0.27, dining table 0.25, bed 0.42, toilet 0.55, potted plant 0.15, refrigerator 0.43, tv 0.45, door 0.18, stairs 0.42. Curb validation mAP50-95 is 0.111 (274 train images, 61 val). The test split has no curb pictures, so there is no curb test score. Potholes are also weak (test mAP50-95 0.08). These are short CPU runs, not a phone benchmark. Full per-class numbers are in `training/metrics/train_report.json`.
+The held-out set is 2,400 real photographs. Synthetic images were not in validation or test. On that set the shipped file scores mAP50 0.352 and mAP50-95 0.200. The previous 3,050,625-byte file, scored on the same pictures, is mAP50 0.263 and mAP50-95 0.152. The same pictures darkened (dim, gamma, noise, motion blur) score mAP50 0.254 and mAP50-95 0.141, against 0.055 mAP50-95 for the previous file. A matched run without the private synthetic training images scored real-photo mAP50-95 0.195, so the synthetic train-only batch is the one that shipped. Full per-class numbers, including the indoor classes, are in `training/metrics/ablation_synth160.json`. These are CPU scores, not a phone benchmark.
 
-The same test pictures were darkened (brightness, gamma, noise, and motion blur) and scored again on this CPU. Before any low-light fine-tune, that darkened split scored mAP50 0.283 and mAP50-95 0.189. One further epoch with those same effects on training batches scored mAP50 0.292 and mAP50-95 0.185 on the darkened split, and the normal validation mAP50-95 fell from 0.400 to 0.261. That epoch was not packaged. ExDark, BDD100K, and nuScenes were not added: their terms are research or non-commercial. A Roboflow night-vision project lists CC BY 4.0, but the photos are a reupload without a confirmed source license, so those pictures were not added either. Numbers are in `training/metrics/lowlight_report.json`.
+The 36 class names, in model order, are:
 
-The 29 class names, in model order, are:
+person, bicycle, motorcycle, car, bus, truck, cow, dog, auto_rickshaw, cycle_rickshaw, handcart, pothole, manhole_open_drain, curb, stairs, pole_bollard, barrier, street_furniture, tree, cat, chair, couch, dining table, bed, toilet, potted plant, refrigerator, tv, door, wall, shoe, bag, toy, bin, appliance, cabinet.
 
-person, bicycle, motorcycle, car, bus, truck, cow, dog, auto_rickshaw, cycle_rickshaw, handcart, pothole, manhole_open_drain, curb, stairs, pole_bollard, barrier, street_furniture, tree, cat, chair, couch, dining table, bed, toilet, potted plant, refrigerator, tv, door.
-
-Spoken short names in English include plant, table, television, door, refrigerator, auto rickshaw, and open drain. `speed_bump` and `low_branch` are not classes. Curbs have few pictures. Training and the held-out scores are in `training/train_obstacles.py` and `training/metrics/train_report.json`.
+Spoken short names in English include plant, table, television, door, refrigerator, auto rickshaw, open drain, wall, shoe, bag, toy, bin, appliance, and cabinet. `unknown object` is not a trained class. Depth still speaks it. `speed_bump` and `low_branch` are not classes. Curbs still have few real pictures (test mAP50-95 about 0.003). Training sources are listed in `training/DATASETS.md`.
 
 Depth file: `app/src/main/assets/depth_anything_v2_small.tflite` (27,733,680 bytes). It is Depth Anything V2 Small, Apache License 2.0, dynamic int8 weights and a float32 interface. Input is `[1, 3, 518, 686]` NCHW, ImageNet mean and standard deviation, stretched to that size. The raw output is disparity (a larger value is closer). The app negates it before the warning logic, which treats a larger value as farther. Base, large, and giant Depth Anything weights are not used. Their license is not Apache-2.0. On this same Xeon, two threads, one depth invoke took about 290 ms and the process was near 1 GB resident. That is about three frames a second if depth ran alone. The app asks for about two frames a second so the detector can keep going. No GPU delegate was available here. No phone and no milliamp-hour figure was measured. A Helio G99 will be slower than this Xeon. Numbers are in `training/metrics/depth_bench.json`.
 
@@ -245,7 +243,7 @@ The Hindi and Spanish word lists are about 3.6 MB and 0.9 MB on disk. In the arm
 - `detect/ObstacleDetector.kt` — loads the bundled detector.
 - `detect/TfliteDepth.kt` — loads the monocular depth model.
 - `detect/ArcoreDepthCamera.kt` — optional metric depth when ARCore is already installed.
-- `detect/YoloDecode.kt` — box decode for the 29-class head, covered by `YoloDecodeTest`.
+- `detect/YoloDecode.kt` — box decode for the 36-class head, covered by `YoloDecodeTest`.
 - `voice/VoskEar.kt` — wake word, then one command.
 - `logic/VoiceCommands.kt` — localizable command matching.
 - `logic/ShakeWatch.kt` — backup shake.
@@ -266,7 +264,7 @@ There is no Mac in the environment that built this repository, and this reposito
 ### What the iPhone app does
 
 - Rear camera, portrait, so a shirt pocket with the camera facing the way you walk can work while the screen is on.
-- Spoken warnings with distance, including "pothole" and the other 29 classes, plus wall, unknown object, and approaching.
+- Spoken warnings with distance for the 36 detector classes, plus a depth wall, an unknown object, and approaching.
 - The screen stays awake while guiding. A very close object ahead vibrates in three pulses (about 280 ms on, 120 ms off) when vibration is on.
 - Hey Guide, then one command. A large Listen button does the same job without the wake phrase. A hard shake, or a double-tap on the screen when VoiceOver is off, also opens that command window.
 - English is the default. Hindi, Spanish, Kannada, Telugu, Tamil, Bengali, and Swahili are the same drafts as Android. Apple's on-device recognizer is used for the selected language when that voice is installed, with English always listening too. Stop, start collecting, stop collecting, missed, and wrong stay English. The Vosk zips are not copied to iOS. The Hindi and Spanish word lists are copied so a wake phrase accepted on Android is accepted here.

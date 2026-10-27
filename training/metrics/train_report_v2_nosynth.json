@@ -1,0 +1,166 @@
+{
+  "hardware": "CPU only. No GPU was visible.",
+  "base": "yolo11n.pt",
+  "model": "yolo11n",
+  "imgsz": 320,
+  "epochs_cap": 8,
+  "hours_cap": 2.5,
+  "batch": 8,
+  "train_seconds": 9035.904736122,
+  "lowlight_batch_probability": 0.4,
+  "weights": "/workspace/training/weights/obstacles_v2.pt",
+  "val": {
+    "map50": 0.3025414001105863,
+    "map50_95": 0.18281293821919797,
+    "per_class_map50_95": [
+      {
+        "class": "person",
+        "map50_95": 0.23193324063573378
+      },
+      {
+        "class": "bicycle",
+        "map50_95": 0.14336422127634602
+      },
+      {
+        "class": "motorcycle",
+        "map50_95": 0.18248254525615284
+      },
+      {
+        "class": "car",
+        "map50_95": 0.15064586139018976
+      },
+      {
+        "class": "bus",
+        "map50_95": 0.3336141274184752
+      },
+      {
+        "class": "truck",
+        "map50_95": 0.16505156366161017
+      },
+      {
+        "class": "cow",
+        "map50_95": 0.016851538461538463
+      },
+      {
+        "class": "dog",
+        "map50_95": 0.15960328571428573
+      },
+      {
+        "class": "auto_rickshaw",
+        "map50_95": 0.18281293821919797
+      },
+      {
+        "class": "cycle_rickshaw",
+        "map50_95": 0.18281293821919797
+      },
+      {
+        "class": "handcart",
+        "map50_95": 0.3512928366084048
+      },
+      {
+        "class": "pothole",
+        "map50_95": 0.2572589597882716
+      },
+      {
+        "class": "manhole_open_drain",
+        "map50_95": 0.1715790312954087
+      },
+      {
+        "class": "curb",
+        "map50_95": 0.0022170846394984323
+      },
+      {
+        "class": "stairs",
+        "map50_95": 0.41917164182684397
+      },
+      {
+        "class": "pole_bollard",
+        "map50_95": 0.06114722353748166
+      },
+      {
+        "class": "barrier",
+        "map50_95": 0.0005473631681152867
+      },
+      {
+        "class": "street_furniture",
+        "map50_95": 0.04607096347902988
+      },
+      {
+        "class": "tree",
+        "map50_95": 0.0704450101785789
+      },
+      {
+        "class": "cat",
+        "map50_95": 0.005307783560385733
+      },
+      {
+        "class": "chair",
+        "map50_95": 0.18944588177317606
+      },
+      {
+        "class": "couch",
+        "map50_95": 0.21392785174184162
+      },
+      {
+        "class": "dining table",
+        "map50_95": 0.10461091700817529
+      },
+      {
+        "class": "bed",
+        "map50_95": 0.4821525818393571
+      },
+      {
+        "class": "toilet",
+        "map50_95": 0.06561904761904762
+      },
+      {
+        "class": "potted plant",
+        "map50_95": 0.024809360329497373
+      },
+      {
+        "class": "refrigerator",
+        "map50_95": 0.4750030620068519
+      },
+      {
+        "class": "tv",
+        "map50_95": 0.15136800060363068
+      },
+      {
+        "class": "door",
+        "map50_95": 0.16908074343072935
+      },
+      {
+        "class": "wall",
+        "map50_95": 0.1562573969573874
+      },
+      {
+        "class": "shoe",
+        "map50_95": 0.05616656073530092
+      },
+      {
+        "class": "bag",
+        "map50_95": 0.22229507889579284
+      },
+      {
+        "class": "toy",
+        "map50_95": 0.18295311785083276
+      },
+      {
+        "class": "bin",
+        "map50_95": 0.4917452714656272
+      },
+      {
+        "class": "appliance",
+        "map50_95": 0.22098212025291653
+      },
+      {
+        "class": "cabinet",
+        "map50_95": 0.2406386250462158
+      }
+    ]
+  },
+  "export_seconds": 151.3668382300002,
+  "tflite": "/workspace/training/metrics/obstacles_v2_int8.tflite",
+  "tflite_bytes": 3052924,
+  "tflite_source": "/workspace/training/runs/obstacles_v2/weights/best_int8.tflite"
+}

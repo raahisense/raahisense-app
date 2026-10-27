@@ -34,6 +34,9 @@ jobs:
           yes | sdkmanager --licenses >/dev/null || true
           sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
 
+      - name: Unit tests
+        run: ./gradlew :app:testDebugUnitTest --stacktrace --no-daemon
+
       - name: Assemble the debug APK
         run: ./gradlew :app:assembleDebug --stacktrace --no-daemon
 

@@ -187,6 +187,14 @@ class CommandParserTest {
     }
 
     @Test
+    fun vocabScan_returnsOnlyTheWordsTheGrammarNeeds() {
+        val lines = sequenceOf("the", "hey", "guide", "start", "unused")
+        val found = VocabScan.presentWords(lines, setOf("hey", "guide", "missing"))
+        assertEquals(setOf("hey", "guide"), found)
+        assertTrue(VocabScan.presentWords(emptySequence(), setOf("hey")).isEmpty())
+    }
+
+    @Test
     fun everydayCommands_canBeHindiOrSpanish_andStopStaysEnglish() {
         val hindi = CommandLexicon.ENGLISH.withExtra(
             mapOf(

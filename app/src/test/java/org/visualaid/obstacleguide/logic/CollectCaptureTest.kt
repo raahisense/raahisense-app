@@ -243,11 +243,12 @@ class CollectCaptureTest {
         val session = File(root, "2026-10-25").apply { mkdirs() }
         val jpg = File(session, "frame.jpg").apply { writeBytes(byteArrayOf(1, 2, 3, 4)) }
         val json = File(session, "frame.json").apply { writeText("{\"event\":\"missed\"}") }
+        val log = File(root, "diagnostics.log").apply { writeText("MEM pssKb=1\n") }
         val zip = File(root, "session.zip")
-        CollectZip.write(zip, root, listOf(jpg, json))
+        CollectZip.write(zip, root, listOf(jpg, json, log))
         ZipFile(zip).use { archive ->
             val names = archive.entries().toList().map { it.name }.toSet()
-            assertEquals(setOf("2026-10-25/frame.jpg", "2026-10-25/frame.json"), names)
+            assertEquals(setOf("2026-10-25/frame.jpg", "2026-10-25/frame.json", "diagnostics.log"), names)
             val saved = archive.getInputStream(archive.getEntry("2026-10-25/frame.json")).readBytes()
             assertEquals("{\"event\":\"missed\"}", saved.toString(Charsets.UTF_8))
         }

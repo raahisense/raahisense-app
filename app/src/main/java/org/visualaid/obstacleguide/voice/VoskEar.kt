@@ -9,7 +9,9 @@ import android.os.Looper
 import android.os.SystemClock
 import android.util.Log
 import org.json.JSONObject
+import org.visualaid.obstacleguide.StabilityLog
 import org.visualaid.obstacleguide.logic.CommandGrammar
+import org.visualaid.obstacleguide.logic.CommandLexicon
 import org.visualaid.obstacleguide.logic.EarChoice
 import org.visualaid.obstacleguide.logic.SpokenEar
 import org.visualaid.obstacleguide.logic.VoiceAction
@@ -78,6 +80,7 @@ class VoskEar(
         captureRequest.set(true)
     }
 
+    /** Asks the ear thread to rebuild. Unchanged language and phrases are ignored there. */
     fun reloadGrammar() {
         reload.set(true)
     }
@@ -102,7 +105,10 @@ class VoskEar(
         val lanes = ArrayList<Lane>()
         try {
             LibVosk.setLogLevel(LogLevel.WARNINGS)
-            openLanes(lanes, listener.languageTag())
+            if (!openLanes(lanes, listener.languageTag())) {
+                main.post { listener.onError() }
+                return
+            }
             val shorts = (SAMPLE_RATE * 0.2f).toInt()
             record = AudioRecord(
                 MediaRecorder.AudioSource.VOICE_RECOGNITION,
@@ -125,25 +131,33 @@ class VoskEar(
             var phase = Phase.WAKE
             var deadline = 0L
             var loadedTag = listener.languageTag()
+            var loadedStamp = grammarStamp()
             while (alive.get()) {
                 val tag = listener.languageTag()
+                val reloadRequested = reload.getAndSet(false)
                 val tagChanged = tag != loadedTag
-                if ((reload.getAndSet(false) || tagChanged) && (phase == Phase.WAKE || tagChanged)) {
+                if ((reloadRequested || tagChanged) && (phase == Phase.WAKE || tagChanged)) {
+                    val stamp = grammarStamp()
                     if (tagChanged) {
-                        openLanes(lanes, tag)
+                        if (!openLanes(lanes, tag)) {
+                            main.post { listener.onError() }
+                            return
+                        }
                         loadedTag = tag
+                        loadedStamp = stamp
                         if (phase == Phase.COMMAND) {
                             phase = Phase.WAKE
                             main.post { listener.onCaptureEnded() }
                         }
-                    } else {
-                        for (lane in lanes) applyGrammar(lane, commandPhase = false)
+                    } else if (stamp != loadedStamp) {
+                        for (lane in lanes) rebuildGrammar(lane, commandPhase = phase == Phase.COMMAND)
+                        loadedStamp = stamp
                     }
                 }
                 if (captureRequest.getAndSet(false) && phase == Phase.WAKE) {
                     phase = Phase.COMMAND
                     deadline = SystemClock.elapsedRealtime() + COMMAND_WINDOW_MS
-                    for (lane in lanes) applyGrammar(lane, commandPhase = true)
+                    for (lane in lanes) applyStored(lane, commandPhase = true)
                     main.post { listener.onCaptureBegan(speakAck = true) }
                 }
                 val read = record.read(buffer, 0, buffer.size)
@@ -152,7 +166,7 @@ class VoskEar(
                     for (lane in lanes) lane.recognizer.reset()
                     if (phase == Phase.COMMAND && SystemClock.elapsedRealtime() > deadline) {
                         phase = Phase.WAKE
-                        for (lane in lanes) applyGrammar(lane, commandPhase = false)
+                        for (lane in lanes) applyStored(lane, commandPhase = false)
                         main.post { listener.onCaptureEnded() }
                     }
                     continue
@@ -164,7 +178,7 @@ class VoskEar(
                 if (phase == Phase.COMMAND && SystemClock.elapsedRealtime() > deadline) {
                     val heard = lanes.map { Heard(it, textOf(it.recognizer.finalResult), endpoint = true) }
                     phase = Phase.WAKE
-                    for (lane in lanes) applyGrammar(lane, commandPhase = false)
+                    for (lane in lanes) applyStored(lane, commandPhase = false)
                     deliver(decide(heard, commandPhase = true))
                     continue
                 }
@@ -184,7 +198,7 @@ class VoskEar(
                         VoiceAction.WAKE_ONLY -> {
                             phase = Phase.COMMAND
                             deadline = SystemClock.elapsedRealtime() + COMMAND_WINDOW_MS
-                            for (lane in lanes) applyGrammar(lane, commandPhase = true)
+                            for (lane in lanes) applyStored(lane, commandPhase = true)
                             main.post { listener.onCaptureBegan(speakAck = true) }
                         }
                         else -> {
@@ -198,7 +212,7 @@ class VoskEar(
                     }
                 } else if (isSpokenCommand(action) || (action == VoiceAction.UNKNOWN && everyLaneEnded)) {
                     phase = Phase.WAKE
-                    for (lane in lanes) applyGrammar(lane, commandPhase = false)
+                    for (lane in lanes) applyStored(lane, commandPhase = false)
                     deliver(action)
                 } else {
                     resetEnded(heard)
@@ -279,32 +293,37 @@ class VoskEar(
         }
     }
 
-    private fun openLanes(lanes: MutableList<Lane>, tag: String) {
+    /** @return false when the English model cannot be unpacked. The process keeps running. */
+    private fun openLanes(lanes: MutableList<Lane>, tag: String): Boolean {
         closeLanes(lanes)
-        lanes += openLane(EarModel.ENGLISH, english = true)
+        val english = try {
+            openLane(EarModel.ENGLISH, english = true)
+        } catch (error: Throwable) {
+            Log.e(TAG, "English Vosk model did not unpack", error)
+            StabilityLog.append(appContext, "VOSK english unpack failed: ${error.message}")
+            return false
+        }
+        lanes += english
         val extra = EarModel.forLanguage(tag)
         if (extra != null) {
             try {
-                val lane = openLane(extra, english = false)
-                if (grammarFor(lane, commandPhase = false) == null) {
-                    lane.recognizer.close()
-                    lane.model.close()
-                } else {
-                    lanes += lane
-                }
-            } catch (error: Exception) {
+                lanes += openLane(extra, english = false)
+            } catch (error: Throwable) {
                 Log.e(TAG, "Language model failed", error)
+                StabilityLog.append(appContext, "VOSK ${extra.tag} model failed: ${error.message}")
             }
         }
-        for (lane in lanes) applyGrammar(lane, commandPhase = false)
+        return true
     }
 
     private fun openLane(spec: EarModel, english: Boolean): Lane {
         val directory = VoskModels.modelDirectory(appContext, spec)
+        val grammars = buildGrammars(spec.wordsAsset, english)
+            ?: throw IllegalStateException("wake phrase is not in the ${spec.tag} model")
         val model = Model(directory.absolutePath)
-        val vocab = VoskVocab.words(appContext, spec.wordsAsset)
-        val recognizer = Recognizer(model, SAMPLE_RATE, "[\"[unk]\"]")
-        return Lane(spec.tag, english, model, recognizer, vocab)
+        val recognizer = Recognizer(model, SAMPLE_RATE, grammars.first)
+        tune(recognizer, commandPhase = false)
+        return Lane(spec.tag, english, spec.wordsAsset, model, recognizer, grammars.first, grammars.second)
     }
 
     private fun closeLanes(lanes: MutableList<Lane>) {
@@ -321,34 +340,58 @@ class VoskEar(
         lanes.clear()
     }
 
-    private fun applyGrammar(lane: Lane, commandPhase: Boolean) {
-        val grammar = grammarFor(lane, commandPhase) ?: CommandGrammar.json(emptyList())
+    private fun rebuildGrammar(lane: Lane, commandPhase: Boolean) {
+        val built = buildGrammars(lane.wordsAsset, lane.english) ?: return
+        lane.wakeGrammar = built.first
+        lane.commandGrammar = built.second
+        applyStored(lane, commandPhase)
+    }
+
+    private fun applyStored(lane: Lane, commandPhase: Boolean) {
+        val grammar = if (commandPhase) lane.commandGrammar else lane.wakeGrammar
         lane.recognizer.setGrammar(grammar)
         tune(lane.recognizer, commandPhase)
         lane.recognizer.reset()
     }
 
-    private fun grammarFor(lane: Lane, commandPhase: Boolean): String? {
+    /**
+     * Streams the word list, keeps only words used by commands, then drops the list.
+     * Returns wake grammar and command grammar.
+     */
+    private fun buildGrammars(wordsAsset: String, english: Boolean): Pair<String, String>? {
         val commands = listener.lexicon().allPhrases()
-        if (commandPhase) {
-            val phrases = CommandGrammar.commandPhrases(commands, lane.vocab)
-            if (phrases.isEmpty()) return null
-            return CommandGrammar.json(phrases)
-        }
-        val phrases = linkedSetOf<String>()
-        val wakes = if (lane.english) {
+        val wakes = if (english) {
             listOf(listener.wakePhrase())
         } else {
-            SpokenEar.nativeWakes(lane.tag) + listener.wakePhrase()
+            SpokenEar.nativeWakes(listener.languageTag()) + listener.wakePhrase()
         }
+        val needed = LinkedHashSet<String>()
+        for (phrase in commands + correctionPhrases() + wakes) {
+            for (word in CommandLexicon.normalize(phrase).split(' ')) {
+                if (word.isNotEmpty()) needed.add(word)
+            }
+        }
+        val present = VoskVocab.presentWords(appContext, wordsAsset, needed)
+        val wakePhrases = linkedSetOf<String>()
         for (wake in wakes) {
-            phrases.addAll(CommandGrammar.wakePhrases(wake, commands, lane.vocab))
+            wakePhrases.addAll(CommandGrammar.wakePhrases(wake, commands, present))
         }
-        if (lane.english && correction.get()) {
-            phrases.addAll(CommandGrammar.commandPhrases(correctionPhrases(), lane.vocab))
+        if (english && correction.get()) {
+            wakePhrases.addAll(CommandGrammar.commandPhrases(correctionPhrases(), present))
         }
-        if (phrases.isEmpty()) return null
-        return CommandGrammar.json(phrases)
+        if (wakePhrases.isEmpty()) return null
+        val commandPhrases = CommandGrammar.commandPhrases(commands, present)
+        val commandGrammar = if (commandPhrases.isEmpty()) {
+            CommandGrammar.json(emptyList())
+        } else {
+            CommandGrammar.json(commandPhrases)
+        }
+        return CommandGrammar.json(wakePhrases) to commandGrammar
+    }
+
+    private fun grammarStamp(): String {
+        val phrases = listener.lexicon().allPhrases().joinToString("|")
+        return "${listener.languageTag()}\n${listener.wakePhrase()}\n$phrases\n${correction.get()}"
     }
 
     private fun correctionPhrases(): List<String> {
@@ -387,9 +430,11 @@ class VoskEar(
     private class Lane(
         val tag: String,
         val english: Boolean,
+        val wordsAsset: String,
         val model: Model,
         val recognizer: Recognizer,
-        val vocab: Set<String>,
+        var wakeGrammar: String,
+        var commandGrammar: String,
     )
 
     private enum class Phase { WAKE, COMMAND }

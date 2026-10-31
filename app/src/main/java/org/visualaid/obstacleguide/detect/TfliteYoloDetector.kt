@@ -17,13 +17,26 @@ import java.nio.ByteOrder
 /**
  * 36-class walking and indoor detector, including wall and household obstacles. The file is int8 TFLite, loaded from assets.
  * Boxes are mapped back through the same letterbox used at inference.
+ * Input, output, and the letterbox bitmap are reused so a frame does not allocate them again.
  */
 class TfliteYoloDetector(context: Context) : Closeable {
     private val interpreter: Interpreter
     private val inputSize: Int
     private val inputFloat: Boolean
     private val channelsFirst: Boolean
+    private val outputFloat: Boolean
+    private val outputCount: Int
     private val paint = Paint(Paint.FILTER_BITMAP_FLAG)
+    private val letterboxMatrix = Matrix()
+    private val letterboxBitmap: Bitmap
+    private val letterboxCanvas: Canvas
+    private val pixels: IntArray
+    private val inputBuffer: ByteBuffer
+    private val outputBuffer: ByteBuffer
+    private val decoded: FloatArray
+    private val reds: FloatArray
+    private val greens: FloatArray
+    private val blues: FloatArray
 
     init {
         val options = Interpreter.Options().apply { setNumThreads(2) }
@@ -42,37 +55,43 @@ class TfliteYoloDetector(context: Context) : Closeable {
             else -> 320
         }
         inputFloat = input.dataType() == DataType.FLOAT32
+        val output = interpreter.getOutputTensor(0)
+        outputFloat = output.dataType() == DataType.FLOAT32
+        outputCount = output.shape().fold(1) { acc, dim -> acc * dim }
+        val plane = inputSize * inputSize
+        letterboxBitmap = Bitmap.createBitmap(inputSize, inputSize, Bitmap.Config.ARGB_8888)
+        letterboxCanvas = Canvas(letterboxBitmap)
+        pixels = IntArray(plane)
+        inputBuffer = ByteBuffer.allocateDirect(if (inputFloat) plane * 3 * 4 else plane * 3)
+            .order(ByteOrder.nativeOrder())
+        outputBuffer = ByteBuffer.allocateDirect(if (outputFloat) outputCount * 4 else outputCount)
+            .order(ByteOrder.nativeOrder())
+        decoded = FloatArray(outputCount)
+        reds = FloatArray(plane)
+        greens = FloatArray(plane)
+        blues = FloatArray(plane)
     }
 
     fun detect(bitmap: Bitmap, scoreThreshold: Float = WarningLogic.SCORE_THRESHOLD): List<DetectionBox> {
-        val fitted = letterbox(bitmap)
-        val input = raster(fitted)
-        fitted.recycle()
-        val outputTensor = interpreter.getOutputTensor(0)
-        val shape = outputTensor.shape()
-        val count = shape.fold(1) { acc, dim -> acc * dim }
-        val decoded = when (outputTensor.dataType()) {
-            DataType.FLOAT32 -> {
-                val out = ByteBuffer.allocateDirect(count * 4).order(ByteOrder.nativeOrder())
-                // Kotlin's run {} would hide Interpreter.run.
-                interpreter.runForMultipleInputsOutputs(arrayOf(input), mapOf(0 to out))
-                out.rewind()
-                FloatArray(count) { out.float }
+        letterbox(bitmap)
+        raster()
+        outputBuffer.clear()
+        interpreter.runForMultipleInputsOutputs(arrayOf(inputBuffer), mapOf(0 to outputBuffer))
+        outputBuffer.rewind()
+        if (outputFloat) {
+            for (index in 0 until outputCount) {
+                decoded[index] = outputBuffer.float
             }
-            else -> {
-                val raw = ByteBuffer.allocateDirect(count).order(ByteOrder.nativeOrder())
-                interpreter.runForMultipleInputsOutputs(arrayOf(input), mapOf(0 to raw))
-                raw.rewind()
-                val params = outputTensor.quantizationParams()
-                FloatArray(count) { index ->
-                    val unsigned = raw.get(index).toInt() and 0xFF
-                    (unsigned - params.zeroPoint) * params.scale
-                }
+        } else {
+            val params = interpreter.getOutputTensor(0).quantizationParams()
+            for (index in 0 until outputCount) {
+                val unsigned = outputBuffer.get(index).toInt() and 0xFF
+                decoded[index] = (unsigned - params.zeroPoint) * params.scale
             }
         }
         return YoloDecode.decode(
             output = decoded,
-            shape = shape,
+            shape = interpreter.getOutputTensor(0).shape(),
             inputSize = inputSize,
             frameWidth = bitmap.width,
             frameHeight = bitmap.height,
@@ -80,62 +99,50 @@ class TfliteYoloDetector(context: Context) : Closeable {
         )
     }
 
-    private fun letterbox(bitmap: Bitmap): Bitmap {
+    private fun letterbox(bitmap: Bitmap) {
         val box = YoloDecode.letterbox(bitmap.width, bitmap.height, inputSize)
-        val canvasBitmap = Bitmap.createBitmap(inputSize, inputSize, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(canvasBitmap)
-        canvas.drawColor(Color.rgb(114, 114, 114))
-        val matrix = Matrix()
-        matrix.postScale(box.scale, box.scale)
-        matrix.postTranslate(box.padX, box.padY)
-        canvas.drawBitmap(bitmap, matrix, paint)
-        return canvasBitmap
+        letterboxCanvas.drawColor(Color.rgb(114, 114, 114))
+        letterboxMatrix.reset()
+        letterboxMatrix.postScale(box.scale, box.scale)
+        letterboxMatrix.postTranslate(box.padX, box.padY)
+        letterboxCanvas.drawBitmap(bitmap, letterboxMatrix, paint)
     }
 
-    private fun raster(bitmap: Bitmap): ByteBuffer {
-        val pixels = IntArray(inputSize * inputSize)
-        bitmap.getPixels(pixels, 0, inputSize, 0, 0, inputSize, inputSize)
-        val buffer = if (inputFloat) {
-            ByteBuffer.allocateDirect(inputSize * inputSize * 3 * 4)
-        } else {
-            ByteBuffer.allocateDirect(inputSize * inputSize * 3)
-        }
-        buffer.order(ByteOrder.nativeOrder())
+    private fun raster() {
+        letterboxBitmap.getPixels(pixels, 0, inputSize, 0, 0, inputSize, inputSize)
+        inputBuffer.clear()
         val plane = inputSize * inputSize
         if (channelsFirst && inputFloat) {
-            val reds = FloatArray(plane)
-            val greens = FloatArray(plane)
-            val blues = FloatArray(plane)
             for (index in pixels.indices) {
                 val pixel = pixels[index]
                 reds[index] = ((pixel shr 16) and 0xFF) / 255f
                 greens[index] = ((pixel shr 8) and 0xFF) / 255f
                 blues[index] = (pixel and 0xFF) / 255f
             }
-            reds.forEach { buffer.putFloat(it) }
-            greens.forEach { buffer.putFloat(it) }
-            blues.forEach { buffer.putFloat(it) }
+            for (index in 0 until plane) inputBuffer.putFloat(reds[index])
+            for (index in 0 until plane) inputBuffer.putFloat(greens[index])
+            for (index in 0 until plane) inputBuffer.putFloat(blues[index])
         } else {
             for (pixel in pixels) {
                 val r = (pixel shr 16) and 0xFF
                 val g = (pixel shr 8) and 0xFF
                 val b = pixel and 0xFF
                 if (inputFloat) {
-                    buffer.putFloat(r / 255f)
-                    buffer.putFloat(g / 255f)
-                    buffer.putFloat(b / 255f)
+                    inputBuffer.putFloat(r / 255f)
+                    inputBuffer.putFloat(g / 255f)
+                    inputBuffer.putFloat(b / 255f)
                 } else {
-                    buffer.put(r.toByte())
-                    buffer.put(g.toByte())
-                    buffer.put(b.toByte())
+                    inputBuffer.put(r.toByte())
+                    inputBuffer.put(g.toByte())
+                    inputBuffer.put(b.toByte())
                 }
             }
         }
-        buffer.rewind()
-        return buffer
+        inputBuffer.rewind()
     }
 
     override fun close() {
+        if (!letterboxBitmap.isRecycled) letterboxBitmap.recycle()
         interpreter.close()
     }
 

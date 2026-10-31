@@ -44,6 +44,8 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleService
 import org.visualaid.obstacleguide.collect.CollectLocation
 import org.visualaid.obstacleguide.collect.CollectSnapshot
+import org.visualaid.obstacleguide.StabilityLog
+import org.visualaid.obstacleguide.collect.CollectEncoder
 import org.visualaid.obstacleguide.collect.CollectStore
 import org.visualaid.obstacleguide.detect.ArcoreDepthCamera
 import org.visualaid.obstacleguide.detect.ObstacleDetector
@@ -113,6 +115,7 @@ class GuideService : LifecycleService() {
     private val collectExecutor = Executors.newSingleThreadExecutor { runnable ->
         Thread(runnable, "obstacle-guide-collect").apply { priority = Thread.NORM_PRIORITY - 1 }
     }
+    private lateinit var collectEncoder: CollectEncoder
     private val collectScheduler = CollectScheduler()
     private val speechBusy = AtomicBoolean(false)
     private val throttle = WarningThrottle()
@@ -217,6 +220,7 @@ class GuideService : LifecycleService() {
 
     override fun onCreate() {
         super.onCreate()
+        collectEncoder = CollectEncoder(applicationContext)
         speaker = GuideSpeaker(
             applicationContext,
             onReady = {
@@ -1724,6 +1728,11 @@ class GuideService : LifecycleService() {
             handler.post { maybeCapture() }
             return
         }
+        if (!::collectEncoder.isInitialized || !collectEncoder.hasRoom()) {
+            pendingSnapshot = null
+            collectScheduler.requeue(snapshot.event)
+            return
+        }
         if (!captureBusy.compareAndSet(false, true)) return
         pendingSnapshot = null
         val copy = try {
@@ -1737,19 +1746,26 @@ class GuideService : LifecycleService() {
             collectScheduler.requeue(snapshot.event)
             return
         }
-        collectExecutor.execute {
-            try {
-                CollectStore.writeBitmap(applicationContext, copy, snapshot.copy(fullResolution = false))
+        val saved = snapshot.copy(fullResolution = false)
+        val accepted = collectEncoder.offer(
+            copy,
+            saved,
+            onSaved = {
                 collectScheduler.onCaptured(SystemClock.elapsedRealtime())
                 publishCollectUsage()
-            } catch (error: Exception) {
-                Log.w(TAG, "Collect save failed", error)
-                collectScheduler.onCaptured(SystemClock.elapsedRealtime())
-            } finally {
-                copy.recycle()
                 captureBusy.set(false)
                 handler.post { maybeCapture() }
-            }
+            },
+            onFailed = {
+                collectScheduler.onCaptured(SystemClock.elapsedRealtime())
+                captureBusy.set(false)
+                handler.post { maybeCapture() }
+            },
+        )
+        if (!accepted) {
+            captureBusy.set(false)
+            collectScheduler.requeue(snapshot.event)
+            StabilityLog.append(this, "COLLECT queue full, frame dropped")
         }
     }
 
@@ -1775,6 +1791,7 @@ class GuideService : LifecycleService() {
         releaseDetector()
         if (::speaker.isInitialized) speaker.shutdown()
         stopCollectWork()
+        if (::collectEncoder.isInitialized) collectEncoder.shutdown()
         cameraExecutor.shutdown()
         depthExecutor.shutdown()
         collectExecutor.shutdown()

@@ -18,6 +18,7 @@ import android.os.PowerManager
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import org.visualaid.obstacleguide.StabilityLog
 import org.visualaid.obstacleguide.logic.CollectCapture
 import org.visualaid.obstacleguide.logic.CollectEvent
 import org.visualaid.obstacleguide.logic.CollectZip
@@ -169,12 +170,15 @@ object CollectStore {
                 )
         }.orEmpty()
         if (files.none { it.extension.equals("jpg", ignoreCase = true) }) return null
+        val collectRoot = session.parentFile ?: session
+        val diagnostics = StabilityLog.logFile(context)
+        val packed = if (diagnostics.isFile) files + diagnostics else files
         val base = context.applicationContext.getExternalFilesDir(null)
             ?: context.applicationContext.filesDir
         val exportDir = File(base, "RaahiSense/export").apply { mkdirs() }
         val zip = File(exportDir, "RaahiSense-collect-${session.name}.zip")
         if (zip.exists()) zip.delete()
-        CollectZip.write(zip, session.parentFile ?: session, files)
+        CollectZip.write(zip, collectRoot, packed)
         return zip.takeIf { it.isFile && it.length() > 0L }
     }
 

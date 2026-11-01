@@ -31,6 +31,7 @@ final class GuideSession: ObservableObject {
     private var models: ModelEngine?
     private var modelFailed = false
     private let throttle = WarningThrottle()
+    private let detectionConfirm = DetectionConfirm()
     private let depthTracker = DepthTracker()
     private let lowLight = LowLightController()
     private var scoreThreshold = WarningLogic.scoreThreshold
@@ -414,8 +415,11 @@ final class GuideSession: ObservableObject {
             let ranked = rank(boxes)
             storeRanked(ranked)
             guard !captureFlag.get() else { return }
+            let confirmed = detectionConfirm.observe(Set(ranked.map { $0.label }))
+            let stable = ranked.filter { confirmed.contains($0.label) }
+            throttle.gapMs = WarningLogic.defaultGapMs
             guard let choice = WarningLogic.selectAnnouncement(
-                ranked: ranked,
+                ranked: stable,
                 throttle: throttle,
                 speechBusy: busy.get(),
                 nowMs: now
@@ -698,6 +702,8 @@ final class GuideSession: ObservableObject {
             noteMissed()
         case .wrong:
             noteWrong()
+        case .sendLog:
+            speakKey("diagnostics_empty", flush: true)
         }
     }
 
@@ -733,6 +739,7 @@ final class GuideSession: ObservableObject {
             .stopCollecting: phrases("cmd_collect_stop"),
             .missed: phrases("cmd_missed"),
             .wrong: phrases("cmd_wrong"),
+            .sendLog: phrases("cmd_send_log"),
         ])
         return CommandLexicon.english.withExtra(extra.phrases)
     }

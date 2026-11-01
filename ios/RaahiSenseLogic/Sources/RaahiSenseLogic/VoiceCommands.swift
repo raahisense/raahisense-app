@@ -2,12 +2,12 @@ import Foundation
 
 public enum VoiceCommand: String, CaseIterable {
     case start, stop, pause, resume, whatIsAhead, repeatLast, louder, quieter, faster, slower, changeLanguage, help
-    case startCollecting, stopCollecting, missed, wrong
+    case startCollecting, stopCollecting, missed, wrong, sendLog
 }
 
 public enum VoiceAction: String {
     case ignore, wakeOnly, unknown, start, stop, pause, resume, whatIsAhead, repeatLast, louder, quieter, faster, slower, changeLanguage, help
-    case startCollecting, stopCollecting, missed, wrong
+    case startCollecting, stopCollecting, missed, wrong, sendLog
 }
 
 public struct CommandLexicon {
@@ -36,6 +36,7 @@ public struct CommandLexicon {
         .stopCollecting: ["stop collecting"],
         .missed: ["missed"],
         .wrong: ["wrong", "false alarm", "wrong warning"],
+        .sendLog: ["send log"],
     ])
 
     public func withExtra(_ extra: [VoiceCommand: [String]]) -> CommandLexicon {
@@ -118,7 +119,7 @@ public enum SpokenEar {
 /// An everyday command from the selected language wins over English.
 public enum EarChoice {
     private static let englishPinned: Set<VoiceAction> = [
-        .stop, .startCollecting, .stopCollecting, .missed, .wrong,
+        .stop, .startCollecting, .stopCollecting, .missed, .wrong, .sendLog,
     ]
 
     public static func prefer(language: VoiceAction?, english: VoiceAction) -> VoiceAction {
@@ -246,6 +247,7 @@ private extension VoiceCommand {
         case .stopCollecting: return .stopCollecting
         case .missed: return .missed
         case .wrong: return .wrong
+        case .sendLog: return .sendLog
         }
     }
 }

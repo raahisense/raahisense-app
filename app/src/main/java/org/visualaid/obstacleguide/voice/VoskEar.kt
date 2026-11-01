@@ -255,7 +255,8 @@ class VoskEar(
                     action == VoiceAction.START_COLLECTING ||
                     action == VoiceAction.STOP_COLLECTING ||
                     action == VoiceAction.MISSED ||
-                    action == VoiceAction.WRONG
+                    action == VoiceAction.WRONG ||
+                    action == VoiceAction.SEND_LOG
                 ) {
                     english = action
                 }

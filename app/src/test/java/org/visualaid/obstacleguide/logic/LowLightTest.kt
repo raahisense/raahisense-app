@@ -141,7 +141,7 @@ class LowLightTest {
         assertEquals(3, DepthWarnings.STATIC_DEBOUNCE)
         assertEquals(4, DepthWarnings.APPROACH_FRAMES)
         assertEquals(0.82f, DepthWarnings.APPROACH_SHRINK, 0.0001f)
-        assertEquals(4_000L, WarningLogic.THROTTLE_MS)
+        assertEquals(3_000L, WarningLogic.THROTTLE_MS)
 
         val box = DetectionBox("chair", 0.42f, 0f, 0.40f, 0.34f, 0.95f)
         assertNull(WarningLogic.fromBox(box, WarningLogic.SCORE_THRESHOLD))

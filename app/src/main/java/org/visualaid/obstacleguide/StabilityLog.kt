@@ -2,12 +2,14 @@ package org.visualaid.obstacleguide
 
 import android.app.ActivityManager
 import android.app.Application
+import android.content.ClipData
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Debug
 import android.os.PowerManager
 import android.util.Log
-import org.visualaid.obstacleguide.collect.CollectStore
+import androidx.core.content.FileProvider
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -15,7 +17,8 @@ import java.util.Locale
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
- * A short log in the collect folder. Export adds it to the zip the user shares.
+ * A diagnostics log in app storage, written on every run even when Collect is off.
+ * Share it from settings or with the English command "send log".
  * Samples stay on a background thread. The file is capped so it cannot grow without bound.
  */
 object StabilityLog {
@@ -64,7 +67,29 @@ object StabilityLog {
     }
 
     fun logFile(context: Context): File {
-        return File(CollectStore.root(context), FILE_NAME)
+        val dir = File(context.applicationContext.filesDir, "RaahiSense")
+        if (!dir.isDirectory) dir.mkdirs()
+        return File(dir, FILE_NAME)
+    }
+
+    /** Opens the Android share sheet. Returns false when there is nothing to share. */
+    fun share(context: Context, title: String): Boolean {
+        val file = logFile(context)
+        if (!file.isFile || file.length() == 0L) return false
+        val uri = FileProvider.getUriForFile(context, "${context.packageName}.files", file)
+        val send = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_STREAM, uri)
+            putExtra(Intent.EXTRA_SUBJECT, title)
+            clipData = ClipData.newRawUri(file.name, uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        val chooser = Intent.createChooser(send, title).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        context.startActivity(chooser)
+        return true
     }
 
     private fun sampleLoop(app: Application) {

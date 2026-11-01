@@ -6,7 +6,21 @@ import Foundation
 /// This type does not build sentences. Phrase files supply the words.
 public enum WarningLogic {
     public static let scoreThreshold: Float = 0.5
-    public static let throttleMs: Int64 = 4_000
+    public static let defaultGapMs: Int64 = 3_000
+    public static let minGapMs: Int64 = 1_000
+    public static let maxGapMs: Int64 = 10_000
+    public static let sameObjectMs: Int64 = 8_000
+    public static let urgentRepeatMs: Int64 = 2_000
+    public static let throttleMs: Int64 = defaultGapMs
+    public static let urgentLabels: Set<String> = ["pothole", "manhole_open_drain", "stairs"]
+
+    public static func isUrgentHazard(_ warning: ObstacleWarning) -> Bool {
+        warning.closeness == .veryClose || urgentLabels.contains(warning.label)
+    }
+
+    public static func clampGapMs(_ gapMs: Int64) -> Int64 {
+        min(maxGapMs, max(minGapMs, gapMs))
+    }
     public static let leftMax: Float = 0.35
     public static let rightMin: Float = 0.65
     public static let veryCloseArea: Float = 0.22
@@ -89,11 +103,29 @@ public enum WarningLogic {
     ) -> ObstacleWarning? {
         for warning in ranked.prefix(2) {
             if speechBusy && !warning.urgent { continue }
-            if throttle.isThrottled(warning, nowMs: nowMs) { continue }
+            if !throttle.allows(warning, nowMs: nowMs) { continue }
             throttle.mark(warning, nowMs: nowMs)
             return warning
         }
         return nil
+    }
+}
+
+public final class DetectionConfirm {
+    private var frames: [[String]] = []
+
+    public init() {}
+
+    public func observe(_ labels: Set<String>) -> Set<String> {
+        frames.append(Array(labels))
+        if frames.count > 3 { frames.removeFirst(frames.count - 3) }
+        var counts: [String: Int] = [:]
+        for frame in frames {
+            for label in Set(frame) {
+                counts[label, default: 0] += 1
+            }
+        }
+        return Set(counts.filter { $0.value >= 2 }.map { $0.key })
     }
 }
 
@@ -140,24 +172,44 @@ public struct ObstacleWarning: Equatable {
 }
 
 public final class WarningThrottle {
-    private let windowMs: Int64
-    private var lastSpokenAt: [String: Int64] = [:]
+    public var gapMs: Int64
 
-    public init(windowMs: Int64 = WarningLogic.throttleMs) {
-        self.windowMs = windowMs
+    private var lastSpokenAt: Int64 = .min / 4
+    private var lastByLabel: [String: (Closeness, Int64)] = [:]
+
+    public init(gapMs: Int64 = WarningLogic.defaultGapMs) {
+        self.gapMs = WarningLogic.clampGapMs(gapMs)
     }
 
     public func key(_ warning: ObstacleWarning) -> String {
         "\(warning.label)|\(warning.position)|\(warning.closeness)"
     }
 
-    public func isThrottled(_ warning: ObstacleWarning, nowMs: Int64) -> Bool {
-        guard let previous = lastSpokenAt[key(warning)] else { return false }
-        return nowMs - previous < windowMs
+    public func allows(_ warning: ObstacleWarning, nowMs: Int64) -> Bool {
+        if WarningLogic.isUrgentHazard(warning) {
+            if let previous = lastByLabel[warning.label], nowMs - previous.1 < WarningLogic.urgentRepeatMs {
+                return false
+            }
+            return true
+        }
+        if let previous = lastByLabel[warning.label] {
+            let closer = rank(warning.closeness) > rank(previous.0)
+            if !closer && nowMs - previous.1 < WarningLogic.sameObjectMs { return false }
+        }
+        return nowMs - lastSpokenAt >= gapMs
     }
 
     public func mark(_ warning: ObstacleWarning, nowMs: Int64) {
-        lastSpokenAt[key(warning)] = nowMs
+        lastSpokenAt = nowMs
+        lastByLabel[warning.label] = (warning.closeness, nowMs)
+    }
+
+    private func rank(_ closeness: Closeness) -> Int {
+        switch closeness {
+        case .far: return 1
+        case .near: return 2
+        case .veryClose: return 3
+        }
     }
 }
 

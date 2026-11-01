@@ -13,7 +13,23 @@ import kotlin.math.abs
  */
 object WarningLogic {
     const val SCORE_THRESHOLD = 0.5f
-    const val THROTTLE_MS = 4_000L
+    const val DEFAULT_GAP_MS = 3_000L
+    const val MIN_GAP_MS = 1_000L
+    const val MAX_GAP_MS = 10_000L
+    const val SAME_OBJECT_MS = 8_000L
+    const val URGENT_REPEAT_MS = 2_000L
+
+    /** Kept so older call sites still compile. The spoken gap is [DEFAULT_GAP_MS]. */
+    const val THROTTLE_MS = DEFAULT_GAP_MS
+
+    /** A drop, stairs, an open drain, or any very-close obstacle. */
+    val URGENT_LABELS = setOf("pothole", "manhole_open_drain", "stairs")
+
+    fun isUrgentHazard(warning: ObstacleWarning): Boolean {
+        return warning.closeness == Closeness.VERY_CLOSE || warning.label in URGENT_LABELS
+    }
+
+    fun clampGapMs(gapMs: Long): Long = gapMs.coerceIn(MIN_GAP_MS, MAX_GAP_MS)
 
     /** Center x below this is on the left. */
     const val LEFT_MAX = 0.35f
@@ -108,10 +124,9 @@ object WarningLogic {
 
     /**
      * Speaks at most one warning, chosen from the two highest-priority objects.
+     * A warning that cannot be spoken now is dropped. It is not saved for later.
      * A non-urgent warning waits while speech is still playing.
-     * A very-close object ahead may be chosen even while speech is playing,
-     * so the caller can interrupt. The same object, side, and distance is
-     * suppressed for [THROTTLE_MS].
+     * Urgent hazards may interrupt, subject to [WarningThrottle].
      */
     fun selectAnnouncement(
         ranked: List<ObstacleWarning>,
@@ -121,11 +136,34 @@ object WarningLogic {
     ): ObstacleWarning? {
         for (warning in ranked.take(2)) {
             if (speechBusy && !warning.urgent) continue
-            if (throttle.isThrottled(warning, nowMs)) continue
+            if (!throttle.allows(warning, nowMs)) continue
             throttle.mark(warning, nowMs)
             return warning
         }
         return null
+    }
+}
+
+/**
+ * An object must be seen in 2 of the last 3 frames before it can be spoken.
+ * One-frame misrecognitions never become a warning.
+ */
+class DetectionConfirm {
+    private val frames = ArrayDeque<Set<String>>()
+
+    fun observe(labels: Set<String>): Set<String> {
+        frames.addLast(labels)
+        while (frames.size > WINDOW) frames.removeFirst()
+        val counts = HashMap<String, Int>()
+        for (frame in frames) {
+            for (label in frame) counts[label] = (counts[label] ?: 0) + 1
+        }
+        return counts.filterValues { it >= NEEDED }.keys
+    }
+
+    companion object {
+        const val WINDOW = 3
+        const val NEEDED = 2
     }
 }
 
@@ -159,20 +197,48 @@ data class ObstacleWarning(
 )
 
 class WarningThrottle(
-    private val windowMs: Long = WarningLogic.THROTTLE_MS,
+    gapMs: Long = WarningLogic.DEFAULT_GAP_MS,
 ) {
-    private val lastSpokenAt = HashMap<String, Long>()
+    var gapMs: Long = WarningLogic.clampGapMs(gapMs)
+        set(value) {
+            field = WarningLogic.clampGapMs(value)
+        }
+
+    private var lastSpokenAt = Long.MIN_VALUE / 4
+    private val lastByLabel = HashMap<String, SpokenObject>()
 
     fun key(warning: ObstacleWarning): String {
         return "${warning.label}|${warning.position}|${warning.closeness}"
     }
 
-    fun isThrottled(warning: ObstacleWarning, nowMs: Long): Boolean {
-        val previous = lastSpokenAt[key(warning)] ?: return false
-        return nowMs - previous < windowMs
+    /**
+     * Same object stays quiet for 8 seconds unless it moves into a nearer
+     * distance bucket. Anything else waits for [gapMs]. Urgent hazards can
+     * skip that gap, but the same hazard cannot repeat inside 2 seconds.
+     */
+    fun allows(warning: ObstacleWarning, nowMs: Long): Boolean {
+        val previous = lastByLabel[warning.label]
+        if (WarningLogic.isUrgentHazard(warning)) {
+            if (previous != null && nowMs - previous.atMs < WarningLogic.URGENT_REPEAT_MS) return false
+            return true
+        }
+        if (previous != null) {
+            val closer = closenessRank(warning.closeness) > closenessRank(previous.closeness)
+            if (!closer && nowMs - previous.atMs < WarningLogic.SAME_OBJECT_MS) return false
+        }
+        return nowMs - lastSpokenAt >= gapMs
     }
 
     fun mark(warning: ObstacleWarning, nowMs: Long) {
-        lastSpokenAt[key(warning)] = nowMs
+        lastSpokenAt = nowMs
+        lastByLabel[warning.label] = SpokenObject(warning.closeness, nowMs)
     }
+
+    private fun closenessRank(closeness: Closeness): Int = when (closeness) {
+        Closeness.FAR -> 1
+        Closeness.NEAR -> 2
+        Closeness.VERY_CLOSE -> 3
+    }
+
+    private data class SpokenObject(val closeness: Closeness, val atMs: Long)
 }

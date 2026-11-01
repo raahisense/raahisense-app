@@ -236,5 +236,12 @@
     <string name="lang_es">Español — draft, needs native-speaker review</string>
     <string name="lang_kn">ಕನ್ನಡ (Kannada) — draft, needs native-speaker review</string>
     <string name="lang_te">తెలుగు (Telugu) — draft, needs native-speaker review</string>
+    <string name="cmd_send_log">send log</string>
+    <string name="warning_gap">Warning gap: %1$s seconds</string>
+    <string name="cd_warning_gap">Seconds between spoken warnings. Double tap to change it. It is %1$s seconds now.</string>
+    <string name="share_diagnostics">Share diagnostics</string>
+    <string name="cd_share_diagnostics">Share the diagnostics log so it can be saved. Nothing is uploaded until you choose where to send it.</string>
+    <string name="diagnostics_empty">There is no diagnostics log yet.</string>
+    <string name="confirm_send_log">Sharing the diagnostics log.</string>
 </resources>
 

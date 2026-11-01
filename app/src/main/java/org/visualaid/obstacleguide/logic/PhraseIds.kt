@@ -237,6 +237,13 @@ object PhraseIds {
         "cmd_collect_stop",
         "cmd_missed",
         "cmd_wrong",
+        "cmd_send_log",
+        "warning_gap",
+        "cd_warning_gap",
+        "share_diagnostics",
+        "cd_share_diagnostics",
+        "diagnostics_empty",
+        "confirm_send_log",
         "collect_note",
     )
 

@@ -340,6 +340,16 @@ class MainActivity : AppCompatActivity() {
         binding.collectGps.setOnClickListener { afterTap { onCollectGps() } }
         binding.collectExport.setOnClickListener { afterTap { exportCollect() } }
         binding.about.setOnClickListener { afterTap { startActivity(Intent(this, AboutActivity::class.java)) } }
+        binding.warningGap.setOnClickListener {
+            afterTap {
+                settings = settings.nextWarningGap()
+                persist()
+                val seconds = (settings.warningGapMs / 1_000L).toString()
+                speakUi(getString(R.string.warning_gap, seconds))
+                render()
+            }
+        }
+        binding.shareDiagnostics.setOnClickListener { afterTap { shareDiagnostics() } }
         binding.calibrate.setOnClickListener { afterTap { onCalibrate() } }
         binding.batteryOpt.setOnClickListener { afterTap { openBatterySettings() } }
         binding.wakePhrase.setOnFocusChangeListener { _, hasFocus ->
@@ -607,6 +617,9 @@ class MainActivity : AppCompatActivity() {
         binding.collectNote.text = getString(R.string.collect_note)
         binding.collectExport.text = getString(R.string.collect_export)
         binding.collectExport.contentDescription = getString(R.string.cd_collect_export)
+        val gapSeconds = (settings.warningGapMs / 1_000L).toString()
+        binding.warningGap.text = getString(R.string.warning_gap, gapSeconds)
+        binding.warningGap.contentDescription = getString(R.string.cd_warning_gap, gapSeconds)
         showCollectUsage()
     }
 
@@ -658,6 +671,19 @@ class MainActivity : AppCompatActivity() {
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                 ),
             )
+        }
+    }
+
+    private fun shareDiagnostics() {
+        val shared = try {
+            StabilityLog.share(this, getString(R.string.share_diagnostics))
+        } catch (_: Exception) {
+            false
+        }
+        if (!shared) {
+            val message = getString(R.string.diagnostics_empty)
+            showStatus(message)
+            speakUi(message)
         }
     }
 

@@ -24,6 +24,7 @@ internal object ExitHistory {
             for (reason in reasons) {
                 if (reason.timestamp <= seen) continue
                 StabilityLog.append(context, line(reason))
+                appendTrace(context, reason)
                 if (reason.timestamp > newest) newest = reason.timestamp
             }
             if (newest > seen) prefs.edit().putLong(KEY_EXIT, newest).apply()
@@ -52,5 +53,19 @@ internal object ExitHistory {
         return "EXIT reason=$name code=${reason.reason} status=${reason.status} " +
             "importance=${reason.importance} pssKb=${reason.pss} rssKb=${reason.rss} " +
             "description=${reason.description.orEmpty()} timestamp=${reason.timestamp}"
+    }
+
+    private fun appendTrace(context: Context, reason: ApplicationExitInfo) {
+        val traced = reason.reason == ApplicationExitInfo.REASON_ANR ||
+            reason.reason == ApplicationExitInfo.REASON_CRASH_NATIVE ||
+            reason.reason == ApplicationExitInfo.REASON_CRASH
+        if (!traced) return
+        val text = try {
+            reason.traceInputStream?.bufferedReader()?.use { it.readText() }.orEmpty()
+        } catch (error: Exception) {
+            "trace unreadable: ${error.message}"
+        }
+        if (text.isBlank()) return
+        StabilityLog.append(context, "TRACE\n${text.take(8_000)}")
     }
 }

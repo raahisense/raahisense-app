@@ -317,6 +317,19 @@
             app:backgroundTint="@null" />
 
         <Button
+            android:id="@+id/warningGap"
+            style="@style/GuideRow"
+            android:text="@string/warning_gap"
+            app:backgroundTint="@null" />
+
+        <Button
+            android:id="@+id/shareDiagnostics"
+            style="@style/GuideRow"
+            android:contentDescription="@string/cd_share_diagnostics"
+            android:text="@string/share_diagnostics"
+            app:backgroundTint="@null" />
+
+        <Button
             android:id="@+id/about"
             style="@style/GuideRow"
             android:contentDescription="@string/cd_about"

@@ -3,6 +3,7 @@ package org.visualaid.obstacleguide
 import org.visualaid.obstacleguide.logic.CollectCapture
 import org.visualaid.obstacleguide.logic.DepthCalibration
 import org.visualaid.obstacleguide.logic.TorchMode
+import org.visualaid.obstacleguide.logic.WarningLogic
 
 data class GuideSettings(
     val languageTag: String = "en",
@@ -18,6 +19,7 @@ data class GuideSettings(
     val collectEnabled: Boolean = false,
     val collectIntervalMs: Long = CollectCapture.DEFAULT_INTERVAL_MS,
     val collectGps: Boolean = false,
+    val warningGapMs: Long = WarningLogic.DEFAULT_GAP_MS,
 ) {
     fun normalized(): GuideSettings {
         val tag = if (languageTag in LANGUAGE_TAGS) languageTag else "en"
@@ -40,7 +42,14 @@ data class GuideSettings(
             depthOpenRaw = open,
             depthWallRaw = wall,
             collectIntervalMs = CollectCapture.clampInterval(collectIntervalMs),
+            warningGapMs = WarningLogic.clampGapMs(warningGapMs),
         )
+    }
+
+    fun nextWarningGap(): GuideSettings {
+        val seconds = (warningGapMs / 1_000L).toInt().coerceIn(1, 10)
+        val next = if (seconds >= 10) 1 else seconds + 1
+        return copy(warningGapMs = next * 1_000L)
     }
 
     fun nextCollectInterval(): GuideSettings {

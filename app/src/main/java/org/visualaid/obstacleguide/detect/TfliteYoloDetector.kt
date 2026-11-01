@@ -37,6 +37,7 @@ class TfliteYoloDetector(context: Context) : Closeable {
     private val reds: FloatArray
     private val greens: FloatArray
     private val blues: FloatArray
+    private val inferenceLock = Any()
 
     init {
         val options = Interpreter.Options().apply { setNumThreads(2) }
@@ -73,6 +74,12 @@ class TfliteYoloDetector(context: Context) : Closeable {
     }
 
     fun detect(bitmap: Bitmap, scoreThreshold: Float = WarningLogic.SCORE_THRESHOLD): List<DetectionBox> {
+        synchronized(inferenceLock) {
+            return detectLocked(bitmap, scoreThreshold)
+        }
+    }
+
+    private fun detectLocked(bitmap: Bitmap, scoreThreshold: Float): List<DetectionBox> {
         letterbox(bitmap)
         raster()
         outputBuffer.clear()

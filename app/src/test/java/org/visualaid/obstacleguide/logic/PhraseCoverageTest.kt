@@ -84,6 +84,7 @@ class PhraseCoverageTest {
                 "cmd_collect_stop",
                 "cmd_missed",
                 "cmd_wrong",
+                "cmd_send_log",
             )
             val english = stringEntries(File(root, "values/strings.xml").readText())
             for (name in englishOnly) {

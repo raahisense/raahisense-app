@@ -19,6 +19,7 @@ import java.nio.ByteOrder
  * negates it, so the returned [DepthField] uses a larger value for farther.
  */
 class TfliteDepth(context: Context) : Closeable {
+    private val inferenceLock = Any()
     private val interpreter: Interpreter
     private val inputHeight: Int
     private val inputWidth: Int
@@ -55,6 +56,12 @@ class TfliteDepth(context: Context) : Closeable {
     }
 
     fun estimate(bitmap: Bitmap): DepthField {
+        synchronized(inferenceLock) {
+            return estimateLocked(bitmap)
+        }
+    }
+
+    private fun estimateLocked(bitmap: Bitmap): DepthField {
         val scaled = Bitmap.createScaledBitmap(bitmap, inputWidth, inputHeight, true)
         val input = raster(scaled)
         if (scaled != bitmap) scaled.recycle()

@@ -24,6 +24,7 @@ enum class VoiceCommand {
     STOP_COLLECTING,
     MISSED,
     WRONG,
+    SEND_LOG,
 }
 
 enum class VoiceAction {
@@ -46,6 +47,7 @@ enum class VoiceAction {
     STOP_COLLECTING,
     MISSED,
     WRONG,
+    SEND_LOG,
 }
 
 data class CommandLexicon(
@@ -86,6 +88,7 @@ data class CommandLexicon(
                 VoiceCommand.STOP_COLLECTING to listOf("stop collecting"),
                 VoiceCommand.MISSED to listOf("missed"),
                 VoiceCommand.WRONG to listOf("wrong", "false alarm", "wrong warning"),
+                VoiceCommand.SEND_LOG to listOf("send log"),
             ),
         )
 
@@ -200,6 +203,7 @@ object EarChoice {
         VoiceAction.STOP_COLLECTING,
         VoiceAction.MISSED,
         VoiceAction.WRONG,
+        VoiceAction.SEND_LOG,
     )
 
     fun prefer(language: VoiceAction?, english: VoiceAction): VoiceAction {
@@ -330,4 +334,5 @@ private fun VoiceCommand.toAction(): VoiceAction = when (this) {
     VoiceCommand.STOP_COLLECTING -> VoiceAction.STOP_COLLECTING
     VoiceCommand.MISSED -> VoiceAction.MISSED
     VoiceCommand.WRONG -> VoiceAction.WRONG
+    VoiceCommand.SEND_LOG -> VoiceAction.SEND_LOG
 }

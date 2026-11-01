@@ -73,6 +73,7 @@ import org.visualaid.obstacleguide.logic.RecognitionGate
 import org.visualaid.obstacleguide.logic.VoiceAction
 import org.visualaid.obstacleguide.logic.VoiceCommand
 import org.visualaid.obstacleguide.logic.ShakeWatch
+import org.visualaid.obstacleguide.logic.DetectionConfirm
 import org.visualaid.obstacleguide.logic.WarningLogic
 import org.visualaid.obstacleguide.logic.WarningThrottle
 import org.visualaid.obstacleguide.speech.GuideSpeaker
@@ -119,6 +120,7 @@ class GuideService : LifecycleService() {
     private val collectScheduler = CollectScheduler()
     private val speechBusy = AtomicBoolean(false)
     private val throttle = WarningThrottle()
+    private val detectionConfirm = DetectionConfirm()
 
     private lateinit var speaker: GuideSpeaker
     private var detector: ObstacleDetector? = null
@@ -506,7 +508,24 @@ class GuideService : LifecycleService() {
             VoiceAction.STOP_COLLECTING -> setCollectingFromVoice(on = false)
             VoiceAction.MISSED -> markMissed()
             VoiceAction.WRONG -> markWrong()
+            VoiceAction.SEND_LOG -> shareDiagnostics()
         }
+    }
+
+    private fun shareDiagnostics() {
+        val speech = speechContext()
+        val shared = try {
+            StabilityLog.share(this, speech.getString(R.string.share_diagnostics))
+        } catch (error: Exception) {
+            Log.w(TAG, "Diagnostics share failed", error)
+            false
+        }
+        val phrase = if (shared) {
+            speech.getString(R.string.confirm_send_log)
+        } else {
+            speech.getString(R.string.diagnostics_empty)
+        }
+        speakTracked(phrase, flush = true)
     }
 
     private fun setCollectingFromVoice(on: Boolean) {
@@ -628,6 +647,7 @@ class GuideService : LifecycleService() {
                 VoiceCommand.STOP_COLLECTING to phrases(R.string.cmd_collect_stop),
                 VoiceCommand.MISSED to phrases(R.string.cmd_missed),
                 VoiceCommand.WRONG to phrases(R.string.cmd_wrong),
+                VoiceCommand.SEND_LOG to phrases(R.string.cmd_send_log),
             ),
         )
     }
@@ -757,7 +777,13 @@ class GuideService : LifecycleService() {
         val notification = buildNotification(foregroundText())
         return try {
             if (Build.VERSION.SDK_INT >= 30) {
-                startForeground(NOTIFICATION_ID, notification, foregroundTypes(guiding))
+                val types = foregroundTypes(guiding)
+                if (types == 0) {
+                    StabilityLog.append(this, "FGS skipped: no permitted foreground type")
+                    if (!running) stopSelf()
+                    return false
+                }
+                startForeground(NOTIFICATION_ID, notification, types)
             } else if (Build.VERSION.SDK_INT >= 29 && guiding) {
                 startForeground(NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA)
             } else {
@@ -767,6 +793,7 @@ class GuideService : LifecycleService() {
             true
         } catch (error: Exception) {
             Log.e(TAG, "Could not start foreground service", error)
+            StabilityLog.append(this, "FGS failed: ${error.javaClass.simpleName} ${error.message}")
             if (!running) stopSelf()
             false
         }
@@ -778,12 +805,20 @@ class GuideService : LifecycleService() {
 
     private fun foregroundTypes(guiding: Boolean): Int {
         var types = 0
-        if (guiding) types = types or ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA
-        if (settings.voiceEnabled) types = types or ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE
-        if (guiding && settings.collectEnabled && settings.collectGps && Build.VERSION.SDK_INT >= 29) {
+        val cameraOk = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) ==
+            PackageManager.PERMISSION_GRANTED
+        val micOk = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) ==
+            PackageManager.PERMISSION_GRANTED
+        val locationOk = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) ==
+            PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) ==
+            PackageManager.PERMISSION_GRANTED
+        if (guiding && cameraOk) types = types or ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA
+        if (settings.voiceEnabled && micOk) types = types or ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE
+        if (guiding && settings.collectEnabled && settings.collectGps && locationOk && Build.VERSION.SDK_INT >= 29) {
             types = types or ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
         }
-        if (types == 0) types = ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA
+        if (types == 0 && guiding && cameraOk) types = ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA
         return types
     }
 
@@ -1112,42 +1147,38 @@ class GuideService : LifecycleService() {
     }
 
     private fun analyze(image: ImageProxy) {
-        if (!running || stopping) {
-            image.close()
-            return
-        }
-        val nowElapsed = SystemClock.elapsedRealtime()
-        val interval = GuideSettings.frameIntervalMs(settings.batterySaver)
-        if (nowElapsed - lastFrameAt < interval) {
-            image.close()
-            return
-        }
-        lastFrameAt = nowElapsed
-        if (detector == null) {
-            image.close()
-            return
-        }
-        val scene = try {
-            val (iso, exposureNs) = image.captureExposure()
-            SceneLight(
-                meanLuma = image.meanLumaY(),
-                lux = ambientLux,
-                iso = iso,
-                exposureTimeNs = exposureNs,
-            )
-        } catch (error: Exception) {
-            Log.w(TAG, "Brightness read failed", error)
-            SceneLight(Float.NaN, ambientLux)
-        }
-        var bitmap: android.graphics.Bitmap? = null
         try {
-            bitmap = image.toUprightBitmap()
-            considerFrame(bitmap, depthField = null, allowMonocular = true, scene = scene)
+            if (!running || stopping || detector == null) return
+            val nowElapsed = SystemClock.elapsedRealtime()
+            val interval = GuideSettings.frameIntervalMs(settings.batterySaver)
+            if (nowElapsed - lastFrameAt < interval) return
+            lastFrameAt = nowElapsed
+            val scene = try {
+                val (iso, exposureNs) = image.captureExposure()
+                SceneLight(
+                    meanLuma = image.meanLumaY(),
+                    lux = ambientLux,
+                    iso = iso,
+                    exposureTimeNs = exposureNs,
+                )
+            } catch (error: Exception) {
+                Log.w(TAG, "Brightness read failed", error)
+                SceneLight(Float.NaN, ambientLux)
+            }
+            val bitmap = image.toUprightBitmap()
+            try {
+                considerFrame(bitmap, depthField = null, allowMonocular = true, scene = scene)
+            } finally {
+                bitmap.recycle()
+            }
         } catch (error: Exception) {
             onFrameError(error)
         } finally {
-            bitmap?.recycle()
-            image.close()
+            try {
+                image.close()
+            } catch (error: Exception) {
+                Log.w(TAG, "Camera frame close failed", error)
+            }
         }
     }
 
@@ -1172,8 +1203,11 @@ class GuideService : LifecycleService() {
         val ranked = rankFrame(boxes, threshold)
         lastRanked = ranked
         if (commandCapturing) return
+        val confirmed = detectionConfirm.observe(ranked.map { it.label }.toSet())
+        val stable = ranked.filter { it.label in confirmed }
+        throttle.gapMs = settings.warningGapMs
         val choice = WarningLogic.selectAnnouncement(
-            ranked,
+            stable,
             throttle,
             speechBusy.get() || speaker.speaking.get(),
             System.currentTimeMillis(),

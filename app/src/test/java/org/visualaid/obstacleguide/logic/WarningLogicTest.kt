@@ -170,55 +170,74 @@ class WarningLogicTest {
     }
 
     @Test
-    fun throttle_blocksTheSameWarningForFourSeconds() {
-        val throttle = WarningThrottle(windowMs = 4_000L)
-        val warning = sampleWarning()
-        assertFalse(throttle.isThrottled(warning, 10_000L))
-        throttle.mark(warning, 10_000L)
-        assertTrue(throttle.isThrottled(warning, 10_000L))
-        assertTrue(throttle.isThrottled(warning, 13_999L))
-        assertFalse(throttle.isThrottled(warning, 14_000L))
-    }
-
-    @Test
-    fun throttle_allowsANewSideDistanceOrObjectImmediately() {
+    fun pacing_keepsThreeSecondsBetweenWarnings_andEightForTheSameObject() {
         val throttle = WarningThrottle()
-        val ahead = sampleWarning()
-        throttle.mark(ahead, 1_000L)
-        val left = ahead.copy(position = HorizontalPosition.LEFT)
-        val nearer = ahead.copy(closeness = Closeness.VERY_CLOSE, urgent = true)
-        val other = ahead.copy(label = "car")
-        assertFalse(throttle.isThrottled(left, 1_100L))
-        assertFalse(throttle.isThrottled(nearer, 1_100L))
-        assertFalse(throttle.isThrottled(other, 1_100L))
-        assertEquals("person|AHEAD|NEAR", throttle.key(ahead))
-        assertEquals("person|LEFT|NEAR", throttle.key(left))
+        val person = sampleWarning(label = "person", closeness = Closeness.NEAR)
+        val chair = sampleWarning(label = "chair", closeness = Closeness.NEAR)
+        assertTrue(throttle.allows(person, 10_000L))
+        throttle.mark(person, 10_000L)
+        assertFalse(throttle.allows(chair, 12_999L))
+        assertTrue(throttle.allows(chair, 13_000L))
+        assertFalse(throttle.allows(person, 17_999L))
+        assertTrue(throttle.allows(person, 18_000L))
+        assertEquals(3_000L, throttle.gapMs)
+        assertEquals(8_000L, WarningLogic.SAME_OBJECT_MS)
     }
 
     @Test
-    fun select_speaksTheTopWarning_thenSuppressesIt() {
+    fun pacing_repeatsACloserBucket_andLetsUrgentHazardsSkipTheGap() {
+        val throttle = WarningThrottle()
+        val far = sampleWarning(label = "person", closeness = Closeness.FAR)
+        throttle.mark(far, 1_000L)
+        val nearer = far.copy(closeness = Closeness.NEAR)
+        val sameSide = far.copy(position = HorizontalPosition.LEFT)
+        assertFalse(throttle.allows(sameSide, 5_000L))
+        assertTrue(throttle.allows(nearer, 4_000L))
+        val stairs = sampleWarning(label = "stairs", closeness = Closeness.FAR, urgent = false)
+        assertTrue(throttle.allows(stairs, 4_100L))
+        throttle.mark(stairs, 4_100L)
+        assertFalse(throttle.allows(stairs, 6_000L))
+        assertTrue(throttle.allows(stairs, 6_100L))
+        val veryClose = sampleWarning(label = "chair", closeness = Closeness.VERY_CLOSE, urgent = false)
+        assertTrue(throttle.allows(veryClose, 6_200L))
+        throttle.mark(veryClose, 6_200L)
+        assertFalse(throttle.allows(veryClose, 8_100L))
+        assertTrue(throttle.allows(veryClose, 8_200L))
+        assertEquals("person|AHEAD|FAR", throttle.key(far))
+    }
+
+    @Test
+    fun select_speaksTheTopWarning_thenDropsItUntilTheObjectWindow() {
         val throttle = WarningThrottle()
         val first = sampleWarning(label = "person", priority = 5f)
         val ranked = listOf(first)
         val spoken = WarningLogic.selectAnnouncement(ranked, throttle, speechBusy = false, nowMs = 5_000L)
         assertEquals(first, spoken)
-        assertNull(WarningLogic.selectAnnouncement(ranked, throttle, speechBusy = false, nowMs = 6_000L))
-        val afterWindow = WarningLogic.selectAnnouncement(ranked, throttle, speechBusy = false, nowMs = 9_000L)
+        assertNull(WarningLogic.selectAnnouncement(ranked, throttle, speechBusy = false, nowMs = 8_000L))
+        val afterWindow = WarningLogic.selectAnnouncement(ranked, throttle, speechBusy = false, nowMs = 13_000L)
         assertEquals(first, afterWindow)
     }
 
     @Test
-    fun select_skipsAThrottledLeader_andSpeaksTheNextOfTheTopTwo() {
+    fun select_skipsAHeldLeader_andSpeaksTheNextAfterTheGap() {
         val throttle = WarningThrottle()
         val first = sampleWarning(label = "person", priority = 5f)
         val second = sampleWarning(label = "chair", priority = 4f)
         val third = sampleWarning(label = "dog", priority = 3f)
         throttle.mark(first, 2_000L)
+        assertNull(
+            WarningLogic.selectAnnouncement(
+                listOf(first, second, third),
+                throttle,
+                speechBusy = false,
+                nowMs = 3_000L,
+            ),
+        )
         val spoken = WarningLogic.selectAnnouncement(
             listOf(first, second, third),
             throttle,
             speechBusy = false,
-            nowMs = 3_000L,
+            nowMs = 5_000L,
         )
         assertEquals("chair", spoken!!.label)
     }
@@ -238,7 +257,7 @@ class WarningLogicTest {
             nowMs = 3_000L,
         )
         assertNull(spoken)
-        assertFalse(throttle.isThrottled(third, 3_000L))
+        assertTrue(throttle.allows(third, 5_000L))
     }
 
     @Test
@@ -255,7 +274,7 @@ class WarningLogicTest {
         assertNull(
             WarningLogic.selectAnnouncement(listOf(waiting), throttle, speechBusy = true, nowMs = 1_000L),
         )
-        assertFalse(throttle.isThrottled(waiting, 1_000L))
+        assertTrue(throttle.allows(waiting, 1_000L))
         val spoken = WarningLogic.selectAnnouncement(
             listOf(waiting, urgent),
             throttle,
@@ -283,7 +302,18 @@ class WarningLogicTest {
     fun batterySaver_usesTheSlowerFrameInterval() {
         assertEquals(300L, GuideSettings.frameIntervalMs(false))
         assertEquals(1_500L, GuideSettings.frameIntervalMs(true))
-        assertEquals(4_000L, WarningLogic.THROTTLE_MS)
+        assertEquals(3_000L, WarningLogic.DEFAULT_GAP_MS)
+        assertEquals(1_000L, WarningLogic.clampGapMs(0L))
+        assertEquals(10_000L, WarningLogic.clampGapMs(99_000L))
+    }
+
+    @Test
+    fun confirm_needsTwoOfTheLastThreeFrames() {
+        val confirm = DetectionConfirm()
+        assertTrue(confirm.observe(setOf("person")).isEmpty())
+        assertEquals(setOf("person"), confirm.observe(setOf("person", "chair")))
+        assertEquals(setOf("person"), confirm.observe(emptySet()))
+        assertTrue(confirm.observe(setOf("dog")).isEmpty())
     }
 
     private fun box(

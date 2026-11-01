@@ -469,13 +469,22 @@ object CollectZip {
         ZipOutputStream(BufferedOutputStream(FileOutputStream(destination))).use { zip ->
             for (file in files) {
                 if (!file.isFile) continue
-                val name = root.toPath().relativize(file.toPath()).toString().replace('\\', '/')
+                val name = zipName(root, file)
                 if (name.isBlank() || name.startsWith("..")) continue
                 val entry = ZipEntry(name)
                 zip.putNextEntry(entry)
                 FileInputStream(file).use { input -> input.copyTo(zip) }
                 zip.closeEntry()
             }
+        }
+    }
+
+    private fun zipName(root: File, file: File): String {
+        return try {
+            val relative = root.toPath().relativize(file.toPath()).toString().replace('\\', '/')
+            if (relative.startsWith("..")) file.name else relative
+        } catch (_: Exception) {
+            file.name
         }
     }
 }

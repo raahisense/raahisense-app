@@ -27,7 +27,11 @@ final class LogicTests: XCTestCase {
         XCTAssertEqual(first, close)
         XCTAssertNil(WarningLogic.selectAnnouncement(ranked: [close], throttle: throttle, speechBusy: false, nowMs: 2_000))
         XCTAssertNil(WarningLogic.selectAnnouncement(ranked: [far], throttle: throttle, speechBusy: true, nowMs: 3_000))
-        XCTAssertEqual(WarningLogic.throttleMs, 4_000)
+        XCTAssertEqual(WarningLogic.defaultGapMs, 3_000)
+        XCTAssertEqual(WarningLogic.sameObjectMs, 8_000)
+        let confirm = DetectionConfirm()
+        XCTAssertTrue(confirm.observe(["person"]).isEmpty)
+        XCTAssertEqual(confirm.observe(["person"]), Set(["person"]))
     }
 
     func testPotholePhraseUsesDistance() {

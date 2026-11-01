@@ -131,6 +131,7 @@ class GuideSpeaker(
             }
             if (flush) pending.clear()
             pending.add(Pending(text, flush))
+            while (pending.size > 1) pending.removeFirst()
             return
         }
         speakNow(engine, text, flush)
@@ -215,6 +216,10 @@ class GuideSpeaker(
     }
 
     private fun complete(utteranceId: String?) {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            main.post { complete(utteranceId) }
+            return
+        }
         if (utteranceId == null || utteranceId != activeId) return
         activeId = null
         markSpeaking(false)

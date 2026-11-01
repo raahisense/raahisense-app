@@ -162,7 +162,7 @@
     <string name="confirm_language">Language changed.</string>
     <string name="confirm_unknown">That was not a command. Say help for the list.</string>
     <string name="ahead_clear">Nothing is in front of you right now.</string>
-    <string name="help_commands">After %1$s, say one everyday command. Hindi and Spanish everyday commands work when that language is selected and the phone has its offline recognizer. English always works. These stay English in every language: stop, stop app, exit, close, start collecting, stop collecting, missed, wrong, false alarm, and wrong warning. Everyday commands are start, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, and help. Stop closes RaahiSense. Pause turns warnings off, and resume turns them on. Start collecting saves training photos while warnings stay on. Say missed when an obstacle was not warned. Say wrong, false alarm, or wrong warning when a warning was false or the wrong object. Kannada, Telugu, Tamil, Bengali, and Swahili listen for the English command words. You can also shake the phone hard, double-tap the screen when TalkBack is off, or hold a volume key while this screen is open.</string>
+    <string name="help_commands">After %1$s, say one everyday command. Hindi and Spanish everyday commands work when that language is selected and the phone has its offline recognizer. English always works. These stay English in every language: stop, stop app, exit, close, start collecting, stop collecting, missed, wrong, false alarm, wrong warning, and send log. Everyday commands are start, pause, resume, what is in front of me, repeat, louder, quieter, faster, slower, change language, and help. Stop closes RaahiSense. Pause turns warnings off, and resume turns them on. Start collecting saves training photos while warnings stay on. Say missed when an obstacle was not warned. Say wrong, false alarm, or wrong warning when a warning was false or the wrong object. Kannada, Telugu, Tamil, Bengali, and Swahili listen for the English command words. You can also shake the phone hard, double-tap the screen when TalkBack is off, or hold a volume key while this screen is open.</string>
     <string name="cmd_start">start|start guide|begin</string>
     <string name="cmd_stop">stop|stop app|exit|close|stop guide</string>
     <string name="cmd_pause">pause</string>
@@ -243,6 +243,13 @@
     <string name="cmd_collect_stop">stop collecting</string>
     <string name="cmd_missed">missed</string>
     <string name="cmd_wrong">wrong|false alarm|wrong warning</string>
+    <string name="cmd_send_log">send log</string>
+    <string name="warning_gap">Warning gap: %1$s seconds</string>
+    <string name="cd_warning_gap">Seconds between spoken warnings. Double tap to change it. It is %1$s seconds now.</string>
+    <string name="share_diagnostics">Share diagnostics</string>
+    <string name="cd_share_diagnostics">Share the diagnostics log so it can be saved. Nothing is uploaded until you choose where to send it.</string>
+    <string name="diagnostics_empty">There is no diagnostics log yet.</string>
+    <string name="confirm_send_log">Sharing the diagnostics log.</string>
     <string name="collect_note">Full photos stay on this phone. Warnings keep running. Nothing is uploaded. Export shares a zip only when you tap Export.</string>
 </resources>
 

@@ -20,6 +20,7 @@ object SettingsStore {
     private const val KEY_COLLECT = "collect_photos"
     private const val KEY_COLLECT_INTERVAL = "collect_interval_ms"
     private const val KEY_COLLECT_GPS = "collect_gps"
+    private const val KEY_WARNING_GAP = "warning_gap_ms"
 
     fun load(context: Context): GuideSettings {
         val prefs = context.applicationContext.getSharedPreferences(PREF, Context.MODE_PRIVATE)
@@ -37,6 +38,7 @@ object SettingsStore {
             collectEnabled = prefs.getBoolean(KEY_COLLECT, false),
             collectIntervalMs = prefs.getLong(KEY_COLLECT_INTERVAL, GuideSettings.DEFAULT_COLLECT_INTERVAL_MS),
             collectGps = prefs.getBoolean(KEY_COLLECT_GPS, false),
+            warningGapMs = prefs.getLong(KEY_WARNING_GAP, org.visualaid.obstacleguide.logic.WarningLogic.DEFAULT_GAP_MS),
         ).normalized()
     }
 
@@ -57,6 +59,7 @@ object SettingsStore {
             .putBoolean(KEY_COLLECT, normalized.collectEnabled)
             .putLong(KEY_COLLECT_INTERVAL, normalized.collectIntervalMs)
             .putBoolean(KEY_COLLECT_GPS, normalized.collectGps)
+            .putLong(KEY_WARNING_GAP, normalized.warningGapMs)
             .apply()
     }
 
